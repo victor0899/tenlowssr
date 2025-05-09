@@ -1,0 +1,144 @@
+<loader-overlay *ngIf="sended && !signupForm.invalid"></loader-overlay>
+<div class="content-signup">
+    <mat-toolbar>
+        <mat-toolbar-row>
+          <button mat-dialog-close>
+            <svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M14 2.0585L12.59 0.72583L7 6.00926L1.41 0.72583L0 2.0585L5.59 7.34193L0 12.6254L1.41 13.958L7 8.6746L12.59 13.958L14 12.6254L8.41 7.34193L14 2.0585Z" fill="#60757C"/>
+            </svg>
+          </button>
+        </mat-toolbar-row>
+    </mat-toolbar>
+    <mat-dialog-content>
+        <div class="lg:w-7/12 md:w-8/12 sm:w-11/12 w-12/12 m-auto text-center mb-10">
+            <h1 class="text-2xl text-tl-crayola">
+                {{ 'pages.sign_up.sign_up_tenlow' | translate }}
+            </h1>
+            <h3 class="my-8 leading-normal text-tl-crayola">
+                {{ 'pages.sign_up.info_sign_up_tenlow' | translate }}
+            </h3>
+        </div>
+        <div class="w-full signup">
+            <form [formGroup]="signupForm" (ngSubmit)="validateForm()">
+                <div class="lg:w-8/12 md:w-9/12 sm:w-11/12 w-full m-auto">
+                    <div class="relative" [ngClass]="{'error-form': (email?.errors && email?.touched)}">
+                        <label for="email" [class]="cssFloatLabel">
+                            {{ 'labels.placeholder_email' | translate }}
+                        </label>
+                        <input id="email" autocomplete="off" type="text" formControlName="email" [class]="cssInputBase" />
+                        <span [class]="cssSpanValidation" *ngIf="(sended || email?.dirty || email?.touched) && email?.errors">
+                            *{{ getValidationEmailMsg() | translate }}
+                        </span>
+                    </div>
+
+                    <div class="relative mt-7" [ngClass]="{'error-form': (password?.errors && password?.touched)}">
+                        <input id="password" autocomplete="off" [type]="typePasswordInput" maxlength="40" formControlName="password" [class]="cssInputBase" />
+                        <label for="password" [class]="cssFloatLabel">
+                            {{ 'labels.password' | translate }}
+                        </label>
+                        <button class="btn-show-password" type="button" (click)="changeTypeInput()">
+                            <ion-icon class="text-2xl" [name]="iconBtnEye"></ion-icon>
+                        </button>
+                        <span [class]="cssSpanValidation" *ngIf="(sended || password?.dirty || password?.touched) && password?.errors">
+                            *{{ getValidationPasswordMsg() | translate }}
+                        </span>
+                    </div>
+
+                    <div class="relative mt-7" [ngClass]="{'error-form': (name?.errors && name?.touched)}">
+                        <input id="name" maxlength="50" autocomplete="off" type="text" formControlName="name" [class]="cssInputBase" />
+                        <label for="name" [class]="cssFloatLabel">
+                            {{ 'labels.name' | translate }}
+                        </label>
+                        <span [class]="cssSpanValidation" *ngIf="(sended || name?.dirty || name?.touched) && name?.errors">
+                            *{{ 'pages.sign_up.enter_valid_name' | translate }}
+                        </span>
+                    </div>
+
+                    <div class="relative mt-7" [ngClass]="{'error-form': (lastName?.errors && lastName?.touched)}">
+                        <input id="lastName" maxlength="50" autocomplete="off" type="text" formControlName="lastName" [class]="cssInputBase" />
+                        <label for="lastName" [class]="cssFloatLabel">
+                            {{ 'labels.last_name' | translate }}
+                        </label>
+                        <span [class]="cssSpanValidation" *ngIf="(sended || lastName?.dirty || lastName?.touched) && lastName?.errors">
+                            *{{ 'pages.sign_up.enter_valid_lastname' | translate }}
+                        </span>
+                    </div>
+
+                    <!-- Reemplazar el div actual del teléfono por esto -->
+<div class="grid grid-cols-5 gap-2 mt-7">
+    <div class="relative lg:col-span-2 md:col-span-2 col-span-5" [ngClass]="{'error-form': (phone_country_code?.errors && phone_country_code?.touched)}">
+        <mat-form-field appearance="outline" class="w-full" subscriptSizing="dynamic">
+            <input
+                type="text"
+                matInput
+                #autoCompleteCountry
+                placeholder="Select a country"
+                formControlName="phone_country_code"
+                required
+                id="code-phone"
+                [class]="cssInputBase"
+                [matAutocomplete]="codeCountrySelect"
+            >
+            <label for="code-phone" [class]="cssFloatLabel">
+                {{ 'labels.code' | translate }}
+            </label>
+            <mat-autocomplete autoActiveFirstOption #codeCountrySelect="matAutocomplete">
+                <mat-option *ngFor="let country of filteredCountry | async" [value]="country.phonecode">
+                    {{ country.name }} ({{country.phonecode}})
+                </mat-option>
+            </mat-autocomplete>
+        </mat-form-field>
+        <span [class]="cssSpanValidation" *ngIf="(sended || phone_country_code?.dirty || phone_country_code?.touched) && phone_country_code?.errors">
+            *{{ 'messages.field_required' | translate }}
+        </span>
+    </div>
+
+    <div class="relative lg:col-span-3 md:col-span-3 col-span-5" [ngClass]="{'error-form': (phone?.errors && phone?.touched)}">
+        <input 
+            id="phone" 
+            autocomplete="off" 
+            type="text" 
+            formControlName="phone" 
+            maxlength="20" 
+            [class]="cssInputBase" 
+        />
+        <label for="phone" [class]="cssFloatLabel">
+            {{ 'labels.phone_number' | translate }}
+        </label>
+        <span [class]="cssSpanValidation" *ngIf="(sended || phone?.dirty || phone?.touched) && phone?.errors">
+            *{{ 'pages.sign_up.enter_valid_phone' | translate }}
+        </span>
+    </div>
+</div>
+                </div>
+
+                <section class="lg:w-10/12 md:w-10/12 w-full flex items-center justify-center mt-6 mb-6 m-auto">
+                    <div class="flex items-center justify-center lg:w-[40vw] md:w-[50vw] w-[80vw] max-w[500px] text-tl-crayola">
+                        <mat-checkbox (change)="onAcceptTerms($event)"></mat-checkbox>
+                        <div class="text-center text-xs">
+                            <span>{{ 'pages.sign_up.accept_terms' | translate }}</span>
+                            <a href="https://tenlow.es/privacidad" class="text-medium"  routerLinkActive="router-link-active" target="_blank" rel="noopener noreferrer">{{ 'pages.sign_up.use_conditions' | translate }}</a>
+                            <span class="mx-0.5">{{ 'pages.sign_up.and_of' | translate }}</span>
+                            <a href="https://tenlow.es/terminos-condiciones/" class="text-medium" routerLinkActive="router-link-active" target="_blank" rel="noopener noreferrer">{{ 'pages.sign_up.privacy_policy' | translate }}</a>
+                        </div>
+                    </div>
+                </section>
+
+                <div class="lg:w-7/12 md:w-8/12 sm:w-11/12 w-12/12 m-auto">
+                    <button type="submit" class="btn-base btn-primary flex flex-row items-center w-full h-10 m-auto justify-center space-x-2 my-4">
+                        <span class="text-tl-blue">{{ 'labels.continue' | translate }}</span>
+                    </button>
+                </div>
+            </form>
+        </div>
+        <!-- <section class="grid grid-cols-2 gap-5 lg:w-7/12 md:w-8/12 sm:w-11/12 w-12/12 m-auto text-center text-sm mt-20 mb-20">
+            <div>¿Ya tienes cuenta?</div>
+            <div>
+                <a routerLink="/auth/login" mat-dialog-close>Inicia sesión aquí</a>
+            </div>
+            <div class="col-span-2">
+                Al continuar, aceptas nuestra <span class="semibold">Política de privacidad</span> y nuestras <span class="semibold">Condiciones de uso general</span>
+            </div>
+        </section> -->
+    </mat-dialog-content>
+</div>

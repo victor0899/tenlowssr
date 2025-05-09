@@ -1,0 +1,61 @@
+<loader-overlay *ngIf="isSendResponse"></loader-overlay>
+<mat-toolbar>
+    <mat-toolbar-row>
+      <button mat-dialog-close>
+        <svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M14 2.0585L12.59 0.72583L7 6.00926L1.41 0.72583L0 2.0585L5.59 7.34193L0 12.6254L1.41 13.958L7 8.6746L12.59 13.958L14 12.6254L8.41 7.34193L14 2.0585Z" fill="#60757C"/>
+        </svg>
+      </button>
+    </mat-toolbar-row>
+</mat-toolbar>
+<mat-dialog-content>
+
+    <div class="text-center mb-10">
+        <h1 class="text-2xl text-tl-dark-gray">
+            {{ 'pages.table_request.select_products' | translate }}
+        </h1>
+    </div>
+
+    <div class="loader">
+        <mat-spinner *ngIf="isLoad" ></mat-spinner>
+    </div>
+
+    <empty-view *ngIf="!isLoad && !listProducts.length" message="pages.table_request.not_have_products"></empty-view>
+
+    <div class="flex items-center justify-center flex-wrap" *ngIf="!isLoad && listProducts.length">
+        <mat-radio-group
+            aria-labelledby="radio-group-select-product"
+            class="flex items-center justify-center flex-wrap radio-group-products"
+            [(ngModel)]="productSelected"
+        >
+
+            <div class="product-item" *ngFor="let item of listProducts">
+                <mat-radio-button class="example-radio-button" [value]="item"></mat-radio-button>
+                <img [defaultImage]="publicService.defaultImg" [lazyLoad]="item.images[0].path" [alt]="item.title" class="object-cover">
+            </div>
+        </mat-radio-group>
+    </div>
+
+    <div class="text-center mb-10 mt-4">
+        <h1 class="text-lg text-tl-dark-gray">
+            {{ 'pages.table_request.or_upload_product' | translate }}
+        </h1>
+        <button class="btn-upload" (click)="navUploadProd()">
+            <span>
+                {{ 'pages.table_request.upload_product' | translate }}
+            </span>
+        </button>
+    </div>
+
+    <section>
+        <div class="buttons flex flex-row items-center justify-end space-x-3">
+            <button class="btn-base btn-gray px-4 flex justify-center" mat-dialog-close>
+                <span class="h-5 text-tl-dark-medium text-sm">{{ 'labels.cancel' | translate }}</span>
+            </button>
+
+            <button [disabled]="!productSelected" class="btn-base bg-tl-primary px-4 flex justify-center disabled:cursor-not-allowed" (click)="sendSelectProduct()">
+                <span class="h-5 text-tl-blue text-sm">{{ 'labels.continue' | translate }}</span>
+            </button>
+        </div>
+    </section>
+</mat-dialog-content>

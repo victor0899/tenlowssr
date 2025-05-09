@@ -1,0 +1,40 @@
+<loader-overlay *ngIf="isShowLoader"></loader-overlay>
+<div class="relative">
+    <div class="content-chat">
+        <div class="header-chat">
+            <div class="flex items-center space-x-2">
+                <img [lazyLoad]="chatInfo.userReceive.photo" [defaultImage]="publicService.defaultAvatar" class="w-11 h-11 object-cover rounded-full min-w-[44px] min-h-[44px]" alt="">
+                <span><h2  [routerLink]="['/user/'+chatInfo.userReceive.id]" routerLinkActive="router-link-active" class="text-base text-tl-dark cursor-pointer">{{ chatInfo.userReceive.name }}</h2></span>
+            </div>
+            <button mat-icon-button [matMenuTriggerFor]="beforeMenu" aria-label="Icon button with chat options" class="flex">
+                <mat-icon>more_vert</mat-icon>
+            </button>
+
+            <mat-menu #beforeMenu="matMenu" xPosition="before">
+                <button mat-menu-item *ngFor="let item of chatOptions" class="!text-tl-dark text-medium !text-sm" [disabled]="isDisabledButton( item.value )" (click)="doActionChat( item.value )" >{{ item.label | translate }}</button>
+            </mat-menu>
+        </div>
+
+        <div id="chatMessages" class="chat relative flex flex-col">
+            <div class="relative flex flex-col" *ngFor="let msg of chatInfo.messages; let i = index;">
+                <div class="badge-date" *ngIf="checkDateMessage( msg.createdAt, chatInfo.messages[i - 1]?.createdAt)">
+                    <span class="text-medium text-tl-blue">{{ msg.createdAt.toDate() | date: 'MMM d, y' }}</span>
+                </div>
+
+                <div class="msg-other" *ngIf="msg.sendUserId !== userLogged?.id && !isDeletedMsg(msg)">{{ msg.message | decrypted }}</div>
+                <div class="msg-me" *ngIf="msg.sendUserId == userLogged?.id  && !isDeletedMsg(msg)">{{ msg.message | decrypted }}</div>
+            </div>
+        </div>
+
+    </div>
+
+    <div class="input-chat">
+        <input type="text" placeholder="Escriba un mensaje" (keydown.enter)="sendMessage()" [(ngModel)]="msg" >
+        <button class="p-2.5 rounded-full hover:bg-tl-gray" (click)="sendMessage()">
+            <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg" *ngIf="!isSend">
+                <path d="M19.44 9.10999L1.44 0.0999756V0.109985C1.31 0.0399854 1.16 0 1 0C0.45 0 0 0.45 0 1V9V11V19C0 19.55 0.45 20 1 20C1.16 20 1.31 19.95 1.44 19.89V19.9L19.44 10.9V10.89C19.77 10.73 20 10.4 20 10C20 9.6 19.77 9.27999 19.44 9.10999ZM2 14C2 12.34 3.34 11 5 11H9C9.55 11 10 10.55 10 10C10 9.45 9.55 9 9 9H5C3.34 9 2 7.66 2 6V2.62L16.76 10L2 17.38V14Z" fill="#41474D"/>
+            </svg>
+            <mat-spinner *ngIf="isSend" diameter="22" color="accent"></mat-spinner>
+        </button>
+    </div>
+</div>

@@ -1,0 +1,33 @@
+<div class="container min-screen m-auto py-5 animated-show-item">
+    <div class="title-login lg:w-5/12 md:w-6/12 sm:w-8/12 w-10/12 m-auto text-center mt-1 mb-20">
+        <h1 class="text-[45px] text-tl-crayola">
+           {{ 'pages.sign_up.we_welcome_tenlow' | translate }}
+        </h1>
+    </div>
+
+    <social-auth-buttons></social-auth-buttons>
+
+    <div class="lg:w-6/12 md:w-7/12  sm:w-8/12 w-10/12 m-auto">
+        <button (click)="openSignupModal()" class="btn-base btn-primary flex flex-row items-center w-10/12 h-10 m-auto justify-center space-x-2 my-4">
+            <span>
+                <svg width="14" height="12" viewBox="0 0 14 12" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M1.66671 11.3334C1.30004 11.3334 0.986263 11.2029 0.725374 10.942C0.464041 10.6807 0.333374 10.3667 0.333374 10V2.00002C0.333374 1.63335 0.464041 1.31958 0.725374 1.05869C0.986263 0.797354 1.30004 0.666687 1.66671 0.666687H12.3334C12.7 0.666687 13.014 0.797354 13.2754 1.05869C13.5363 1.31958 13.6667 1.63335 13.6667 2.00002V10C13.6667 10.3667 13.5363 10.6807 13.2754 10.942C13.014 11.2029 12.7 11.3334 12.3334 11.3334H1.66671ZM7.00004 6.66669L1.66671 3.33335V10H12.3334V3.33335L7.00004 6.66669ZM7.00004 5.33335L12.3334 2.00002H1.66671L7.00004 5.33335ZM1.66671 3.33335V2.00002V10V3.33335Z" fill="#075A81"/>
+                </svg>
+            </span>
+            <span class="text-white h-5">{{  'pages.sign_up.register_with_email' | translate }}</span>
+        </button>
+    </div>
+
+    <section class="grid grid-cols-2 gap-5 lg:w-4/12 md:w-5/12 sm:w-8/12 w-10/12 m-auto text-center text-[15px] mt-20 mb-20 text-tl-crayola">
+        <div>{{  'pages.sign_up.have_account' | translate }}</div>
+        <div>
+            <a routerLink="/autentificacion/acceso">{{  'pages.sign_up.login_here' | translate }}</a>
+        </div>
+        <div class="col-span-2">
+            {{  'pages.login.to_continue_accept' | translate }}
+            <a href="https://tenlow.es/privacidad" routerLinkActive="router-link-active"> {{  'pages.login.policy_privacy' | translate }}</a>
+            {{  'pages.login.and_our' | translate }}
+            <a href="https://tenlow.es/terminos-condiciones/" routerLinkActive="router-link-active"> {{  'pages.login.use_conditions_general' | translate }}</a>
+        </div>
+    </section>
+</div>

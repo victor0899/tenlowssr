@@ -1,0 +1,30 @@
+.info-content{
+    width: 90%;
+    margin: auto;
+}
+.content-info{
+    display: grid;
+    place-content: center;
+    .item-content{
+        display:  flex;
+        align-items: center;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        gap: 20px;
+        margin: 16px 0;
+        padding-bottom: 20px;
+        border-bottom: 1px solid var(--gray);
+        span.item-name{
+            min-width: 170px;
+        }
+        span.description-item{
+            max-width: 500px;
+        }
+    }
+}
+
+@media (max-width: 390px) {
+    .header-content{
+        display: none !important;
+    }
+}

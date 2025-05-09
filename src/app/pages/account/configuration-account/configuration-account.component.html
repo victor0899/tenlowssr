@@ -1,0 +1,192 @@
+<div class="container min-screen m-auto px-2 py-5">
+    <h1 class="lg:text-3.5xl text-2xl mt-3 mb-6 flex flex-wrap flex-col">
+        {{ 'pages.configuration_account.title' | translate }}
+        <button (click)="back()" class="h-[38px] flex items-center justify-start">
+            <mat-icon class="w-5 h-5 text-xl">arrow_back</mat-icon>
+            <span class="text-base-2 h-3">{{ 'labels.back_to' | translate }}</span>
+        </button>
+    </h1>
+
+    <section class="grid grid-cols-3 gap-5" *ngIf="!isShowExpanded">
+        <div class="lg:col-span-1 md:col-span-1 col-span-3 panel-options">
+            <div
+                *ngFor="let item of optionsFieldsEdit;let i = index"
+                class="item-edit"
+                [ngClass]="{'opacity-30': currentView !== item.view}"
+                (click)="selectView(item.view)"
+            >
+                <h2 class="text-base semibold mb-1">{{ item.title | translate }} <span class="float-right font-light text-xs">{{ 'labels.edit' | translate | lowercase }}</span> </h2>
+                <p class="text-base-2">{{ item.subtitle | translate }}</p>
+            </div>
+        </div>
+
+        <div class="lg:col-span-2 md:col-span-2 col-span-3 px-6 py-1 content-view" *ngIf="currentView">
+            <div class="animated-show-item" *ngIf="currentView ==  VIEWS.SECURITY  " [ngTemplateOutlet]="SecuritySettings"></div>
+            <!-- <div class="animated-show-item" *ngIf="currentView ==  VIEWS.NOTIFICATIONS  " [ngTemplateOutlet]="NotificationSettings"></div> -->
+            <div class="animated-show-item" *ngIf="currentView ==  VIEWS.SOCIAL " [ngTemplateOutlet]="SocialSettings"></div>
+            <div class="animated-show-item" *ngIf="currentView ==  VIEWS.ACCOUNT " [ngTemplateOutlet]="AccountSettings"></div>
+        </div>
+
+        <div class="empty-view lg:col-span-2 md:col-span-2 col-span-3" *ngIf="!currentView">
+            <empty-view message="pages.config_profile.select_config_op" ></empty-view>
+        </div>
+    </section>
+
+    <section *ngIf="isShowExpanded">
+        <mat-accordion class="config-panel">
+            <mat-expansion-panel
+                hideToggle
+                *ngFor="let item of optionsFieldsEdit;let i = index"
+                (click)="selectView(item.view)"
+                [ngClass]="{'opacity-30': currentView !== item.view}"
+            >
+                <mat-expansion-panel-header>
+                    <mat-panel-title>
+                        <div class="w-full">
+                            <h2 class="text-base semibold mb-1">{{ item.title | translate }} <span class="float-right font-light text-xs">{{ 'labels.edit' | translate | lowercase }}</span> </h2>
+                            <p class="text-xs">{{ item.subtitle | translate }}</p>
+                        </div>
+                    </mat-panel-title>
+                </mat-expansion-panel-header>
+                <div class="p-5">
+                    <div class="animated-show-item" *ngIf="item.view ==  VIEWS.SECURITY  " [ngTemplateOutlet]="SecuritySettings"></div>
+                    <div class="animated-show-item" *ngIf="item.view ==  VIEWS.NOTIFICATIONS  " [ngTemplateOutlet]="NotificationSettings"></div>
+                    <div class="animated-show-item" *ngIf="item.view ==  VIEWS.SOCIAL " [ngTemplateOutlet]="SocialSettings"></div>
+                    <div class="animated-show-item" *ngIf="item.view ==  VIEWS.ACCOUNT " [ngTemplateOutlet]="AccountSettings"></div>
+                </div>
+            </mat-expansion-panel>
+          </mat-accordion>
+    </section>
+</div>
+
+<ng-template #SecuritySettings>
+    <section class="w-11/12 m-auto">
+        <div class="item-setting">
+            <div class="detail-settings">
+                <h1 class="text-base text-tl-dark">{{ 'labels.email' | translate }}</h1>
+                <p class="text-tl-dark-gray text-sm">{{ txtVerifiedEmail() | translate }}</p>
+                <p class="text-tl-dark-gray text-base">{{user?.email}}</p>
+            </div>
+            <button class="btn-edit" (click)="openModalUpdateEmail()">
+                <span class="semibold">{{!showEditEmail ? 'Editar' : 'Cancelar'}}</span>
+            </button>
+        </div>
+
+        <div class="item-setting my-6">
+            <div class="detail-settings">
+                <h1 class="text-base text-tl-dark">{{ 'labels.mobile_phone' | translate }}</h1>
+                <p class="text-tl-dark-gray  text-sm">{{ txtVerifiedPhone() | translate }}</p>
+                <p class="text-tl-dark-gray text-base">{{ user?.personal_info?.phone_country_code ?? '' }} {{ user?.personal_info?.phone ?? 'pages.configuration_account.no_have_phone' | translate }}</p>
+            </div>
+            <button class="btn-edit" (click)="openModalUpdatePhone()">
+                <span class="semibold">{{ 'labels.edit' | translate }}</span>
+            </button>
+        </div>
+
+        <div class="item-setting">
+            <div class="detail-settings">
+                <h1 class="text-base text-tl-dark">{{ 'labels.password' | translate }}</h1>
+                <p class="text-tl-dark-gray text-base">************</p>
+            </div>
+            <button class="btn-edit" (click)="openModalUpdatePassword()">
+                <span class="semibold text-sm">{{ 'labels.edit' | translate }}</span>
+            </button>
+        </div>
+    </section>
+</ng-template>
+
+<ng-template #NotificationSettings>
+    <section class="w-11/12 m-auto">
+        <div class="section">
+            <h1 class="semibold text-base">{{ 'pages.configuration_account.my_products' | translate }}</h1>
+            <div class="item-toggle flex justify-between items-center indent-5">
+                <label for="expired_products">
+                    <span class="text-base h-4">{{ 'pages.configuration_account.receive_notification_prod' | translate }}</span>
+                </label>
+                <label class="relative inline-flex items-center cursor-pointer">
+                    <input id="expired_products" type="checkbox"  [disabled]="isPressToggle" [checked]="notificationSettings.expired_products" (change)="onChangeNotiticationSettings()" [(ngModel)]="notificationSettings.expired_products" class="sr-only peer">
+                    <div [class]="cssInputToggle"></div>
+                </label>
+            </div>
+        </div>
+
+        <div class="section">
+            <h1 class="semibold text-base">{{ 'pages.configuration_account.my_favorites' | translate }}</h1>
+            <div class="item-toggle flex justify-between items-center indent-5 my-3" *ngFor="let item of favoritesNotifications; let i = index;">
+                <label [for]="'fav_notify' + i">
+                    <span class="text-base h-4">{{ item.label | translate }}</span>
+                </label>
+                <label class="relative inline-flex items-center cursor-pointer">
+                    <input [id]="'fav_notify' + i" type="checkbox" [checked]="item.value" [disabled]="isPressToggle" (change)="onChangeNotiticationSettings()" [(ngModel)]="item.value" class="sr-only peer">
+                    <div [class]="cssInputToggle"></div>
+                </label>
+            </div>
+        </div>
+
+        <div class="section">
+            <h1 class="semibold text-base">{{ 'pages.configuration_account.news_tenlow' | translate }}</h1>
+            <div class="item-toggle flex justify-between items-center indent-5 my-3" *ngFor="let item of newsNotifications; let i = index">
+                <label [for]="'fav_news' + i">
+                    <span class="text-base h-4">{{ item.label| translate }}</span>
+                </label>
+                <label class="relative inline-flex items-center cursor-pointer">
+                    <input [id]="'fav_news' + i" type="checkbox" [checked]="item.value" [disabled]="isPressToggle" [(ngModel)]="item.value" (change)="onChangeNotiticationSettings()" class="sr-only peer">
+                    <div [class]="cssInputToggle"></div>
+                </label>
+            </div>
+        </div>
+
+        <div class="section">
+            <div class="item-toggle flex items-center justify-start space-x-2  mt-10">
+                <div (click)="modalConfirmDisabledAllNotification()">
+                    <mat-checkbox class="z-[-1]" [checked]="notificationSettings.unsubscribe" [disabled]="isPressToggle" color="accent"></mat-checkbox>
+                </div>
+                <span class="text-base h-4">{{ 'pages.configuration_account.cancel_email_suscription_add' | translate }}</span>
+            </div>
+        </div>
+    </section>
+</ng-template>
+
+<ng-template #SocialSettings>
+    <section class="w-11/12 m-auto">
+        <div class="item-setting items-center">
+            <div class="detail-settings">
+                <h1 class="text-base text-tl-dark">{{ 'labels.google' | translate  }}</h1>
+                <p *ngIf="!isLinkedGoogle()" class="text-tl-dark-gray">{{ 'pages.configuration_account.no_connect' | translate }}</p>
+                <p *ngIf="isLinkedGoogle()" class="text-tl-dark-gray">{{ 'pages.configuration_account.account_linked' | translate }}</p>
+            </div>
+            <button class="btn-edit" (click)="linkedGoogle()">
+                <span class="semibold" *ngIf="!isLinkedGoogle()">{{ 'labels.connect' | translate }}</span>
+                <span class="semibold" *ngIf="isLinkedGoogle()">{{ 'pages.configuration_account.linked' | translate }}</span>
+            </button>
+        </div>
+        <div class="item-setting items-center my-6">
+            <div class="detail-settings">
+                <h1 class="text-base text-tl-dark">{{ 'labels.facebook' | translate  }}</h1>
+                <p *ngIf="!isLinkedFaceboook()" class="text-tl-dark-gray">{{ 'pages.configuration_account.no_connect' | translate }}</p>
+                <p *ngIf="isLinkedFaceboook()" class="text-tl-dark-gray">{{ 'pages.configuration_account.account_linked' | translate }}</p>
+            </div>
+            <button class="btn-edit" (click)="linkedFacebook()" >
+                <span class="semibold" *ngIf="!isLinkedFaceboook()">{{ 'labels.connect' | translate }}</span>
+                <span class="semibold" *ngIf="isLinkedFaceboook()">{{ 'pages.configuration_account.linked' | translate }}</span>
+            </button>
+        </div>
+    </section>
+</ng-template>
+
+<ng-template #AccountSettings>
+    <mat-radio-group aria-label="Select an option"  (change)="onChangeAccountSettings($event)">
+        <mat-radio-button value="disabled" color="primary">
+            <div>
+                <h2 class="text-base">{{ 'pages.configuration_account.disabled_account' | translate }}</h2>
+                <p class="text-base-2">{{ 'pages.configuration_account.info_disabled_account' | translate }}</p>
+            </div>
+        </mat-radio-button>
+        <mat-radio-button value="delete" color="primary">
+            <div>
+                <h2 class="text-base">{{ 'pages.configuration_account.delete_account' | translate }}</h2>
+                <p class="text-base-2">{{ 'pages.configuration_account.info_delete_account' | translate }}</p>
+            </div>
+        </mat-radio-button>
+    </mat-radio-group>
+</ng-template>

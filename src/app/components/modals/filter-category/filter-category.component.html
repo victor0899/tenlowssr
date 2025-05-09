@@ -1,0 +1,19 @@
+<mat-dialog-content>
+    <div class="py-6 lg:px-7 md:px-4 sm:px-2 px-1 grid lg:grid-cols-5 md:grid-cols-4 sm:grid-cols-3 grid-cols-2 max-w-[896px] gap-4 md:w-full sm:w-full">
+        <a 
+            [href]="getCategoryUrl(category)"
+            class="item-category flex flex-col items-center justify-end flex-shrink-0"
+            [ngClass]="{'item-category-selected': categorySelected && categorySelected.id == category.id}"
+            *ngFor="let category of listCategories"
+        >
+            <img [defaultImage]="defaultImg" 
+                 [errorImage]="defaultImg" 
+                 [lazyLoad]="category.icon" 
+                 class="icon" 
+                 alt="{{category.name}}">
+            <p class="relative text-center text-[11px] w-28 mt-2 text-tl-dark opacity-40">
+                {{ category.name | translate }}
+            </p>
+        </a>
+    </div>
+</mat-dialog-content>

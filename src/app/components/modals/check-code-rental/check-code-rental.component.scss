@@ -1,0 +1,39 @@
+* {
+    font-family: "BalooTamma";
+}
+
+mat-toolbar{
+    background: var(---light);
+}
+
+.content{
+    margin: 30px 100px;
+    max-width: 350px;
+}
+
+p{
+    max-width: 452px;
+    margin-top: 20px;
+}
+
+h1,p{
+    color: var(--black);
+}
+
+input{
+    border: none;
+    border-bottom: 1px solid;
+    border-radius: 0;
+}
+
+.relative{
+    span{
+        margin-top: 2px;
+    }
+}
+
+@media (max-width:600px) {
+    .content{
+        margin: 10px;
+    }
+}

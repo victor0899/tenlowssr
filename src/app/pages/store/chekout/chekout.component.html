@@ -1,0 +1,267 @@
+<loader-overlay *ngIf="isLoad"></loader-overlay>
+<div class="container min-screen m-auto px-3 py-5">
+  <section class="flex flex-row justify-between items-center flex-wrap">
+      <nav class="flex" aria-label="Breadcrumb" *ngIf="!isCancelRental">
+          <ol class="inline-flex items-center space-x-1 md:space-x-3">
+            <li class="inline-flex items-center">
+              <a [routerLink]="['/shopping/store']" routerLinkActive="router-link-active" class="inline-flex items-center text-sm font-medium text-tl-dark hover:text-tl-dark-medium">
+                {{ 'pages.detail_prod.home' | translate }}
+              </a>
+            </li>
+            <li *ngIf="checkoutData">
+              <div class="flex items-center">
+                  <div [ngTemplateOutlet]="ArrowBreadcrumb"></div>
+                <a [routerLink]="['/shopping/store/category', checkoutData.product.categories[0].name, checkoutData.product.categories[0].id]"  class="ml-1 text-sm font-medium text-tl-dark hover:text-tl-dark-medium"> {{ checkoutData.product.categories[0].name }}</a>
+              </div>
+            </li>
+            <li aria-current="page" *ngIf="checkoutData">
+              <div class="flex items-center">
+                  <div [ngTemplateOutlet]="ArrowBreadcrumb"></div>
+                <span class="ml-1 text-sm font-medium text-tl-dark  md:ml-2 ">{{ checkoutData.product.title }}</span>
+              </div>
+            </li>
+          </ol>
+      </nav>
+  </section>
+
+  <section class="py-5"  *ngIf="!isShowSuccess && !isCancelRental && checkoutData">
+      <div class="grid grid-cols-2 gap-5">
+
+        <div class="col-span-2 sm:col-span-2 lg:col-span-1 md:col-span-2">
+          <div class="md:w-10/12 sm:w-full lg:w-8/12 w-full mt-4" *ngIf="!isSelectShipping">
+            <h1 class="text-4xl mb-4">{{ 'pages.checkout.shipping_method' | translate }}</h1>
+            <h3 class="text-xl my-4">{{ 'pages.checkout.text_select_shipping_method' | translate }}</h3>
+
+            <div class="flex items-center justify-between pt-5 pb-3 border-b-2 border-tl-gray">
+                <label class="text-base" for="in_person"> {{ 'pages.checkout.in_person' | translate}} </label>
+                <input type="radio" value="in_person" id="in_person" (change)="onSelectShipping($event)" name="shipping" [class]="cssRadioInput">
+            </div>
+
+            <div class="flex-col items-center justify-between pt-5 pb-3 border-b-2 border-tl-gray">
+              <div class="flex items-center justify-between mb-2">
+                <label class="text-base" for="my_address"> {{ 'pages.checkout.my_address' | translate}} </label>
+                <span class="flex items-center">
+                    <label class="text-base mr-2 h-5" for="my_address"> 3.99 € </label>
+                    <input type="radio" value="my_address" id="my_address" name="shipping" (change)="onSelectShipping($event)" [class]="cssRadioInput">
+                </span>
+              </div>
+              <span class="flex items-center"  *ngIf="shippingInfo.method == 'my_address' ">
+                  <div class="relative my-2 w-full">
+                    <label  for="directionAddress"  class="text-tl-crayola">
+                      {{ !shippingInfo.address ? ( 'pages.checkout.first_must_enter_address'  | translate ) : shippingInfo.address }}
+                    </label>
+                  </div>
+              </span>
+            </div>
+
+            <div class="flex items-center justify-between pt-8 pb-4">
+                <div class="flex flex-col items-start pr-1.5">
+                  <label class="text-base" for="delivery_address"> {{ 'pages.checkout.collect_point' | translate}} </label>
+                  <span class="text-base leading-4" *ngIf="shippingInfo.method == 'delivery_address'"> {{ shippingInfo.address }} </span>
+                </div>
+                <span class="flex items-center min-w-[67px]">
+                    <label class="text-base mr-2 h-5" for="delivery_address"> 2.99 € </label>
+                    <input type="radio" value="delivery_address" (change)="onSelectShipping($event)" id="delivery_address" name="shipping" [class]="cssRadioInput">
+                </span>
+            </div>
+
+            <div class="flex items-center justify-between mt-3 mb-5">
+                <label class="text-base" for="correct"> {{ 'pages.checkout.estimated_shipping_in' | translate}} </label>
+                <label class="text-base mr-6" for="correct"> 2-7 días </label>
+            </div>
+
+            <div class="border-b-2 border-tl-gray pt-4 pb-5 w-full" *ngIf="shippingInfo.method == 'delivery_address' ">
+                <button (click)="modalSelectPointCollect()" class="bg-white text-tl-dark border-2 border-tl-gray text-sm cursor-pointer h-10 py-2 px-3 rounded-full flex flex-row justify-center items-center">
+                    <span class="h-5 cursor-pointer opacity-30 semibold">
+                      {{ 'pages.checkout.show_collect_points' | translate}}
+                    </span>
+                </button>
+            </div>
+
+            <div (click)="selectShipping()" *ngIf=" shippingInfo.method !== '' && ( shippingInfo.method == 'in_person' || shippingInfo.address !== '' ) " class="bg-tl-primary-medium text-white text-sm col-span-2 w-full cursor-pointer h-12 py-2 px-1 mt-4 rounded-full flex flex-row justify-center items-center">
+                <label class="h-5 cursor-pointer text-medium text-base">
+                  {{ 'labels.continue' | translate}}
+                </label>
+            </div>
+          </div>
+
+          <div class="md:w-10/12 sm:w-full lg:w-8/12 w-full mb-8" *ngIf="isSelectShipping">
+              <h1 class="text-4xl mb-4">{{ 'pages.checkout.shipping_method_selected' | translate }}</h1>
+              <h3 class="text-xl my-4">{{ shippingInfo.label }}</h3>
+              <h3 class="text-xl my-3" *ngIf="shippingInfo.method == 'my_address'">{{ addressShipping }}</h3>
+              <h3 class="text-xl my-3" *ngIf="shippingInfo.method == 'delivery_address'"> {{ 'pages.checkout.collect_product_in' | translate }} {{ this.shippingInfo.address }}</h3>
+
+              <div (click)="changeShipping()" class="bg-tl-primary-medium text-white text-sm col-span-2 w-full cursor-pointer h-12 py-2 px-1 mt-4 rounded-full flex flex-row justify-center items-center">
+                  <label class="h-5 cursor-pointer text-medium text-base">{{ 'labels.change' | translate }}</label>
+              </div>
+          </div>
+
+          <div class="md:w-10/12 sm:w-full lg:w-8/12 w-full" *ngIf="isSelectShipping">
+            <h1 class="text-4xl mb-4">{{ 'pages.checkout.payment_method' | translate }}</h1>
+            <h3 class="text-xl my-3">{{ 'pages.checkout.add_credit_card' | translate }}</h3>
+            <div >
+              <app-payment 
+                :[total]="checkoutData.rentalData.cost *  checkoutData.rentalData.duration  + shippingInfo.cost"
+                :[userInfo]="userInfo"
+                :[checkoutData]="checkoutData"
+                :[shippingInfo]="shippingInfo"
+                />
+            </div>
+            <!-- <div class="grid grid-cols-12 gap-3"> -->
+              <!-- <div id="card-form" class="card-form col-span-2 relative flex items-center justify-center">
+                <mat-spinner diameter="40" color="accent"></mat-spinner>
+              </div>
+              <form name="datos">
+                <input type="hidden" id="token" />
+                <input type="hidden" id="errorCode" />
+              </form> -->
+            <!-- </div> -->
+          </div>
+        </div>
+
+        <div class="detail-prod col-span-2 sm:col-span-2 lg:col-span-1 md:col-span-2">
+          <name-product-actions [product]="checkoutData.product" ></name-product-actions>
+
+
+          <div class="small-details-prod flex flex-row lg:justify-between sm:justify-between md:justify-between justify-around flex-wrap">
+            <div class="flex items-center my-1.5">
+              <button class="appearance-none" *ngFor="let item of [1,2,3,4,5]">
+                  <svg class="w-6 h-6" *ngIf="item <= checkoutData.product.rating"><use class="scale-[1.3]" href="#star-select"></use></svg>
+                  <svg class="w-6 h-6" *ngIf="item > checkoutData.product.rating"><use class="scale-[1.3]" href="#star-no-select"></use></svg>
+              </button>
+              <label class="h-5 ml-1 text-base">({{ checkoutData.product.rating }})</label>
+            </div>
+            <div class="h-5 text-base my-1.5 text-medium">
+              {{ 'pages.detail_prod.state' | translate }}
+              {{ getTextStateProduct(checkoutData.product.condition) | translate }}
+            </div>
+            <div class="h-5 text-base my-1.5 text-medium">
+              {{ 'pages.detail_prod.product_of' | translate }}
+              <a [routerLink]="['/user/'+checkoutData.product.user.id]" routerLinkActive="router-link-active"  class="semibold text-tl-dark hover:text-tl-dark-medium"> {{ checkoutData.product.user.name }} </a>
+            </div>
+          </div>
+
+          <div class="bg-tl-light-opaque rounded-3xl w-full px-6 pb-8 pt-9 mt-5">
+            <div class="time-price flex flex-row flex-wrap items-center justify-between border-b-1 py-2 px-8">
+              <div class="flex items-center space-x-2">
+                <p> {{ checkoutData.rentalData.duration }} {{ checkoutData.rentalData.labelPeriod | translate }}  </p>
+                <p class="semibold"> {{ checkoutData.rentalData.date }} </p>
+              </div>
+
+              <button class="cursor-pointer semibold" (click)="openCart()">
+                {{ 'labels.change' | translate }}
+              </button>
+            </div>
+
+            <div class="time-price flex flex-row flex-wrap items-center justify-between border-b-1 pb-5 px-8 mt-7">
+              <div class="flex flex-col items-start space-y-2">
+                <p>{{  checkoutData.rentalData.cost | currency }} x {{ checkoutData.rentalData.duration }} {{ checkoutData.rentalData.labelPeriod | translate }} </p>
+                <p>{{ 'pages.checkout.charges_services' | translate}} </p>
+                <p>{{ 'pages.checkout.charges_shipping' | translate}}  </p>
+              </div>
+              <div class="flex flex-col items-end space-y-2">
+                <p>{{  checkoutData.rentalData.cost *  checkoutData.rentalData.duration  | currency }}</p>
+                <p>{{ 0 | currency  }}</p>
+                <p>{{ shippingInfo.cost | currency }}</p>
+              </div>
+            </div>
+
+            <!-- <div class="time-price flex flex-row flex-wrap items-center justify-between py-5 px-8">
+              <p class="cursor-pointer">{{ 'pages.checkout.add_discount_code' | translate }}</p>
+              <p> 123456 </p>
+            </div> -->
+            <div class="time-price flex flex-row flex-wrap items-center justify-between pt-16 pb-7 px-8">
+              <p class="semibold">{{ 'labels.total' | translate }}</p>
+              <p class="semibold"> {{  checkoutData.rentalData.cost *  checkoutData.rentalData.duration  + shippingInfo.cost | currency }} </p>
+            </div>
+          </div>
+        </div>
+
+      </div>
+  </section>
+
+  <section *ngIf="!checkoutData">
+    <no-results message="pages.checkout.empty_checkout" [status]="false"></no-results>
+  </section>
+
+  <section class="py-5" *ngIf="isShowSuccess && !isCancelRental">
+    <h1 class="lg:text-4xl text-2xl mt-3 mb-6">{{ 'pages.checkout.request_in_proccess' | translate}}</h1>
+    <p class="text-base my-9 lg:w-4/12 w-11/12">{{ 'pages.checkout.info_success_rental' | translate}}</p>
+    <div class="grid grid-cols-2 gap-5">
+      <div class="col-span-2 sm:col-span-2 lg:col-span-1 md:col-span-2">
+        <h2 class="text-[22px] my-4">{{ 'pages.checkout.now_what' | translate }}</h2>
+        <ul class="list-disc ml-6">
+          <li>{{ 'pages.checkout.detail_one' | translate }}</li>
+          <li>{{ 'pages.checkout.detail_two' | translate }}</li>
+          <li>{{ 'pages.checkout.detail_three' | translate }}</li>
+        </ul>
+
+        <button (click)="modalConfirmCancelOperation()" class="bg-tl-primary-medium text-white text-sm py-3 px-5 my-4 rounded-full flex flex-row justify-center items-center">
+          <span class="h-5 text-medium text-base">
+            {{ 'pages.checkout.cancel_rental' | translate}}
+          </span>
+        </button>
+
+        <div class="flex flex-row space-x-2 items-center mt-10">
+          <span class="mr-6">{{ 'pages.checkout.payment_safe_with' | translate }}</span>
+          <h3 class="semibold text-sm">NOMBRE DEL SEGURO</h3>
+        </div>
+      </div>
+
+      <div class="detail-product grid grid-cols-2 gap-6 sm:col-span-2 col-span-2 lg:col-span-1 md:col-span-2">
+        <div class="details lg:col-span-1 md:col-span-1 col-span-2">
+          <h1 class="semibold text-[22px]">
+            {{ 'pages.checkout.resume' | translate}}
+          </h1>
+          <div class="flex items-center justify-between flex-wrap mt-7">
+            <span class="text-result" >{{ checkoutData.rentalData.duration }} {{ checkoutData.rentalData.labelPeriod | translate }}</span>
+            <span class="text-result semibold mt-2">{{ checkoutData.rentalData.startDate | date:'d MMM' }} - {{ checkoutData.rentalData.endDate | date:'d MMM' }}</span>
+          </div>
+          <div class="flex flex-row justify-between mt-4 mb-3">
+            <span>{{ 'labels.total' | translate }}</span>
+            <span class="semibold">{{  checkoutData.rentalData.cost *  checkoutData.rentalData.duration  | currency }}</span>
+          </div>
+          <!-- <button class="bg-tl-primary-medium text-white text-sm py-3 px-5 my-4 rounded-full flex flex-row justify-center items-center">
+            <span>
+              {{ 'pages.checkout.edit_rental_date' | translate}}
+            </span>
+          </button> -->
+        </div>
+
+        <div class="product lg:col-span-1 md:col-span-1 col-span-2">
+          <card-product [enabledActions]="false" [product]="checkoutData.product" [enabledActions]="false" ></card-product>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section *ngIf="isCancelRental">
+    <h1 class="lg:text-4xl text-2xl mt-3 mb-6 text-center">{{ 'pages.checkout.has_been_cancel' | translate}}</h1>
+
+    <div class="content-msg">
+      <img src="assets/images/shape-cloud.svg" alt="" srcset="">
+      <h2 class="text-xl text-center text-tl-blue">{{ 'pages.checkout.cancel_rental_msg' | translate}}</h2>
+      <button (click)="goHome()" class="bg-tl-blue text-white text-sm py-3 px-5 my-4 rounded-full flex flex-row justify-center items-center">
+        <span class="h-5 text-medium">
+          {{ 'pages.checkout.continue_searching' | translate}}
+        </span>
+      </button>
+    </div>
+  </section>
+</div>
+
+<ng-template #ArrowBreadcrumb>
+    <svg aria-hidden="true" class="w-6 h-6 text-tl-dark" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"></path></svg>
+</ng-template>
+
+<svg class="hidden">
+  <defs>
+      <symbol id="star-select" width="17" height="16" viewBox="0 0 17 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M3.61113 15.4167L4.89759 9.85521L0.583008 6.11458L6.28301 5.61979L8.49967 0.375L10.7163 5.61979L16.4163 6.11458L12.1018 9.85521L13.3882 15.4167L8.49967 12.4677L3.61113 15.4167Z" fill="#FFB959"/>
+      </symbol>
+
+      <symbol id="star-no-select" width="17" height="17" viewBox="0 0 17 17" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M16.4163 6.71083L10.7243 6.22L8.49967 0.979164L6.27509 6.22791L0.583008 6.71083L4.90551 10.4554L3.60717 16.0208L8.49967 13.0679L13.3922 16.0208L12.1018 10.4554L16.4163 6.71083ZM8.49967 11.5875L5.52301 13.3846L6.31467 9.99625L3.68634 7.71625L7.15384 7.41541L8.49967 4.225L9.85342 7.42333L13.3209 7.72416L10.6926 10.0042L11.4843 13.3925L8.49967 11.5875Z" fill="#1C1B1F"/>
+      </symbol>
+  </defs>
+</svg>

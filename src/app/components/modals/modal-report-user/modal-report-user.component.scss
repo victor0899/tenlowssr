@@ -1,0 +1,124 @@
+* {
+    font-family: "BalooTamma";
+}
+
+mat-toolbar{
+    background: var(---light);
+}
+
+.content{
+    padding: 0px 25px;
+    text-align: center;
+}
+
+h1.title-modal{
+    font-size: 22px;
+    max-width: 378px;
+    line-height: 28px;
+    margin: auto;
+    color: var(--dark);
+}
+
+p{
+    max-width: 400px;
+    margin-top: 20px;
+    font-size: 16px;
+}
+
+@media (max-width:600px) {
+    .content{
+        padding: 0 20px;
+    }
+}
+
+@media (max-width: 585px) {
+    .content-buttons{
+        button{
+            width: 100% !important;
+        }
+    }
+}
+
+// mat-dialog-content{
+//     padding: 0 !important;
+// }
+
+.reasons-report{
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 135px), 1fr));
+    grid-gap: 10px;
+    place-items: center;
+    max-width: 360px;
+    margin: auto;
+    margin-top: 70px;
+}
+
+.reason-item{
+    transition: all .45s ease-in-out;
+    width: 130px;
+    height: 130px;
+    img{
+        width: 48px;
+        height: 48px;
+        min-width: 48px;
+        min-height: 48px;
+    }
+
+    .reason-bg,
+    .reason-border{
+        clip-path: polygon(30% 0%, 70% 0%, 100% 30%, 100% 70%, 70% 100%, 30% 100%, 0% 70%, 0% 30%);
+        transform: rotate(68deg);
+
+    }
+
+    .reason-bg{
+        background: var(--light);
+        width: 128px;
+        height: 128px;
+    }
+
+    .reason-border{
+        background: var(--primary-medium);
+        width: 130px;
+        height: 130px;
+    }
+
+    .reason-selected{
+        background: var(--primary);
+    }
+
+    p{
+        margin-top: 10px;
+        font-size: 14px;
+    }
+}
+
+.btn-send{
+    width: 85%;
+    margin: auto;
+    margin-top: 52px;
+    margin-bottom: 50px;
+}
+
+.msg-success{
+    font-size: 16px;
+    line-height: 24px;
+    margin: 20px 0 28px;
+}
+
+.other-comment{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    max-width: 420px;
+    .reason-item{
+        margin: 16px 0;
+    }
+    h1{
+        margin: 20px 0;
+        width: 100%;
+    }
+    .comment{
+        width: 88%;
+    }
+}

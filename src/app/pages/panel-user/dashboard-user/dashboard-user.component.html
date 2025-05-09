@@ -1,0 +1,220 @@
+<loader-overlay *ngIf="showLoader"></loader-overlay>
+<div class="container min-screen m-auto p-4 pb-10 pt-6">
+    <div class="grid grid-cols-3 gap-7 w-full m-auto">
+
+        <section class="card-profile-img lg:col-span-1 md:col-span-3 sm:col-span-3 col-span-3 pb-10 profile-section relative">
+
+            <button  [disabled]="isPressFavButton" class="flex justify-center items-center p-4 absolute btn-fav top-1" (click)="toogleFavoriteProfile()" *ngIf="isPublicProfile">
+                <mat-spinner diameter="25" *ngIf="isPressFavButton"></mat-spinner>
+                <mat-icon class="text-tl-error" *ngIf="!userCurrent?.favorite_by_auth_user && !isPressFavButton">favorite_border</mat-icon>
+                <mat-icon class="text-tl-error" *ngIf="userCurrent?.favorite_by_auth_user && !isPressFavButton">favorite</mat-icon>
+            </button>
+
+            <button  class="flex justify-center items-center p-4 absolute btn-fav top-[26%]" (click)="shareProfile()" *ngIf="isPublicProfile">
+                <img src="assets/icons/tl-share.svg" alt="" class="cursor-pointer" width="24" srcset="">
+            </button>
+
+            <img [lazyLoad]="userCurrent?.profile_photo_path ?? publicService.defaultAvatar" [defaultImage]="publicService.defaultAvatar" class="img-profile" alt="Imagen de perfil de {{ userCurrent?.name + ' ' + userCurrent?.last_name }}" srcset="">
+
+            <label for="upload-profile-img" class="mb-8 cursor-pointer" *ngIf="!isPublicProfile">
+                <div class="btn-base btn-gray px-4 flex justify-center">
+                    <span class="h-5 text-tl-dark-medium text-sm">{{ 'pages.profile.change_img' | translate }}</span>
+                </div>
+            </label>
+            <input type="file" accept=".jpg, .jpeg, .png, .webp" id="upload-profile-img" class="upload-img" *ngIf="!isPublicProfile" (change)="onSelectImage($event)">
+
+            <div class="stars-rating flex items-center mt-2 mb-4" *ngIf="userCurrent">
+                <button class="appearance-none" *ngFor="let item of [1,2,3,4,5]">
+                    <svg class="w-6 h-6" *ngIf="item <= userCurrent.rating"><use [ngClass]="{'scale-[1.3]': !publicService.isIosMobile()}" href="#star-select"></use></svg>
+                    <svg class="w-6 h-6" *ngIf="item > userCurrent.rating"><use [ngClass]="{'scale-[1.3]': !publicService.isIosMobile()}" href="#star-no-select"></use></svg>
+                </button>
+            </div>
+
+            <div class="flex items-center justify-between mt-4 mb-6 w-full" *ngIf="userCurrent && userCurrent.personal_info?.alias">
+                <div  class="flex flex-col justify-start text-start">
+                    <h3 class="text-medium text-xs">{{ 'pages.profile.hobbie_label' | translate}}</h3>
+                    <p class="text-base-2 text-tl-crayola">{{ userCurrent.personal_info?.alias ?? ( 'pages.profile.empty_hobbie' | translate ) }}</p>
+                </div>
+                <button class="appearance-none ml-2 text-medium" (click)="goEdit('profession')" *ngIf="!isPublicProfile">{{ 'labels.edit' | translate | lowercase }}</button>
+            </div>
+
+
+            <div class="my-achievements w-full">
+                <!-- <h2>{{ 'pages.profile.your_achievents' | translate }}</h2> -->
+                <div class="grid grid-cols-2 gap-4 mb-3">
+                    <div class="trees lg:col-span-1 md:col-span-1 sm:col-span-1 col-span-2">
+                        <div class="flex items-center py-2">
+                            <svg width="35" height="35" viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg" *ngIf="!isPublicProfile">
+                                <path d="M5.00175 22.7648V12.0267H7.25649V22.7648H5.00175ZM13.1135 22.7648V12.0267H15.369V22.7648H13.1135ZM0.692627 27.2412V25.0195H27.6218V27.2412H0.692627ZM21.058 22.7648V12.0267H23.3127V22.7648H21.058ZM0.692627 9.77117V7.68447L14.1572 0.312744L27.6218 7.68447V9.77117H0.692627ZM5.70863 7.51643H22.6058L14.1572 2.87124L5.70863 7.51643Z" fill="#31B7BC"/>
+                            </svg>
+                            <svg width="34" height="34" viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg" *ngIf="isPublicProfile">
+                                <path d="M16.9508 26.982C16.5022 27.4086 15.9582 27.6218 15.3189 27.6218C14.6791 27.6218 14.1459 27.4086 13.7194 26.982L1.33245 14.5951C1.10787 14.3705 0.945218 14.1179 0.844505 13.8373C0.743253 13.5567 0.692627 13.2707 0.692627 12.9794V2.94817C0.692627 2.29758 0.905902 1.759 1.33245 1.33245C1.759 0.905902 2.29758 0.692627 2.94817 0.692627H12.9794C13.2707 0.692627 13.5624 0.743253 13.8543 0.844505C14.1462 0.945218 14.4155 1.10787 14.6621 1.33245L26.982 13.6863C27.4306 14.1349 27.655 14.6735 27.655 15.302C27.655 15.9299 27.4306 16.4796 26.982 16.9508L16.9508 26.982ZM15.369 25.4333L25.4002 15.403L12.9794 2.94817H2.94817V12.9794L15.369 25.4333ZM6.41551 8.23319C6.90884 8.23319 7.34078 8.05358 7.71132 7.69435C8.08132 7.33512 8.26632 6.89753 8.26632 6.38158C8.26632 5.88771 8.08132 5.46143 7.71132 5.10274C7.34078 4.74351 6.90884 4.56389 6.41551 4.56389C5.92164 4.56389 5.48943 4.74351 5.11889 5.10274C4.74889 5.46143 4.56389 5.88771 4.56389 6.38158C4.56389 6.89753 4.74889 7.33512 5.11889 7.69435C5.48943 8.05358 5.92164 8.23319 6.41551 8.23319Z" fill="#31B7BC"/>
+                            </svg>
+                            <div class="flex flex-col items-start justify-start money">
+                                <h3 *ngIf="isPublicProfile" matTooltip="{{ userCurrent?.rentals ?? 0  }}">{{ userCurrent?.rentals ?? 0 }}</h3>
+                                <h3 *ngIf="!isPublicProfile" matTooltip="{{ userCurrent?.total_charges ?? 0 | currency }}">{{ userCurrent?.total_charges ?? 0 | formatCurrency }}</h3>
+                                <span  *ngIf="!isPublicProfile" class="text-xs">{{  'pages.profile.earned' | translate | lowercase }}</span>
+                                <span  *ngIf="isPublicProfile" class="text-xs">{{  'pages.profile.rentals' | translate | lowercase }}</span>
+                            </div>
+
+                        </div>
+                    </div>
+                    <div class="data flex flex-col justify-between lg:col-span-1 md:col-span-1 sm:col-span-1 col-span-2">
+                        <!-- <div class="flex items-center py-2">
+                            <svg width="35" height="35" viewBox="0 0 28 27" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M19.5432 12.8148C19.9245 12.8148 20.2442 12.6858 20.5022 12.4278C20.7601 12.1699 20.8891 11.8502 20.8891 11.4689C20.8891 11.0871 20.7601 10.7671 20.5022 10.5092C20.2442 10.2512 19.9245 10.1222 19.5432 10.1222C19.1614 10.1222 18.8415 10.2512 18.5835 10.5092C18.3255 10.7671 18.1965 11.0871 18.1965 11.4689C18.1965 11.8502 18.3255 12.1699 18.5835 12.4278C18.8415 12.6858 19.1614 12.8148 19.5432 12.8148ZM8.77123 9.68434H15.5039V7.42961H8.77123V9.68434ZM4.05898 26.2794C3.29582 23.7212 2.54397 21.1686 1.80344 18.6217C1.0629 16.0748 0.692627 13.4659 0.692627 10.7952C0.692627 8.7308 1.41081 6.98044 2.84719 5.54406C4.28357 4.10822 6.03393 3.39031 8.09828 3.39031H14.8302C15.4813 2.5372 16.2725 1.87503 17.2037 1.40378C18.1349 0.932526 19.139 0.696899 20.2162 0.696899C20.7774 0.696899 21.2543 0.893479 21.6469 1.28664C22.0395 1.67926 22.2358 2.1559 22.2358 2.71655C22.2358 2.85119 22.2191 2.98584 22.1858 3.12048C22.1518 3.25512 22.1125 3.37873 22.0678 3.49129C21.9779 3.73795 21.8936 3.99028 21.8149 4.24825C21.7363 4.50623 21.6746 4.76986 21.6299 5.03915L24.6933 8.10255H27.6218V17.4939L23.8176 18.7397L21.5629 26.2794H14.1572V23.5868H11.4646V26.2794H4.05898ZM5.74175 24.0239H9.20909V21.3313H16.4128V24.0239H19.8793L21.9999 17.0229L25.3663 15.8443V10.3581H23.7506L19.3073 5.91487C19.33 5.3763 19.3916 4.86573 19.4923 4.38317C19.5936 3.9006 19.7115 3.40135 19.8462 2.88539C19.0604 3.10944 18.3309 3.44039 17.6577 3.87825C16.9845 4.31557 16.4685 4.9045 16.1098 5.64504H8.09828C6.66191 5.64504 5.44446 6.14457 4.44595 7.14362C3.44743 8.14214 2.94817 9.35932 2.94817 10.7952C2.94817 13.062 3.26243 15.2836 3.89095 17.46C4.51892 19.6369 5.13586 21.8249 5.74175 24.0239Z" fill="#31B7BC"/>
+                            </svg>
+                            <label>
+                                <h3>{{ 50 | currency }}</h3>
+                                <span class="text-xs">{{ 'pages.profile.saved_money' | translate }}</span>
+                            </label>
+                        </div> -->
+                        <div class="flex items-center py-2">
+                            <svg width="35" height="35" viewBox="0 0 25 28" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M6.94005 25.3664H17.3744L18.8891 19.3075H5.42531L6.94005 25.3664ZM6.94005 27.622C6.44618 27.622 5.99728 27.4647 5.59335 27.1502C5.18942 26.8362 4.92013 26.4323 4.78549 25.9384L3.10271 19.3075H21.2117L19.5289 25.9384C19.3943 26.4323 19.125 26.8362 18.7211 27.1502C18.3171 27.4647 17.8682 27.622 17.3744 27.622H6.94005ZM2.29485 17.0858H22.0196V13.9215H2.29485V17.0858ZM12.1572 8.73823C12.2245 6.69596 13.0661 4.86131 14.6818 3.23428C16.2975 1.60725 18.1375 0.760071 20.2019 0.692749C20.1572 2.57776 19.4446 4.28907 18.0643 5.8267C16.6845 7.36379 15.0857 8.28933 13.268 8.60332V11.6998H24.2751V17.0858C24.2751 17.6917 24.0565 18.2134 23.6191 18.6507C23.1813 19.0885 22.6481 19.3075 22.0196 19.3075H2.29485C1.66634 19.3075 1.13315 19.0885 0.695289 18.6507C0.257967 18.2134 0.0393066 17.6917 0.0393066 17.0858V11.6998H11.0464V8.60332C9.22872 8.28933 7.62996 7.36379 6.25014 5.8267C4.86977 4.28907 4.15724 2.57776 4.11254 0.692749C6.17689 0.760071 8.01693 1.60159 9.63265 3.21731C11.2484 4.83303 12.0899 6.67334 12.1572 8.73823Z" fill="#31B7BC"/>
+                            </svg>
+                            <div class="flex flex-col items-start justify-start money">
+                                <h3>{{ userCurrent?.tree_count ?? 0 }}</h3>
+                                <span class="text-xs">{{ 'pages.profile.tress_planted' | translate  }}</span>
+                            </div>
+                        </div>
+                        <button mat-icon-button [matMenuTriggerFor]="infoTable" aria-label="info icon button with options" class="flex" *ngIf="!isPublicProfile">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <mask id="mask0_7255_30083" style="mask-type:alpha" maskUnits="userSpaceOnUse" x="0" y="0" width="24" height="24">
+                                <rect width="24" height="24" fill="#D9D9D9"/>
+                                </mask>
+                                <g mask="url(#mask0_7255_30083)">
+                                <path d="M11.5 16.5H12.5V11H11.5V16.5ZM12 9.57692C12.1744 9.57692 12.3205 9.51795 12.4385 9.4C12.5564 9.28205 12.6154 9.13589 12.6154 8.96152C12.6154 8.78718 12.5564 8.64103 12.4385 8.52308C12.3205 8.40513 12.1744 8.34615 12 8.34615C11.8256 8.34615 11.6795 8.40513 11.5615 8.52308C11.4436 8.64103 11.3846 8.78718 11.3846 8.96152C11.3846 9.13589 11.4436 9.28205 11.5615 9.4C11.6795 9.51795 11.8256 9.57692 12 9.57692ZM12.0034 21C10.7588 21 9.58872 20.7638 8.4931 20.2915C7.39748 19.8192 6.44444 19.1782 5.63397 18.3685C4.82352 17.5588 4.18192 16.6066 3.70915 15.512C3.23638 14.4174 3 13.2479 3 12.0033C3 10.7588 3.23616 9.58872 3.70848 8.4931C4.18081 7.39748 4.82183 6.44444 5.63153 5.63398C6.44123 4.82353 7.39337 4.18192 8.48795 3.70915C9.58255 3.23638 10.7521 3 11.9966 3C13.2412 3 14.4113 3.23616 15.5069 3.70848C16.6025 4.18081 17.5556 4.82182 18.366 5.63152C19.1765 6.44122 19.8181 7.39337 20.2908 8.48795C20.7636 9.58255 21 10.7521 21 11.9967C21 13.2412 20.7638 14.4113 20.2915 15.5069C19.8192 16.6025 19.1782 17.5556 18.3685 18.366C17.5588 19.1765 16.6066 19.8181 15.512 20.2908C14.4174 20.7636 13.2479 21 12.0034 21ZM12 20C14.2333 20 16.125 19.225 17.675 17.675C19.225 16.125 20 14.2333 20 12C20 9.76667 19.225 7.875 17.675 6.325C16.125 4.775 14.2333 4 12 4C9.76667 4 7.875 4.775 6.325 6.325C4.775 7.875 4 9.76667 4 12C4 14.2333 4.775 16.125 6.325 17.675C7.875 19.225 9.76667 20 12 20Z" fill="#313B3F"/>
+                                </g>
+                            </svg>
+                        </button>
+                        <mat-menu #infoTable="matMenu" xPosition="after" yPosition="above" >
+                            <button mat-menu-item>{{ 'pages.profile.info_tree_nation' | translate }}</button>
+                        </mat-menu>
+                    </div>
+                </div>
+                <div *ngIf="userCurrent" class="flex  justify-between items-baseline space-x-2 mb-3">
+                    <mat-progress-bar
+                        class="progress-tree"
+                        mode="determinate"
+                        [value]="userCurrent.plant_tree_percentage"
+                        [bufferValue]="100"
+                    >
+                    </mat-progress-bar>
+                    <span class="text-base">{{ userCurrent.plant_tree_percentage }}%</span>
+                </div>
+                <span class="text-xs" *ngIf="!isPublicProfile">{{ 'pages.profile.not_long_plant_another_tree' | translate }}</span>
+                <span class="text-xs" *ngIf="isPublicProfile">{{ 'pages.profile.he_not_long_plant_another_tree' | translate }}</span>
+            </div>
+        </section>
+
+        <section class="lg:col-span-2 md:col-span-3 sm:col-span-3 col-span-3">
+            <div class="flex flex-row flex-wrap header-profile">
+                <div class="flex flex-col w-7/12 detail-profile">
+                    <div>
+                        <h1 class="text-[32px]"  *ngIf="!isPublicProfile">{{ 'pages.profile.hello_user' | translate:{ user: getNameUser() } }}</h1>
+                        <h1 class="text-[32px]"  *ngIf="isPublicProfile">{{  getNameUser() }}</h1>
+                    </div>
+                    <div class="flex w-full my-5 flex-row justify-between" *ngIf="userCurrent?.personal_info?.description">
+                        <div class="w-10/12">
+                            <h2 class="text-base semibold">{{ 'pages.profile.about_me' | translate }}</h2>
+                            <p class="text-base-2 text-tl-dark-gray" *ngIf="userCurrent">{{ userCurrent.personal_info?.description }}</p>
+                        </div>
+                        <button class="appearance-none ml-2 text-medium" (click)="goEdit('description')" *ngIf="!isPublicProfile">{{ 'labels.edit' | translate | lowercase }}</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="buttons flex flex-wrap items-center justify-start" [ngClass]="{'mb-5': selectedIndex == 3}">
+                <button
+                    class="btn-base my-1.5 mx-2 px-6 flex justify-center"
+                    [ngClass]="{'bg-tl-primary': selectedIndex == i, 'btn-gray' : selectedIndex !== i}"
+                    *ngFor="let item of filterBtns;let i = index"
+                    (click)="goTab(i)"
+                >
+                    <span class="h-5 text-sm" [ngClass]="{'text-tl-blue': selectedIndex == i, 'text-tl-dark-medium opacity-[0.6]' : selectedIndex !== i}">{{ item.label | translate }}</span>
+                </button>
+            </div>
+
+            <div class="container-searchbar flex items-center my-6 space-x-4 flex-wrap animated-show-item" *ngIf="selectedIndex !== 3">
+                <div class="searchbar py-1 px-4 flex flex-row my-2 items-center">
+                    <img src="assets/icons/tl-search.svg" alt="" srcset="">
+                    <input
+                        type="text"
+                        name="search"
+                        id="searchBar"
+                        placeholder="{{ ( isPublicProfile  ? 'pages.profile.search_their_items' : 'pages.profile.search_your_items') | translate }}"
+                        (keyup)="onSearchItems($event)"
+                        class="ml-2"
+                    >
+                </div>
+                <!-- <button class="btn-base border-solid border border-tl-primary-medium px-4 h-10 my-2 flex justify-center" (click)="openFilterCategory()">
+                    <span class="h-5 text-tl-primary-medium text-sm">{{ 'labels.categories' | translate }}</span>
+                </button> -->
+                <mat-form-field appearance="outline" class="select-add-product select-category" subscriptSizing="dynamic" color="primary">
+                    <mat-label class="text-base text-medium">{{ 'pages.upload_prod.categories' | translate}}</mat-label>
+                    <mat-select (selectionChange)="onSelectCategorie($event, categories)">
+                        <mat-option  class="mat-option-icon" *ngFor="let category of categories" [value]="category.id">
+                            <img [src]="category.icon" alt="" width="10" srcset="">
+                            <p class="opacity-7" >{{ category.name }}</p>
+                        </mat-option>
+                    </mat-select>
+                </mat-form-field>
+                <button class="appearance-none ml-2 text-medium" (click)="resetFilter()" *ngIf="isFilterCategory">{{ 'labels.cancel' | translate | lowercase }}</button>
+            </div>
+
+            <mat-tab-group class="dashboard" dynamicHeight [selectedIndex]="selectedIndex">
+                <mat-tab label="all">
+                    <div *ngIf="isLoadProds" class="grid md:grid-cols-3 lg:grid-cols-3 sm:grid-cols-2 grid-cols-1 gap-6 animated-show-item">
+                        <app-loader-card-product *ngFor="let item of [1,2,3,4,5]"></app-loader-card-product>
+                    </div>
+                    <div class="grid lg:grid-cols-3 md:grid-cols-2 sm:grid-cols-1 grid-cols-1 gap-4" *ngIf="!isLoadProds">
+                        <card-product *ngFor="let item of listProducts" [enabledActions]="false" [product]="item"></card-product>
+                        <h2 class="semibold text-lg text-center text-tl-crayola col-span-3" *ngIf="!listProducts.length">{{ isFilterCategory ? ( 'pages.profile.no_products_available_with_category' | translate:{category: categoryFilter.name} ): ('pages.profile.no_have_proucts_added' | translate )}}</h2>
+                    </div>
+                </mat-tab>
+                <mat-tab label="in_rental" >
+                    <div *ngIf="isLoadProds" class="grid md:grid-cols-3 lg:grid-cols-3 sm:grid-cols-2 grid-cols-1 gap-6 animated-show-item">
+                        <app-loader-card-product *ngFor="let item of [1,2,3,4,5]"></app-loader-card-product>
+                    </div>
+                    <div class="grid lg:grid-cols-3 md:grid-cols-2 sm:grid-cols-1 grid-cols-1 gap-4" *ngIf="!isLoadProds">
+                        <card-product *ngFor="let item of listInRentalProducts" [product]="item" [enabledActions]="false"></card-product>
+                        <h2 class="semibold text-lg text-center text-tl-crayola col-span-3" *ngIf="!listInRentalProducts.length">{{ isFilterCategory ? ( 'pages.profile.no_products_available_with_category' | translate:{category: categoryFilter.name} ) : ('pages.profile.no_products_in_rental' | translate) }}</h2>
+                    </div>
+                </mat-tab>
+                <mat-tab label="available" >
+                    <div *ngIf="isLoadProds" class="grid md:grid-cols-3 lg:grid-cols-3 sm:grid-cols-2 grid-cols-1 gap-6 animated-show-item">
+                        <app-loader-card-product *ngFor="let item of [1,2,3,4,5]"></app-loader-card-product>
+                    </div>
+                    <div class="grid lg:grid-cols-3 md:grid-cols-2 sm:grid-cols-1 grid-cols-1 gap-4" *ngIf="!isLoadProds">
+                        <card-product *ngFor="let item of listAvailableProducts" [product]="item" [enabledActions]="false"></card-product>
+                        <h2 class="semibold text-lg text-center text-tl-crayola col-span-3" *ngIf="!listAvailableProducts.length">{{ isFilterCategory ? ( 'pages.profile.no_products_available_with_category' | translate:{category: categoryFilter.name} ) : ('pages.profile.no_products_available' | translate )}}</h2>
+                    </div>
+                </mat-tab>
+                <mat-tab label="rating">
+                    <card-rating *ngFor="let item of userCurrent?.califications" [calification]="item" ></card-rating>
+                    <h2 class="semibold text-lg text-center text-tl-crayola col-span-3" *ngIf="!userCurrent?.califications?.length">{{ "pages.profile.no_have_rating" | translate }}</h2>
+                </mat-tab>
+                <mat-tab label="my_favorite">
+                    <div class="grid lg:grid-cols-3 md:grid-cols-2 sm:grid-cols-1 grid-cols-1 gap-4">
+                        <card-product [showFavorites]="true" *ngFor="let item of userCurrent?.favoriteProducts" [enabledActions]="false" [product]="item"></card-product>
+                        <h2 class="semibold text-lg text-center text-tl-crayola col-span-3" *ngIf="!userCurrent?.favoriteProducts?.length">{{ isFilterCategory ? ( 'pages.profile.no_products_available_with_category' | translate:{category: categoryFilter.name} ) :('pages.profile.no_products_favorites' | translate) }}</h2>
+                    </div>
+                </mat-tab>
+            </mat-tab-group>
+        </section>
+    </div>
+</div>
+
+
+<svg class="hidden">
+    <defs>
+        <symbol id="star-select" width="17" height="16" viewBox="0 0 17 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M3.61113 15.4167L4.89759 9.85521L0.583008 6.11458L6.28301 5.61979L8.49967 0.375L10.7163 5.61979L16.4163 6.11458L12.1018 9.85521L13.3882 15.4167L8.49967 12.4677L3.61113 15.4167Z" fill="#FFB959"/>
+        </symbol>
+
+        <symbol id="star-no-select" width="17" height="17" viewBox="0 0 17 17" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M16.4163 6.71083L10.7243 6.22L8.49967 0.979164L6.27509 6.22791L0.583008 6.71083L4.90551 10.4554L3.60717 16.0208L8.49967 13.0679L13.3922 16.0208L12.1018 10.4554L16.4163 6.71083ZM8.49967 11.5875L5.52301 13.3846L6.31467 9.99625L3.68634 7.71625L7.15384 7.41541L8.49967 4.225L9.85342 7.42333L13.3209 7.72416L10.6926 10.0042L11.4843 13.3925L8.49967 11.5875Z" fill="#1C1B1F"/>
+        </symbol>
+    </defs>
+</svg>

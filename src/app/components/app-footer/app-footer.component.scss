@@ -1,0 +1,33 @@
+footer{
+    height: 72px;
+    background: var(--opaque-primary);
+}
+
+a{
+    color: var(--crayola);
+    font-size: 12px;
+    line-height: 16px;
+    letter-spacing: 0.4px;
+}
+
+@media (max-width: 460px) {
+    footer{
+        height: auto;
+        padding: 12px;
+    }
+}
+
+.op-lang{
+    display: flex;
+    justify-content: left;
+    align-items: center;
+    span{
+        margin-left: 4px;
+        height: 20px;
+    }
+    img{
+        width: 14px;
+        height: 14px;
+        border-radius: 100%;
+    }
+}

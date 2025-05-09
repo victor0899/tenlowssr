@@ -1,0 +1,20 @@
+.table-payments{
+    background: var(--blank);
+    border: 1px solid var(--light-silver);
+    border-radius: 16px;
+    padding: 20px 18px;
+    overflow: auto;
+}
+
+.container{
+    min-height: calc(100vh - 212px);
+}
+
+table{
+    box-shadow: none;
+}
+
+.highlight-red {
+    color: #E53E65;
+    font-weight: bold;
+  }

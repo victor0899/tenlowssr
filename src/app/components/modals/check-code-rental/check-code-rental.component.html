@@ -1,0 +1,37 @@
+<loader-overlay *ngIf="isLoad"></loader-overlay>
+<mat-toolbar>
+    <mat-toolbar-row>
+      <button mat-dialog-close>
+        <svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M14 2.0585L12.59 0.72583L7 6.00926L1.41 0.72583L0 2.0585L5.59 7.34193L0 12.6254L1.41 13.958L7 8.6746L12.59 13.958L14 12.6254L8.41 7.34193L14 2.0585Z" fill="#60757C"/>
+        </svg>
+      </button>
+    </mat-toolbar-row>
+</mat-toolbar>
+<mat-dialog-content>
+    <div class="content">
+        <h1 class="text-2xl leading-6 semibold text-center">{{ 'components.check_code.verification_code' | translate }}</h1>
+        <p class="text-center text-base leading-6">{{ 'components.check_code.enter_code_msg' | translate }}</p>
+
+        <form [formGroup]="formCheckCode"  (ngSubmit)="checkCode()">
+            <div class="grid grid-cols-2 gap-6 mt-6 mb-6">
+                <div class="relative col-span-2" [ngClass]="{'error-form': (formCheckCode.invalid && formCheckCode.touched)}">
+                    <input id="code-verify" autocomplete="off" formControlName="code" type="text" maxlength="5" [class]="cssInputTxt" placeholder="code-verify" />
+                    <span [class]="cssSpanValidation" *ngIf="formCheckCode.invalid && formCheckCode.touched">
+                        {{ getErrorLabel('code') | translate }}
+                    </span>
+                </div>
+            </div>
+
+            <div class="flex justify-center items-center mt-5 flex-wrap">
+                <button type="button" class="bg-tl-light px-5 h-10 rounded-3xl flex justify-center items-center my-3 mx-2" (click)="requestCode()" >
+                    <span class="text-tl-primary text-sm">{{ 'components.check_code.resend_sms' | translate }}</span>
+                </button>
+
+                <button type="submit" class="bg-tl-primary-medium px-5 h-10 rounded-3xl flex justify-center items-center my-3 mx-2" [disabled]="formCheckCode.invalid" >
+                    <span class="text-tl-light text-sm">{{ 'components.check_code.confirm_delivery'  | translate }}</span>
+                </button>
+            </div>
+        </form>
+    </div>
+</mat-dialog-content>

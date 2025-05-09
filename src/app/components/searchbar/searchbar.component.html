@@ -1,0 +1,25 @@
+<div class="searchbar relative py-1 px-4 flex flex-row items-center searchStyle" [ngClass]="{'blank': isModal}">
+    <img src="assets/icons/tl-search.svg" alt="" srcset=""  class="img-icon">
+    <!-- TODO remove for PRODUCTION -->
+    <!-- <input  type="text" name="" id=""  (keyup.enter)="searchProduct()" [(ngModel)]="textSearch" placeholder="{{ placeholder | translate }}" class="ml-2"> -->
+    <mat-form-field  class="w-full ml-2" appearance="fill" >
+        <input type="text"
+            placeholder="{{ placeholder | translate }}"
+            aria-label="text"
+            matInput
+            #searchInput
+            [(ngModel)]="textSearch"
+            [formControl]="myControl"
+            (keydown.enter)="onEnterKey()"
+            (ngModelChange)="this.userQuestionUpdate.next($event)"
+            [matAutocomplete]="searchAutocomplete"
+        >
+        
+        <mat-autocomplete  #searchAutocomplete="matAutocomplete" (optionSelected)="onSelectSuggest($event)">
+          <mat-option *ngFor="let option of filteredOptions | async" [value]="option" [disabled]="isOptionSelected(option)">
+            {{ option.title }}
+          </mat-option>
+        </mat-autocomplete>
+        <mat-spinner matSuffix color="accent" *ngIf="isSearch"></mat-spinner>
+    </mat-form-field>
+</div>

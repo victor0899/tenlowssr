@@ -1,0 +1,22 @@
+.table{
+    border: 1px solid var(--light-silver);
+    border-radius: 16px;
+    padding: 8px 0 50px;
+    width: 100%;
+    overflow: auto;
+    display: inline-flex;
+    table{
+        min-width: 1350px;
+        width: 100%;
+    }
+    tbody{
+        tr{
+            background: var(--light);
+        }
+    }
+}
+
+
+th, td {
+    padding: 0px 22px;
+}

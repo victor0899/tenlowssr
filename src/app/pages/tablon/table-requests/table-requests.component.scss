@@ -1,0 +1,79 @@
+*{
+    scroll-behavior: smooth;
+}
+
+.avatar{
+    overflow: hidden;
+}
+
+.grid-board{
+    border: 0.5px solid var(--light-primary);
+    border-radius: 28px;
+    padding: 30px 18px;
+    min-width: 750px;
+    table{
+        width: 100%;
+    }
+}
+
+.btn-i-have{
+    border: 1px solid var(--primary-medium);
+    border-radius: 100px;
+    padding: 3px 10px;
+    min-width: 140px;
+    span{
+        color: var(--primary-medium);
+    }
+}
+
+.btn-text{
+    border: none !important;
+}
+
+.btn-solved{
+    border: 1px solid var(--primary-medium);
+    border-radius: 100px;
+    padding: 3px 16px;
+    opacity: .5;
+    span{
+        color: var(--primary-medium);
+    }
+}
+
+.btn-solved-answer{
+    opacity: 0.4;
+}
+
+.btn-my-request{
+    border: 1px solid var(--gray);
+    border-radius: 100px;
+    padding: 3px 10px;
+    span{
+        opacity: 0.4;
+    }
+}
+
+.btn-request{
+    position: absolute;
+    top: -21px;
+    left: 45%;
+    justify-content: center;
+    z-index: 100;
+}
+
+.empty-table{
+    div{
+        width: 320px;
+        margin: auto;
+    }
+}
+
+.img-prod-answer{
+    width: 38px;
+    height: 38px;
+    border-radius: 100px;
+    min-width: 38px;
+    border: 2px solid var(--blank);
+    margin-right: -10px;
+    object-fit: cover;
+}

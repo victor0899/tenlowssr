@@ -1,0 +1,60 @@
+* {
+    font-family: "BalooTamma";
+}
+
+mat-toolbar{
+    background: var(---light);
+}
+
+.content{
+    padding: 0px 90px;
+    display: flex;
+    padding: 0px 90px;
+    flex-direction: column;
+    align-items: center;
+}
+
+// h1{
+//     font-size: 22px;
+//     line-height: 28px;
+// }
+
+h2{
+    text-align: center;
+    margin: 16px 0;
+    font-size: 16px;
+    line-height: 24px;
+}
+
+
+p{
+    max-width: 386px;
+    margin-top: 30px;
+    font-size: 14px;
+    text-align: center;
+}
+
+
+.reasons-container{
+    max-width: 380px;
+    margin: 35px 0;
+    display: flex;
+    flex-direction: column;
+    mat-radio-button{
+        font-size: 16px;
+        line-height: 24px;
+        width: 100%;
+        margin: 8px 0;
+    }
+}
+
+@media (max-width:600px) {
+    .content{
+        padding: 0 20px;
+    }
+}
+
+.enter-password{
+    max-width: 350px;
+    margin: auto;
+}

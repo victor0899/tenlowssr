@@ -1,0 +1,122 @@
+<loader-overlay *ngIf="isSend"></loader-overlay>
+
+<mat-toolbar>
+    <mat-toolbar-row>
+      <button mat-dialog-close>
+        <svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M14 2.0585L12.59 0.72583L7 6.00926L1.41 0.72583L0 2.0585L5.59 7.34193L0 12.6254L1.41 13.958L7 8.6746L12.59 13.958L14 12.6254L8.41 7.34193L14 2.0585Z" fill="#60757C"/>
+        </svg>
+      </button>
+    </mat-toolbar-row>
+</mat-toolbar>
+<mat-dialog-content>
+    <div class="content">
+        <section *ngIf="isLoad">
+            <mat-spinner diameter="70" color="accent"></mat-spinner>
+        </section>
+
+        <section *ngIf="!isLoad && !isChangeEmail && !isVerifyEmail && !isVerifyNewEmail" class="animated-show-item">
+            <h1 class="text-2xl semibold text-tl-dark-gray text-center mb-10">
+                {{ 'components.update_email.change_you_email' | translate }}
+            </h1>
+
+            <!-- <p class="text-tl-dark text-base max-w-[440px] text-center">
+                {{ 'components.update_email.info_send_email' | translate }}
+            </p> -->
+
+            <div class="info-email">
+                <h2 class="text-base text-tl-dark">{{ 'components.update_email.email_of_verify' | translate }}</h2>
+                <p class="text-base text-tl-dark-gray">{{ userCurrent?.email ?? '' }}</p>
+            </div>
+
+            <div class="flex justify-center items-center w-full mt-7 mb-8">
+                <h2 class="text-base text-tl-dark mr-3">{{ 'components.update_email.i_change_email' | translate }}</h2>
+                <p class="text-base text-tl-dark-gray cursor-pointer" (click)="openUpdate()">{{ 'labels.edit' | translate | lowercase }}</p>
+            </div>
+
+            <!-- <button class="bg-tl-primary px-5 h-10 rounded-3xl flex justify-center items-center my-3 md:w-8/12 lg:w-8/12 w-full m-auto" (click)="openUpdate()" >
+                <span class="text-tl-blue text-sm">{{ 'components.update_email.change_email' | translate }}</span>
+            </button> -->
+
+            <p class="text-tl-dark text-[15px] max-w-[440px] text-center mb-6">
+                {{ 'components.update_email.info_change_email' | translate }}
+            </p>
+
+            <button *ngIf="!userCurrent?.email_verified_at" class="bg-tl-primary px-5 h-10 rounded-3xl flex justify-center items-center my-3 md:w-8/12 lg:w-8/12 w-full m-auto" (click)="sendCodeEmailVerification()" >
+                <span class="text-tl-blue text-sm">{{ 'components.update_email.verify_email' | translate }}</span>
+            </button>
+        </section>
+
+        <!-- FORM VERIFY EMAIL -->
+        <section class="w-10/12 m-auto p-4 text-center animated-show-item" *ngIf="!isLoad && isVerifyEmail">
+            <h2 class="text-2xl semibold text-tl-dark-gray mb-1">{{ 'labels.email' | translate }}</h2>
+            <p class="text-base text-tl-dark max-w-[430px] ">{{ 'components.update_email.enter_verify_code'  | translate:{ email: userCurrent?.email ?? '' } }}</p>
+
+            <form [formGroup]="formVerifyEmail"  (ngSubmit)="verifyEmail()">
+                <div class="grid grid-cols-2 gap-6 mt-6 mb-6">
+                    <div class="relative col-span-2" [ngClass]="{'error-form': (formVerifyEmail.get('code')?.invalid && formVerifyEmail.get('code')?.touched)}">
+                        <input id="code-verify" autocomplete="off" formControlName="code" type="text" maxlength="5" [class]="cssInputTxt" placeholder="code-verify" />
+                        <label for="code-verify" [class]="cssFloatLabel">
+                            {{ 'components.update_email.code_verify' | translate }}
+                        </label>
+                        <span [class]="cssSpanValidation" *ngIf="(formVerifyEmail.get('code')?.invalid && formVerifyEmail.get('code')?.touched)">
+                            {{ getErrorLabel('code') | translate }}
+                        </span>
+                    </div>
+                </div>
+
+                <button class="bg-tl-primary px-5 h-10 rounded-3xl flex justify-center items-center my-3 w-full" [disabled]="formVerifyEmail.invalid" >
+                    <span class="text-tl-blue text-sm text-medium">{{ 'components.update_email.update_email' | translate }}</span>
+                </button>
+            </form>
+        </section>
+
+        <!-- FORM CHANGE EMAIL -->
+        <section class="w-10/12 m-auto p-4 text-center animated-show-item" *ngIf="!isLoad && isChangeEmail && !isVerifyNewEmail">
+            <h2 class="text-2xl semibold text-tl-dark-gray mb-1">{{ 'components.update_email.update_email' | translate }}</h2>
+            <p class="text-base text-tl-dark ">{{ 'components.update_email.info_change_new_email'  | translate }}</p>
+
+            <form [formGroup]="formUpdateEmail"  (ngSubmit)="sendCodeEmailChange()">
+                <div class="grid grid-cols-2 gap-6 mt-6 mb-6">
+                    <div class="relative col-span-2" [ngClass]="{'error-form': (formUpdateEmail.get('newEmail')?.invalid && formUpdateEmail.get('newEmail')?.touched)}">
+                        <input id="new-email" autocomplete="off" formControlName="newEmail"  type="text" [class]="cssInputTxt" placeholder="new-email" />
+                        <label for="new-email" [class]="cssFloatLabel">
+                            {{ 'components.update_email.new_email' | translate }}
+                        </label>
+                        <span [class]="cssSpanValidation" *ngIf="(formUpdateEmail.get('newEmail')?.invalid && formUpdateEmail.get('newEmail')?.touched)">
+                            {{ getErrorLabel('newEmail') | translate }}
+                        </span>
+                    </div>
+                </div>
+
+                <button class="bg-tl-primary px-5 h-10 rounded-3xl flex justify-center items-center my-3 w-full" [disabled]="formUpdateEmail.invalid" >
+                    <span class="text-tl-blue text-sm text-medium">{{ 'components.update_email.update_email' | translate }}</span>
+                </button>
+            </form>
+        </section>
+
+        <!-- FORM CHANGE EMAIL -->
+        <section class="w-10/12 m-auto p-4 text-center animated-show-item" *ngIf="!isLoad && isVerifyNewEmail">
+            <h2 class="text-2xl semibold text-tl-dark-gray mb-1">{{ 'components.update_email.update_email' | translate }}</h2>
+            <p class="text-base text-tl-dark max-w-[400px]">{{ 'components.update_email.info_new_email'  | translate }}</p>
+
+            <form [formGroup]="formVerifyChangeEmail"  (ngSubmit)="updateEmail()">
+                <div class="grid grid-cols-2 gap-6 mt-6 mb-6">
+                    <div class="relative col-span-2" [ngClass]="{'error-form': (formVerifyChangeEmail.get('code')?.invalid && formVerifyChangeEmail.get('code')?.touched)}">
+                        <input id="code-verify" autocomplete="off" formControlName="code" type="text" maxlength="5" [class]="cssInputTxt" placeholder="code-verify" />
+                        <label for="code-verify" [class]="cssFloatLabel">
+                            {{ 'components.update_email.code_verify' | translate }}
+                        </label>
+                        <span [class]="cssSpanValidation" *ngIf="(formVerifyChangeEmail.get('code')?.invalid && formVerifyChangeEmail.get('code')?.touched)">
+                            {{ getErrorLabel('code') | translate }}
+                        </span>
+                    </div>
+                </div>
+
+                <button class="bg-tl-primary px-5 h-10 rounded-3xl flex justify-center items-center my-3 w-full" [disabled]="formVerifyChangeEmail.invalid" >
+                    <span class="text-tl-blue text-sm text-medium">{{ 'components.update_email.update_email' | translate }}</span>
+                </button>
+            </form>
+        </section>
+    </div>
+</mat-dialog-content>

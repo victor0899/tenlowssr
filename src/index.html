@@ -1,0 +1,80 @@
+<!doctype html>
+<html lang="es">
+<head>
+
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  <title>Tenlow</title>
+  <base href="/">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="icon" type="image/x-icon" href="favicon.ico">
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="preconnect" href="https://maps.googleapis.com">
+  <link rel="dns-prefetch" href="https://tenlow.es">
+  <meta property="og:title" content="Mira esto en Tenlow" />
+  <meta property="og:description" content="Te ofrecemos una forma sencilla y segura de alquilar tus objetos. Recuperarás tu inversión y tendrás una fuente de ingresos extra. Nosotros nos aseguramos de que el proceso de alquiler sea sencillo, ¿Por qué esperar?" />
+  <meta property="og:image" content="https://tenlow.es/assets/images/how-works.webp" />
+  <meta property="dc.relation" content="https://tenlow.es" />
+  <meta http-equiv="cache-control" content="no-cache"/>
+  <meta property="robots" content="index, follow"/>
+  <meta property="googlebot" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1"/>
+  <meta property="bingbot" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1"/>
+  <script src="https://js.stripe.com/v3/"></script>
+
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag() { dataLayer.push(arguments); }
+    gtag('js', new Date());
+    gtag('config', 'GA_MEASUREMENT_ID', {
+      'send_page_view': true,
+      'cookie_domain': 'tenlow.es',
+      'cookie_flags': 'SameSite=None;Secure',
+      'cookie_prefix': '_ga',
+      'cookie_update': true,
+      'cookie_expires': 63072000, 
+      'linker': {
+        'domains': ['tenlow.es', 'app.tenlow.es'],
+        'accept_incoming': true,
+        'url_position': 'query', 
+        'decorate_forms': true,
+        'link_attribution': {
+          'cookie_expires': 0 
+        }
+      }
+    });
+    (function() {
+      if (typeof gtag === 'function') {
+        document.addEventListener('click', function(e) {
+          var target = e.target;
+          while (target && target.tagName !== 'A') {
+            target = target.parentNode;
+            if (!target) return;
+          }
+          
+          var href = target.getAttribute('href');
+          if (href && (href.indexOf('tenlow.es') !== -1 || href.startsWith('/') || href.startsWith('#'))) {
+            if (href.indexOf('?') !== -1) {
+              href = href.replace(/([?&])_gl=[^&]*(&|$)/, '$1').replace(/([?&])_ga=[^&]*(&|$)/, '$1');
+              href = href.replace(/[?&]$/, '');
+              target.setAttribute('href', href);
+            }
+          }
+        });
+      }
+    })();
+  </script>
+</head>
+<body class="min-h-screen ">
+  <app-root></app-root>
+</body>
+<script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
+<script type="module" src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.esm.js"></script>
+<script src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.js"></script>
+<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBPe8DlQxhKFA_YdmwU8f60ZA-jNsdpKwM&libraries=places&language=es"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/@alpinejs/focus@3.x.x/dist/cdn.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+<!-- // Real -->
+<script src="https://sis.redsys.es/sis/NC/redsysV3.js"></script>
+</html>

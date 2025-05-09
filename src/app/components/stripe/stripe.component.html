@@ -1,0 +1,13 @@
+<form id="payment-form">
+  <loader-overlay *ngIf="isLoad"></loader-overlay>
+  <!-- <div id="card-element"></div> -->
+  <!-- <div class="input-group"> -->
+    <!-- <div id="card-element"></div> -->
+  <!-- </div>  -->
+  <div id="payment-element"></div> 
+  <div class="md:w-12/12 sm:w-full lg:w-12/12 w-full mb-8">
+    <button type="submit" class="bg-tl-primary-medium text-white text-sm col-span-2 w-full cursor-pointer h-12 py-2 px-1 mt-4 rounded-full flex flex-row justify-center items-center">
+      <label class="h-5 cursor-pointer text-medium text-base"  >{{ 'labels.pay' | translate}}</label>
+    </button>
+  </div>
+</form>

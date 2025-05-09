@@ -1,0 +1,126 @@
+.information-content{
+    background-color: var(--blue-water);
+    overflow: hidden;
+    border-radius: 16px;
+    .info-text{
+        padding: 30px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: flex-start;
+
+        h1{
+            color: var(--blue);
+            font-size: 36px;
+            line-height: 44px;
+        }
+    }
+
+    .info-image{
+        max-height: 386px;
+        position: relative;
+        img{
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 16px;
+        }
+        .shape{
+            position: absolute;
+            &-left{
+                left: -1px;
+                top: 0;
+            }
+            &-right{
+                right: 0;
+                bottom: 0;
+            }
+        }
+    }
+}
+
+.title-info{
+    font-size: 22px;
+    line-height: 28px;
+    color: var(--blue);
+}
+
+.details-rentals{
+    display: flex;
+    align-items: flex-start;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: 12px;
+    .info-card{
+        max-width: 263px;
+        position: relative;
+        width: 100%;
+        .image-card{
+            width: 100%;
+            height: 168px;
+        }
+        h2{
+            font-family: "BalooTamma-Medium";
+            color: var(--blue);
+            font-size: 16px;
+            line-height: 16px;
+            margin: 16px 0 9px;
+        }
+        p{
+            color: var(--crayola);
+            font-size: 15px;
+            line-height: 17px;
+        }
+        .indicator-number{
+            position: absolute;
+            width: 32px;
+            height: 32px;
+            background: var(--primary);
+            border-radius: 100%;
+            top: 0;
+            bottom: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            span{
+                height: 20px;
+            }
+        }
+    }
+}
+
+.join-community{
+    color: var(--blue);
+    text-align: center;
+    margin: 280px 0 100px;
+    h1{
+        max-width: 314px;
+        margin: auto;
+    }
+}
+
+.shape-bottom{
+    position: absolute;
+    z-index: -1;
+    bottom: -54px;
+    left: 0;
+    width: 100vw;
+    svg{
+        width: 100vw !important;
+        height: 100%;
+    }
+}
+
+
+@media (max-width:620px) {
+    .details-rentals{
+        justify-content: center;
+        gap: 26px;
+    }
+    .info-card{
+        max-width: 90% !important;
+        .image-card{
+            height: auto !important;
+        }
+    }
+}

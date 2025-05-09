@@ -1,0 +1,80 @@
+<loader-overlay *ngIf="isShowLoader"></loader-overlay>
+<mat-toolbar>
+    <mat-toolbar-row>
+      <button mat-dialog-close *ngIf="!reasonSelected || (reasonSelected && reasonSelected.value !== 'others')  ">
+        <svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M14 2.0585L12.59 0.72583L7 6.00926L1.41 0.72583L0 2.0585L5.59 7.34193L0 12.6254L1.41 13.958L7 8.6746L12.59 13.958L14 12.6254L8.41 7.34193L14 2.0585Z" fill="#60757C"/>
+        </svg>
+      </button>
+      <button *ngIf="reasonSelected && reasonSelected.value == 'others' " (click)="resetReport()">
+        <svg width="18" height="12" viewBox="0 0 18 12" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M6.50033 11.8334L0.666992 6.00002L6.50033 0.166687L7.68783 1.33335L3.85449 5.16669H17.3337V6.83335H3.85449L7.66699 10.6667L6.50033 11.8334Z" fill="#9EAAAD"/>
+        </svg>
+      </button>
+    </mat-toolbar-row>
+</mat-toolbar>
+<mat-dialog-content>
+    <div class="content" *ngIf="!isShowSuccess">
+        <h1 class="title-modal semibold text-center">{{ 'components.report_user.title_modal' | translate }}</h1>
+
+        <div class="reasons-report" *ngIf="!reasonSelected || (reasonSelected && reasonSelected.value !== 'others') ">
+            <div
+                class="reason-item relative flex flex-col items-center justify-center m-1 cursor-pointer"
+                (click)="selectReason( item )"
+                *ngFor="let item of reasonsReport"
+            >
+                <div class="reason-border absolute"></div>
+                <div class="reason-bg absolute" [ngClass]="{'reason-selected': (reasonSelected && item.value == reasonSelected.value)}"></div>
+                <img [src]="item.icon" class="relative" alt="{{ item.label | translate }}">
+                <p class="relative text-center text-xs w-28 mt-2 text-tl-crayola">{{ item.label | translate }}</p>
+            </div>
+        </div>
+
+        <div class="other-comment" *ngIf="reasonSelected && reasonSelected.value == 'others' ">
+            <div
+                class="reason-item relative flex flex-col items-center justify-center m-1 cursor-pointer"
+            >
+                <div class="reason-border absolute"></div>
+                <div class="reason-bg absolute"></div>
+                <img [src]="reasonSelected.icon" class="relative" alt="{{ reasonSelected.label | translate }}">
+                <p class="relative text-center text-xs w-28 mt-2">{{ reasonSelected.label | translate }}</p>
+            </div>
+
+            <h1 class="text-center text-base">{{ 'components.report_user.write_more_info_problem' | translate }}</h1>
+
+            <div class="relative comment" [ngClass]="{'error-form': comment.length < 1}">
+                <textarea
+                    id="descriptionProd"
+                    maxlength="600"
+                    autocomplete="off"
+                    type="text"
+                    rows="6"
+                    [(ngModel)]="comment"
+                    [class]="publicService.cssInputBase"
+                    (change)="isCommentErr = false"
+                    placeholder="descriptionProd"
+                ></textarea>
+                <label for="descriptionProd" [class]="publicService.cssFloatLabelBase">
+                    {{ 'components.report_user.write_a_comment' | translate }}
+                </label>
+                <span *ngIf="isCommentErr" [class]="publicService.cssSpanValidationBase">
+                    {{ msgErrComment | translate }}
+                </span>
+            </div>
+        </div>
+
+        <button class="btn-send bg-tl-primary px-5 h-10 rounded-3xl flex justify-center items-center mx-3 my-1 disabled:bg-tl-primary-opaque" [disabled]="isShowLoader || !reasonSelected" (click)="validate()">
+            <span class="text-tl-blue text-sm">{{ 'components.report_user.send_report' | translate }}</span>
+        </button>
+    </div>
+
+    <div class="content" *ngIf="isShowSuccess">
+        <h1 class="title-modal semibold text-center">{{ 'components.report_user.im_here_to_help' | translate }}</h1>
+
+        <p class="msg-success">{{ 'components.report_user.msg_success_report' | translate }}</p>
+
+        <button class="bg-tl-primary px-8 h-10 rounded-3xl flex justify-center items-center m-auto mb-6" (click)="close()">
+            <span class="text-tl-blue text-sm">{{ 'labels.ok' | translate }}</span>
+        </button>
+    </div>
+</mat-dialog-content>

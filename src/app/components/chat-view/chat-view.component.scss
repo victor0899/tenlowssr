@@ -1,0 +1,95 @@
+*{
+    scroll-behavior: smooth;
+}
+
+button{
+    transition: all .5s;
+}
+
+.content-chat{
+    border: 1px solid var(--light-silver);
+    border-radius: 16px;
+    width: 100%;
+    height: 100vh;
+    position: relative;
+    overflow: hidden;
+    .header-chat{
+        border-bottom: 1px solid var(--light-silver);
+        padding: 7.5px 16px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        position: absolute;
+        width: 100%;
+        background: var(--blank);
+        z-index: 10;
+    }
+}
+
+.badge-date{
+    background: var(--bagde-chat-date);
+    padding: 3px 20px;
+    align-self: center;
+    margin: 20px 0;
+    border-radius: 100px;
+    left: 45%;
+    top: 20px;
+    span{
+        font-size: 12px;
+    }
+}
+
+.msg-other,
+.msg-me{
+    padding: 12px 20px;
+    color: var(--dark);
+    margin: 10px 20px;
+    border-radius: 20px;
+    max-width: 65%;
+    font-size: 15px;
+    line-height: 20px;
+}
+
+.msg-me{
+    background: var(--bagde-chat-date);
+    align-self: flex-end;
+}
+
+.msg-other{
+    background: #EEEEEE;
+    align-self: flex-start;
+}
+
+.input-chat{
+    background: linear-gradient(0deg, rgba(0, 101, 145, 0.11), rgba(0, 101, 145, 0.11)), #F9FDFF;
+    border-radius: 28px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 6px 16px;
+    position: absolute;
+    width: 100%;
+    bottom: -18px;
+    input{
+        background: transparent;
+        height: 40px;
+        width: 100%;
+    }
+    input:focus{
+        outline: none;
+    }
+}
+
+input{
+    padding-left: 16px;
+}
+
+input::placeholder{
+    color: var(--dark-gray);
+}
+
+.chat{
+    height: 100%;
+    overflow: auto;
+    padding: 60px 0;
+}

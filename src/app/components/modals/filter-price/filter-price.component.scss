@@ -1,0 +1,38 @@
+mat-slider{
+    width: 100% !important;
+}
+
+.container{
+    font-family: 'BalooTamma';
+}
+
+button{
+    outline: none;
+}
+
+section{
+    margin: 32px 0;
+}
+
+section.header{
+    margin: 0;
+}
+
+canvas{
+    position: relative;
+    bottom: -22px;
+    margin: auto;
+}
+
+.mat-filter-price{
+    mat-radio-button{
+        display: block;
+        width: 100%;
+        padding: 2px;
+    }
+}
+.price-input{
+    label,input{
+        background: var(--blank);
+    }
+}

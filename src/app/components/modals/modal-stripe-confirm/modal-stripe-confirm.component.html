@@ -1,0 +1,11 @@
+<mat-dialog-content>
+    <div class="flex flex-col items-center">
+        <div class="!text-base !text-tl-crayola">{{ data.title }}</div>
+        <div class="!text-base !text-tl-crayola">{{ data.msg | translate }}</div>
+        <div mat-dialog-actions>
+            <button mat-button mat-dialog-close class="btn-base  bg-tl-primary  flex justify-center">
+                <span class="h-5 text-tl-blue text-sm text-medium">{{ 'labels.back_to' | translate }}</span>
+            </button>
+        </div>
+    </div>
+</mat-dialog-content>

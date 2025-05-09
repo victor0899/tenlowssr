@@ -1,0 +1,528 @@
+<loader-overlay *ngIf="(sended && !formCreateRequest.invalid) || isShowLoader"></loader-overlay>
+
+<div class="container min-screen m-auto p-2 pb-10">
+    <div class="title-page  mt-3 mb-6 flex flex-row items-center justify-between flex-wrap space-y-6">
+        <h1 class="text-4xl h-7 mr-4">{{ 'pages.table_request.title' | translate }}</h1>
+
+        <div class="buttons flex flex-row items-center space-x-3" *ngIf="userCurrent">
+            <button class="btn-base bg-tl-primary px-4 flex justify-center" [ngClass]="{'btn-gray': !isShowMyAnswers}" (click)="openMyAnswers()">
+                <span class="h-5 text-tl-dark-medium text-sm" [ngClass]="{'text-tl-blue': isShowMyAnswers}">{{ 'pages.table_request.my_answers' | translate }}</span>
+            </button>
+
+            <button class="btn-base bg-tl-primary  px-4 flex justify-center" (click)="openMyRequests()" [ngClass]="{'btn-gray': !isShowMyRequest}">
+                <span class="h-5 text-tl-dark-medium text-sm" [ngClass]="{'text-tl-blue': isShowMyRequest}">{{ 'pages.table_request.my_requests' | translate }}</span>
+            </button>
+        </div>
+    </div>
+
+    <div class="lg:w-9/12 md:w-9/12 sm:w-10/12 w-11/12 m-auto text-center mb-10">
+        <h2 class="text-2xl">{{ 'pages.table_request.info_board' | translate }}</h2>
+        <p *ngIf="!isShowTable" class="text-base-2 my-2">{{ 'pages.table_request.info_create_request' | translate}}</p>
+    </div>
+
+    <div *ngIf="isShowTable && !isShowMyRequest && !isShowMyAnswers" [ngTemplateOutlet]="TableBoard"></div>
+
+    <div *ngIf="isShowTable && isShowMyAnswers" [ngTemplateOutlet]="TableMyAnswers"></div>
+
+    <div *ngIf="isShowTable && isShowMyRequest" [ngTemplateOutlet]="TableMyRequests"></div>
+
+    <div *ngIf="!isShowTable" [ngTemplateOutlet]="FormCreateRquest"></div>
+
+</div>
+
+<ng-template #FormCreateRquest>
+    <div class="lg:w-7/12 md:w-8/12 sm:w-10/12 w-10/12 m-auto animated-show-item">
+
+
+        <form [formGroup]="formCreateRequest" (ngSubmit)="validateForm()">
+            <div class="grid grid-cols-2 gap-5">
+                <div class="relative col-span-2"  [ngClass]="{'error-form': (need?.errors && need?.touched)}">
+                    <input id="i_need" formControlName="need" autocomplete="off" type="text" [class]="cssInputTxt" placeholder="need" />
+                    <label for="i_need" [class]="cssFloatLabel">
+                        {{ 'pages.table_request.i_need' | translate }}
+                    </label>
+                    <span [class]="cssSpanValidation" *ngIf="need?.errors && (showError || need?.touched)">
+                        {{ 'messages.enter_valid_field' | translate }}
+                    </span>
+                </div>
+
+                <div class="relative lg:col-span-1 md:col-span-1 sm:col-span-2 col-span-2" [ngClass]="{'error-form': (zip_code?.errors && zip_code?.touched)}">
+                    <input id="postal_code" formControlName="zip_code" autocomplete="off" maxlength="6" type="text" [class]="cssInputTxt" placeholder="zip" />
+                    <label for="postal_code" [class]="cssFloatLabel">
+                        {{ 'labels.postal_code' | translate }}
+                    </label>
+                    <span [class]="cssSpanValidation" *ngIf="zip_code?.errors && (showError || zip_code?.touched)">
+                        {{ 'messages.enter_valid_field' | translate }}
+                    </span>
+                </div>
+
+                <div class="relative lg:col-span-1 md:col-span-1 sm:col-span-2 col-span-2" [ngClass]="{'error-form': (province?.errors && province?.touched)}">
+                    <input id="province" formControlName="province" autocomplete="off" type="text" [class]="cssInputTxt" placeholder="province" />
+                    <label for="province" [class]="cssFloatLabel">
+                        {{ 'labels.province' | translate }}
+                    </label>
+                    <span [class]="cssSpanValidation" *ngIf="province?.errors && (showError || province?.touched)">
+                        {{ 'messages.enter_valid_field' | translate }}
+                    </span>
+                </div>
+
+                <div class="relative col-span-2" [ngClass]="{'error-form': (description?.errors && description?.touched)}">
+                    <textarea id="description" formControlName="description" autocomplete="off" type="text" rows="5" [class]="cssInputTxt" placeholder="description"></textarea>
+                    <label for="description" [class]="cssFloatLabel">
+                        *{{ 'pages.table_request.add_description' | translate }}
+                    </label>
+                    <span [class]="cssSpanValidation" *ngIf="description?.errors && (showError || description?.touched)">
+                        {{ 'pages.table_request.description_valid' | translate }}
+                    </span>
+                </div>
+
+                <div class="buttons flex flex-row items-center justify-center space-x-3 col-span-2">
+                    <button class="btn-base btn-gray px-5 flex justify-center" (click)="hideForm()">
+                        <span class="h-5 text-tl-dark-medium text-base-2">{{ 'labels.cancel' | translate }}</span>
+                    </button>
+
+                    <button type="submit" class="btn-base bg-tl-primary px-5 flex justify-center">
+                        <span class="h-5 text-tl-blue text-base-2">{{ 'pages.table_request.request_item' | translate }}</span>
+                    </button>
+                </div>
+            </div>
+        </form>
+    </div>
+</ng-template>
+
+<ng-template #TableBoard>
+    <section class="overflow-x-auto pt-7">
+        <div class="grid-board relative animated-show-item">
+            <button class="btn-base bg-tl-primary flex btn-request" (click)="openFormRequest()" *ngIf="userCurrent">
+                <span class="h-5 text-tl-blue text-sm">{{ 'pages.table_request.request_item' | translate }}</span>
+            </button>
+
+            <table class="table-auto">
+                <thead *ngIf="!isLoadBoard && listRequests.length">
+                  <tr>
+                    <th>
+                        <h1 class=" semibold text-base text-center">{{  'pages.table_request.i_need'  | translate }}</h1>
+                    </th>
+                    <th>
+                        <h1 class=" semibold text-base text-center">{{  'pages.table_request.where'  | translate }}</h1>
+                    </th>
+                    <th class="w-[250px]">
+                        <h1 class=" semibold text-base text-center">{{  'pages.table_request.when'  | translate }}</h1>
+                    </th>
+                  </tr>
+                </thead>
+
+                <tbody *ngIf="isLoadBoard">
+                    <div [ngTemplateOutlet]="LoadTable"></div>
+                </tbody>
+
+                <tbody *ngIf="!isLoadBoard && listRequests.length">
+                    <tr class="border-b-[0.5px] border-tl-gray-lavender" *ngFor="let request of listRequests">
+                      <td class="w-6/12">
+                          <div class="card-rating py-6 flex flex-row items-start space-x-3">
+                              <div class="avatar w-[63px] h-[63px]  min-w-[63px] rounded-full bg-tl-gray" *ngIf="request.locatario">
+                                <img [lazyLoad]="request.locatario.profile_photo_path" [defaultImage]="publicService.defaultAvatar"  [alt]="request.locatario.name">
+                              </div>
+                              <div class="content-rating">
+                                <div class="content-comment flex flex-row items-start justify-between">
+                                  <div class="rating-comment mt-1.5 w-full">
+                                    <h2 class="text-medium text-base-2 leading-[18px]">{{ request?.locatario?.name }} - {{ request.need }}</h2>
+                                    <p class="text-tl-dark-light text-base-2 leading-[15.73px] font-light">{{ request.description }}</p>
+                                  </div>
+                                </div>
+                              </div>
+                          </div>
+                      </td>
+
+                      <td>
+                          <div class="text-center">
+                              <h2 class="text-base-2 text-medium">{{ request.zip_code }}</h2>
+                              <p class="text-tl-dark-gray  text-medium text-base-2">{{ request.province }}</p>
+                          </div>
+                      </td>
+
+                      <td>
+                          <div class="text-center">
+                            <h2 class="text-base-2 mb-1 text-medium">{{ request.created_at | date:'M/d/yy'  }}</h2>
+
+                            <button  class="btn-i-have" (click)="openModalHaveProduct(request)" *ngIf="request.locatario_user_id !== userCurrent?.id && !userSendedResponse(request)" >
+                                <span class="h-4 text-base-2 semibold text-tl-primary-medium">{{  'pages.table_request.i_get'  | translate }}</span>
+                            </button>
+
+
+                            <button class="btn-my-request" *ngIf="request.locatario_user_id == userCurrent?.id && !userSendedResponse(request)" #tooltip="matTooltip" matTooltip="No puedes responder a tus propias peticiones">
+                                <span class="h-4 text-base-2 semibold text-tl-blue">{{  'pages.table_request.my_request'  | translate }}</span>
+                            </button>
+
+                            <button class="btn-i-have" *ngIf="userSendedResponse(request) && !isSolvesRequest(request)">
+                                <span class="h-4 text-base-2 semibold text-tl-blue">{{  getTextStatusBoardItem(request) | translate }}</span>
+                            </button>
+
+                            <button class="btn-solved btn-solved-answer" *ngIf="userSendedResponse(request) && isSolvesRequest(request)">
+                                <span class="h-4 text-base-2 semibold text-tl-blue">{{  getTextStatusBoardItem(request) | translate }}</span>
+                            </button>
+
+                          </div>
+                      </td>
+                    </tr>
+                </tbody>
+
+                <tbody *ngIf="!isLoadBoard && !listRequests.length" class="empty-table">
+                    <div class="flex flex-col items-center justify-center">
+                        <img src="assets/images/no-results.svg" alt="" srcset="" class="img-empty">
+                        <h1 class="semibold text-xl text-tl-dark-medium">{{ 'pages.table_request.empty_request' | translate }}</h1>
+                    </div>
+                </tbody>
+            </table>
+
+            <div class="flex items-center justify-between mt-4">
+                <div class="pages flex flex-row items-center space-x-8 pl-2">
+                    <div
+                      *ngFor="let item of pagesIndex"
+                      class="text-tl-input-label semibold cursor-pointer"
+                      (click)="selectPage(item+1)"
+                      [ngClass]="{'opacity-100': item + 1 == currentPage, 'opacity-30': item + 1 !== currentPage}"
+                  >{{ item  + 1 }}</div>
+                  </div>
+                <mat-paginator
+                    #matPaginator
+                    *ngIf="!isLoadBoard && listRequests.length"
+                    class="demo-paginator"
+                    (page)="handlePageEvent($event)"
+                    [length]="paginator.total"
+                    [pageSize]="15"
+                    [pageSizeOptions]="[]"
+                    [hidePageSize]="true"
+                    [disabled]="isLoadBoard"
+                    color="primary"
+                    [pageIndex]="paginator.currentPage - 1"
+                    aria-label="Select page">
+                </mat-paginator>
+            </div>
+        </div>
+    </section>
+</ng-template>
+
+<ng-template #TableMyAnswers>
+    <section class="overflow-x-auto pt-7">
+        <div class="grid-board relative animated-show-item">
+            <button class="btn-base bg-tl-primary flex btn-request" (click)="openFormRequest()" *ngIf="userCurrent">
+                <span class="h-5 text-tl-blue text-sm">{{ 'pages.table_request.request_item' | translate }}</span>
+            </button>
+
+            <table class="table-auto">
+                <thead *ngIf="!isLoadMyAnswers && myListAnswers.length">
+                  <tr>
+                    <th>
+                        <h1 class=" semibold text-base text-center">{{  'pages.table_request.request'  | translate }}</h1>
+                    </th>
+                    <th>
+                        <h1 class=" semibold text-base text-center">{{  'pages.table_request.where'  | translate }}</h1>
+                    </th>
+                    <th>
+                        <h1 class=" semibold text-base text-center">{{  'pages.table_request.when'  | translate }}</h1>
+                    </th>
+                    <th>
+                        <h1 class=" semibold text-base text-center">{{  'pages.table_request.offered_product'  | translate }}</h1>
+                    </th>
+                    <th>
+                        <h1 class=" semibold text-base text-center">{{  'labels.state'  | translate }}</h1>
+                    </th>
+                  </tr>
+                </thead>
+
+                <tbody *ngIf="isLoadMyAnswers">
+                    <div [ngTemplateOutlet]="LoadTable"></div>
+                </tbody>
+
+                <tbody *ngIf="!isLoadMyAnswers && myListAnswers.length">
+                    <tr class="border-b-[0.5px] border-tl-gray-lavender" *ngFor="let answer of myListAnswers">
+
+                        <td class="!max-w-[250px]">
+                            <div class="card-rating py-6 flex flex-row items-start space-x-3 ">
+                                <div class="avatar w-[63px] h-[63px]  min-w-[63px] rounded-full bg-tl-gray overflow-hidden" *ngIf="answer.request">
+                                    <img [lazyLoad]="answer.request.locatario.profile_photo_path" [defaultImage]="publicService.defaultAvatar"  [alt]="answer.request.locatario.name">
+                                </div>
+                                <div class="content-rating">
+                                    <div class="content-comment flex flex-row items-start justify-between">
+                                    <div class="rating-comment mt-1.5">
+                                        <h2 class="text-medium text-base-2 leading-[18px]">{{ answer.request?.need }}</h2>
+                                        <p class="text-tl-dark-light text-base-2 leading-[15.73px] font-light">{{ answer.request?.description }}</p>
+                                    </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </td>
+
+                        <td>
+                            <div class="text-center">
+                                <h2 class="text-base-2 text-medium">{{ answer.request?.province }}</h2>
+                                <p class="text-tl-dark-gray text-base-2 text-medium">{{ answer.request?.zip_code }}</p>
+                            </div>
+                        </td>
+
+                        <td>
+                            <div class="text-center">
+                                <h2 class="text-base-2 text-medium">{{ answer.request?.created_at | date:'M/d/yy' }}</h2>
+                            </div>
+                        </td>
+
+                        <td>
+                            <div class="text-center flex-col items-center justify-center">
+                                <h2 class="text-base-2">{{ answer.product.title }}</h2>
+                                <div class="flex items-center justify-center overflow-hidden flex-wrap" *ngIf="answer.product">
+                                    <img class="img-prod-answer" *ngFor="let item of answer.product.images" [lazyLoad]="item.path" [defaultImage]="publicService.defaultImg"  [alt]="answer.product.title">
+                                </div>
+                            </div>
+                        </td>
+
+
+                        <td class="w-[175px]">
+                            <div class="text-center">
+                                <button  class="btn-i-have" [ngClass]="{'btn-solved btn-solved-answer': getStatusTextAnswer(answer.status) == 'pages.table_request.solved' }">
+                                    <span class="h-4 text-base-2 semibold text-tl-blue">{{ getStatusTextAnswer(answer.status) | translate }}</span>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                </tbody>
+
+                <tbody *ngIf="!isLoadMyAnswers && !myListAnswers.length" class="empty-table">
+                    <div class="flex flex-col items-center justify-center">
+                        <img src="assets/images/no-results.svg" alt="" srcset="" class="img-empty">
+                        <h1 class="semibold text-xl text-tl-dark-medium">{{ 'pages.table_request.empty_answers' | translate }}</h1>
+                    </div>
+                </tbody>
+            </table>
+
+            <mat-paginator
+                #matMyPaginator
+                *ngIf="!isLoadMyBoard && myListAnswers.length"
+                class="demo-paginator"
+                (page)="handlePageEvent($event)"
+                [length]="myPaginator.total"
+                [pageSize]="15"
+                [pageSizeOptions]="[]"
+                [hidePageSize]="true"
+                [disabled]="isLoadMyBoard"
+                color="primary"
+                [pageIndex]="myPaginator.currentPage - 1"
+                aria-label="Select page">
+            </mat-paginator>
+        </div>
+    </section>
+</ng-template>
+
+<ng-template #TableMyRequests>
+    <section class="overflow-x-auto pt-7">
+        <div class="grid-board relative animated-show-item">
+            <button class="btn-base bg-tl-primary flex btn-request" (click)="openFormRequest()" *ngIf="userCurrent">
+                <span class="h-5 text-tl-blue text-sm">{{ 'pages.table_request.request_item' | translate }}</span>
+            </button>
+
+            <table class="table-auto">
+                <thead *ngIf="!isLoadMyBoard && myListRequests.length">
+                  <tr>
+                    <th>
+                        <h1 class=" semibold text-base text-center">{{ 'pages.table_request.request' | translate}}</h1>
+                    </th>
+                    <th>
+                        <h1 class=" semibold text-base text-center">{{  'pages.table_request.where'  | translate }}</h1>
+                    </th>
+                    <th class="w-[250px]">
+                        <h1 class=" semibold text-base text-center">{{  'pages.table_request.when'  | translate }}</h1>
+                    </th>
+                  </tr>
+                </thead>
+
+                <tbody *ngIf="isLoadMyBoard">
+                    <div [ngTemplateOutlet]="LoadTable"></div>
+                </tbody>
+
+                <tbody *ngIf="!isLoadMyBoard && myListRequests.length && !showResponseResquest">
+                    <tr class="border-b-[0.5px] border-tl-gray-lavender" *ngFor="let request of myListRequests">
+
+                      <td class="w-6/12">
+                        <div class="card-rating py-6 flex flex-row items-start space-x-3">
+                            <div class="avatar w-[63px] h-[63px]  min-w-[63px] rounded-full bg-tl-gray ">
+                                <img [lazyLoad]="request.locatario.profile_photo_path" [defaultImage]="publicService.defaultAvatar"  [alt]="request.locatario.name">
+                            </div>
+                            <div class="content-rating w-11/12">
+                                <div class="content-comment flex flex-row items-start justify-between">
+                                    <div class="rating-comment mt-1.5 w-4/5">
+                                        <h2 class="text-medium text-base-2 leading-[18px]">{{ request?.locatario?.name }} - {{ request.need }}</h2>
+                                        <p class="text-tl-dark-gray text-base-2 leading-[15.73px] font-light">{{ request.description }}</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                      </td>
+
+                      <td>
+                          <div class="text-center">
+                              <h2 class="text-base-2 text-medium">{{ request.zip_code }}</h2>
+                              <p class="text-tl-dark-gray text-base-2 text-medium">{{ request.province }}</p>
+                          </div>
+                      </td>
+
+                      <td>
+                        <div class="text-center flex flex-col items-center justify-center space-y-1">
+
+                            <h2 class="text-base-2 mb-1 text-medium">{{ request.created_at  | date:'M/d/yy' }}</h2>
+
+                            <button  class="btn-i-have" (click)="showResponses(request)">
+                                <span class="h-4 text-base-2 semibold text-tl-primary-medium">{{ 'pages.table_request.see_answers' | translate}}</span>
+                            </button>
+
+                            <button  class="btn-i-have" (click)="confirmDeleteRequest(request)">
+                                <span class="h-4 text-base-2 semibold text-tl-primary-medium">{{ 'labels.delete' | translate}}</span>
+                            </button>
+                        </div>
+                      </td>
+                    </tr>
+                </tbody>
+
+                <tbody *ngIf="showResponseResquest">
+                    <tr class="border-b-[0.5px] border-tl-gray-lavender">
+
+                        <td class="w-6/12">
+                            <div class="card-rating py-6 flex flex-row items-start space-x-3">
+                                <div class="avatar w-[63px] h-[63px]  min-w-[63px] rounded-full bg-tl-gray">
+                                    <img [lazyLoad]="requestSelect.locatario.profile_photo_path" [defaultImage]="publicService.defaultAvatar"  [alt]="requestSelect.locatario.name">
+                                </div>
+                                <div class="content-rating">
+                                  <div class="content-comment flex flex-row items-start justify-between">
+                                    <div class="rating-comment mt-1.5 w-4/5">
+                                      <h2 class="text-medium text-base-2">{{ requestSelect.locatario.name || '' }} - {{ requestSelect.need }}</h2>
+                                      <p class="text-tl-dark-gray text-xs font-light">{{ requestSelect.description }}</p>
+                                    </div>
+                                  </div>
+                                </div>
+                            </div>
+                        </td>
+
+                        <td>
+                            <div class="text-center">
+                                <h2 class="text-base-2 text-medium">{{ requestSelect.zip_code }}</h2>
+                                <p class="text-tl-dark-gray text-base-2 text-medium">{{ requestSelect.province }}</p>
+                            </div>
+                        </td>
+
+                        <td>
+                          <div class="text-center flex flex-col items-center justify-center space-y-1">
+
+                              <h2 class="text-base-2 mb-1 text-medium">{{ requestSelect.created_at | date:'M/d/yy'  }}</h2>
+
+                              <button  class="btn-i-have" (click)="hiddenResponses(requestSelect)">
+                                  <span class="h-4 text-base-2 semibold text-tl-primary-medium">{{ 'labels.hidden' | translate}}</span>
+                              </button>
+                          </div>
+                        </td>
+                    </tr>
+
+                    <tr class="border-b-[0.5px] border-tl-gray-lavender" *ngFor="let response of requestSelect.responses">
+
+                      <td class="w-6/12">
+                          <div class="card-rating py-6 flex flex-row items-center space-x-3">
+                            <div class="avatar w-[63px] h-[63px]  min-w-[63px] rounded-full bg-tl-gray ">
+                                <img [lazyLoad]="response.user.profile_photo_path" [defaultImage]="publicService.defaultAvatar"  [alt]="response.user.name">
+                            </div>
+                              <div class="content-rating">
+                                <div class="content-comment flex flex-row items-start justify-between">
+                                  <div class="rating-comment mt-1.5">
+                                    <h2 class="semibold text-base-2">{{ response.user.name + ' ' + response.user.last_name }}</h2>
+                                    <!-- <p class="text-tl-dark-gray text-xs font-light">{{ response.user.email }}</p> -->
+                                  </div>
+                                </div>
+                              </div>
+                          </div>
+                      </td>
+
+                      <td>
+                        <div class="text-center flex-col items-center justify-center">
+                            <h2 class="text-base-2">{{ response.product.title | uppercase }}</h2>
+                            <div class="flex items-center justify-center overflow-hidden flex-wrap" *ngIf="response.product">
+                                <img class="img-prod-answer" *ngFor="let item of response.product.images" [lazyLoad]="item.path" [defaultImage]="publicService.defaultImg"  [alt]="response.product.title">
+                            </div>
+                            <button class="btn-i-have btn-text" (click)="openProduct(response.product_id, response.product.title)">
+                                <span class="h-4 text-base-2 semibold text-tl-primary-medium">{{ 'pages.table_request.see_product' | translate}}</span>
+                            </button>
+                        </div>
+                      </td>
+
+                      <td>
+                        <div class="text-center flex flex-col items-center justify-center space-y-2" *ngIf="response.status == responseReqBoardStatus.pending ">
+
+                            <button  class="btn-i-have" (click)="setSolvedProduct(response)">
+                                <span class="h-4 text-base-2 semibold text-tl-primary-medium">{{ 'pages.table_request.solved' | translate}}</span>
+                            </button>
+
+                            <button  class="btn-i-have" (click)="setNoSolvedProduct(response)">
+                                <span class="h-4 text-base-2 semibold text-tl-primary-medium">{{ 'pages.table_request.no_solved' | translate}}</span>
+                            </button>
+                        </div>
+
+                        <div class="text-center flex flex-col items-center justify-center space-y-2" *ngIf="response.status !== responseReqBoardStatus.pending ">
+                            <button class="btn-solved !px-5">
+                                <span class="h-4 text-base-2 semibold text-tl-blue">{{  getStatusTextAnswer(response.status) | translate }}</span>
+                            </button>
+                        </div>
+                      </td>
+                    </tr>
+
+                    <tr *ngIf="!requestSelect.responses.length">
+                        <td colspan="3">
+                            <div class="flex flex-col items-center justify-center h-24 my-3">
+                                <img src="assets/images/no-results.svg" alt="" srcset="" class="h-20">
+                                <h1 class="semibold text-xl text-tl-dark-medium">{{ 'pages.table_request.empty_answers' | translate }}</h1>
+                            </div>
+                        </td>
+                    </tr>
+                </tbody>
+
+                <tbody *ngIf="!isLoadMyBoard && !myListRequests.length" class="empty-table">
+                    <div class="flex flex-col items-center justify-center">
+                        <img src="assets/images/no-results.svg" alt="" srcset="" class="img-empty">
+                        <h1 class="semibold text-xl text-tl-dark-medium">{{ 'pages.table_request.empty_request' | translate }}</h1>
+                    </div>
+                </tbody>
+
+            </table>
+        </div>
+    </section>
+</ng-template>
+
+<ng-template #LoadTable>
+    <tr class="border-b-[0.5px] border-tl-gray-lavender" *ngFor="let item of [1,2,3,4]">
+
+        <td class="w-6/12">
+            <div role="status" class="animate-pulse card-rating  py-6 flex flex-row items-start space-x-3">
+                <div class="avatar w-[63px] h-[63px]  min-w-[63px] rounded-full bg-tl-light-silver">
+                    <svg class="w-full h-full text-tl-dark-medium" aria-hidden="true" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-6-3a2 2 0 11-4 0 2 2 0 014 0zm-2 4a5 5 0 00-4.546 2.916A5.986 5.986 0 0010 16a5.986 5.986 0 004.546-2.084A5 5 0 0010 11z" clip-rule="evenodd"></path></svg>
+                </div>
+                <div class="content-rating">
+                  <div class="content-comment flex flex-row items-start justify-between">
+                    <div class="rating-comment mt-1.5 w-12/12">
+                        <div class="w-52 h-4 bg-gray-200 rounded-lg text-tl-dark-medium"></div>
+                        <div class="w-full h-8 mt-2 bg-gray-200 rounded-lg text-tl-dark-medium"></div>
+                    </div>
+                  </div>
+                </div>
+            </div>
+        </td>
+
+        <td>
+            <div class="text-center flex flex-col items-center animate-pulse" role="status" >
+                <div class="w-32 h-4 bg-gray-200 rounded-lg text-tl-dark-medium"></div>
+                <div class="w-32 h-4 mt-2 bg-gray-200 rounded-lg text-tl-dark-medium"></div>
+            </div>
+        </td>
+
+        <td>
+            <div class="text-center flex flex-col items-center animate-pulse" role="status" >
+                <div class="w-32 h-4 bg-gray-200 rounded-lg text-tl-dark-medium"></div>
+                <div class="w-32 h-4 mt-2 bg-gray-200 rounded-lg text-tl-dark-medium"></div>
+            </div>
+        </td>
+      </tr>
+</ng-template>

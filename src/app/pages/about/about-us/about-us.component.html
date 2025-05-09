@@ -1,0 +1,85 @@
+<div class="min-screen animated-show-item">
+    <div class="banner">
+        <div class="we-are">
+            <h2>{{ 'pages.about_us.we_are_impact' | translate }}</h2>
+            <h2>{{ 'pages.about_us.we_are_honesty' | translate }}</h2>
+            <h2>{{ 'pages.about_us.we_are_commit' | translate }}</h2>
+        </div>
+        <div class="card-banner">
+            <h2>{{ 'pages.about_us.time_to_revolution' | translate }}</h2>
+            <p innerHTML="{{ 'pages.about_us.info_time_to_revolution' | translate }}"></p>
+        </div>
+    </div>
+
+    <div class="content-about-us">
+
+        <div class="first-information space-y-10">
+
+            <img src="assets/images/about/cloud.svg" class="cloud-1" alt="nube-tenlow" srcset="">
+
+            <img src="assets/images/about/info_1.webp" alt="" srcset="">
+
+            <div class="information-detail">
+                <div class="top-absolute"></div>
+                <div class="bottom-absolute"></div>
+
+                <div class="flex items-center space-x-1">
+                    <mat-icon>close</mat-icon>
+                    <span>{{ 'pages.about_us.no_prioritize_benefit' | translate }}</span>
+                </div>
+                <div class="flex items-center space-x-1">
+                    <mat-icon>close</mat-icon>
+                    <span>{{ 'pages.about_us.no_promote_cosumption' | translate }}</span>
+                </div>
+                <div class="flex items-center space-x-1">
+                    <mat-icon>close</mat-icon>
+                    <span>{{ 'pages.about_us.no_platform_benefit' | translate }}</span>
+                </div>
+                <p innerHTML="{{ 'pages.about_us.our_mission' | translate }}" class="paragraph-shape"></p>
+            </div>
+        </div>
+
+        <div class="second-information space-y-10">
+
+            <img src="assets/images/about/cloud.svg" class="cloud cloud-1" alt="nube-tenlow" srcset="">
+            <img src="assets/images/about/cloud.svg" class="cloud cloud-2" alt="nube-tenlow" srcset="">
+            <img src="assets/images/about/cloud.svg" class="cloud cloud-3" alt="nube-tenlow" srcset="">
+
+            <div class="information-detail">
+                <div class="top-absolute"></div>
+
+                <div class="flex items-center space-x-1">
+                    <mat-icon>close</mat-icon>
+                    <span>{{ 'pages.about_us.we_arent_cosumption' | translate }}</span>
+                </div>
+                <div class="flex items-center space-x-1">
+                    <mat-icon>close</mat-icon>
+                    <span>{{ 'pages.about_us.we_arent_indifference' | translate }}</span>
+                </div>
+                <div class="flex items-center space-x-1">
+                    <mat-icon>close</mat-icon>
+                    <span>{{ 'pages.about_us.we_arent_spend' | translate }}</span>
+                </div>
+                <p innerHTML="{{ 'pages.about_us.our_goal' | translate }}" class="paragraph-shape"></p>
+            </div>
+
+
+            <img src="assets/images/about/info_2.webp" alt="" srcset="">
+
+        </div>
+
+        <div class="join-community">
+            <img src="assets/images/about/cloud.svg" class="cloud cloud-1" alt="nube-tenlow" srcset="">
+            <img src="assets/images/about/cloud.svg" class="cloud cloud-2" alt="nube-tenlow" srcset="">
+            <img src="assets/images/about/cloud.svg" class="cloud cloud-3" alt="nube-tenlow" srcset="">
+            <img src="assets/images/about/cloud.svg" class="cloud cloud-4" alt="nube-tenlow" srcset="">
+
+            <img [src]="logo" class="logo" alt="logo de tenlow">
+            <h2>{{ 'pages.about_us.join_new_era_consumption' | translate }}</h2>
+
+            <button class="btn-base bg-tl-primary !px-6 py-2.5 flex justify-center"  (click)="navigate('/auth/register')">
+                <span class="h-5 text-tl-blue text-sm text-medium">{{ 'pages.about_us.sign_up_here' | translate}}</span>
+            </button>
+        </div>
+    </div>
+</div>

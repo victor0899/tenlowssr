@@ -1,0 +1,484 @@
+<loader-overlay *ngIf="isSended"></loader-overlay>
+<div class="container min-screen m-auto p-2 pb-10">
+    <h1 class="lg:text-3.5xl text-2xl mt-3 mb-6 flex flex-wrap flex-col">
+        {{ 'pages.config_profile.title' | translate }}
+        <button (click)="back()" class="h-[38px] flex items-center justify-start max-w-[100px]">
+            <mat-icon class="w-5 h-5 text-xl">arrow_back</mat-icon>
+            <span class="text-base-2 h-3">{{ 'labels.back_to' | translate }}</span>
+        </button>
+    </h1>
+
+    <section class="grid grid-cols-3 gap-5 mt-5" *ngIf="!isShowExpanded">
+        <div class="col-span-1 panel-options">
+            <div
+                *ngFor="let item of optionsFieldsEdit;let i = index"
+                class="item-edit"
+                [ngClass]="{'opacity-30': currentView !== item.view}"
+                (click)="selectView(item.view)"
+            >
+                <h2 class="text-base semibold mb-1">{{ item.title  | translate }} <span class="float-right font-light text-xs">{{ 'labels.edit' | translate | lowercase }}</span> </h2>
+                <p class="text-base-2">{{ item.subtitle | translate }}</p>
+            </div>
+        </div>
+        <div class="lg:col-span-2 md:col-span-2 col-span-3" *ngIf="currentView">
+            <div class="animated-show-item" *ngIf="currentView == VIEWS.NAME" [ngTemplateOutlet]="NameEdit"></div>
+            <div class="animated-show-item" *ngIf="currentView == VIEWS.DNI " [ngTemplateOutlet]="DniEdit"></div>
+            <div class="animated-show-item" *ngIf="currentView == VIEWS.DESCRIPTION " [ngTemplateOutlet]="DescriptionEdit"></div>
+            <div class="animated-show-item" *ngIf="currentView == VIEWS.BIRTHDAY " [ngTemplateOutlet]="BirthdayEdit"></div>
+            <div class="animated-show-item" *ngIf="currentView == VIEWS.ADDRESS " [ngTemplateOutlet]="AddressEdit"></div>
+        </div>
+
+        <div class="lg:col-span-2 md:col-span-2 col-span-3" *ngIf="!currentView">
+            <empty-view message="pages.config_profile.select_op" ></empty-view>
+        </div>
+
+    </section>
+
+    <section *ngIf="isShowExpanded">
+        <mat-accordion class="config-panel">
+            <mat-expansion-panel
+                hideToggle
+                *ngFor="let item of optionsFieldsEdit;let i = index"
+                (click)="selectView(item.view)"
+                [ngClass]="{'opacity-30': currentView !== item.view}"
+            >
+                <mat-expansion-panel-header>
+                    <mat-panel-title>
+                        <div class="w-full">
+                            <h2 class="text-base semibold mb-1">{{ item.title | translate }} <span class="float-right font-light text-xs">{{ 'labels.edit' | translate | lowercase }}</span> </h2>
+                            <p class="text-xs">{{ item.subtitle | translate }}</p>
+                        </div>
+                    </mat-panel-title>
+                </mat-expansion-panel-header>
+                <div class="p-5">
+                    <div class="animated-show-item" *ngIf="item.view == VIEWS.NAME" [ngTemplateOutlet]="NameEdit"></div>
+                    <div class="animated-show-item" *ngIf="item.view == VIEWS.DNI " [ngTemplateOutlet]="DniEdit"></div>
+                    <div class="animated-show-item" *ngIf="item.view == VIEWS.DESCRIPTION " [ngTemplateOutlet]="DescriptionEdit"></div>
+                    <div class="animated-show-item" *ngIf="item.view == VIEWS.BIRTHDAY " [ngTemplateOutlet]="BirthdayEdit"></div>
+                    <div class="animated-show-item" *ngIf="item.view == VIEWS.ADDRESS " [ngTemplateOutlet]="AddressEdit"></div>
+                </div>
+            </mat-expansion-panel>
+          </mat-accordion>
+    </section>
+</div>
+
+<ng-template #AddressEdit>
+    <section class="lg:w-9/12 md:w-9/12 w-11/12 m-auto">
+        <h2 class="text-base semibold mb-1">{{ 'pages.config_profile.postal_address' | translate }}</h2>
+        <p class="text-base-2">{{ 'pages.config_profile.info_update_address' | translate }}</p>
+        <form (ngSubmit)="onValidate(fields.ADDRESS)" [formGroup]="formUpdateProfile" >
+            <div class="grid grid-cols-2 gap-6 mt-6 mb-6">
+                <div class="relative lg:col-span-1 col-span-2" [ngClass]="{'error-form': getErrorLabel('country_name') !== ''}">
+                    <mat-form-field appearance="outline" class="w-full" subscriptSizing="dynamic" [hideRequiredMarker]="true">
+                        <mat-label class="text-base-3">{{ "labels.country"  | translate }}</mat-label>
+                        <input
+                            type="text"
+                            matInput
+                            #autoCompleteCountry
+                            placeholder='{{ "labels.country"  | translate }}'
+                            formControlName="country_name"
+                            required
+                            [matAutocomplete]="countrySelect"
+                        >
+                        <mat-autocomplete autoActiveFirstOption #countrySelect="matAutocomplete" (optionSelected)="onSelectCountryAddress($event)">
+                            <mat-option *ngFor="let country of filteredCountry | async" [value]="country.name">
+                                {{ country.name }}
+                            </mat-option>
+                        </mat-autocomplete>
+                    </mat-form-field>
+                    <span *ngIf="!country_name?.value" [class]="cssSpanValidation">
+                        *{{ 'messages.field_required' | translate }}
+                    </span>
+                </div>
+
+                <div class="relative lg:col-span-1 col-span-2 flex space-x-3" [ngClass]="{'error-form': getErrorLabel('state_name') !== ''}">
+                    <div class="w-full" >
+                        <mat-form-field class="w-full" appearance="outline" subscriptSizing="dynamic" [hideRequiredMarker]="true">
+                            <mat-label class="text-base-3">{{ "labels.province"  | translate}}</mat-label>
+                            <input
+                                type="text"
+                                matInput
+                                #autoCompleteState
+                                placeholder='{{ "labels.province"  | translate}}'
+                                formControlName="state_name"
+                                required
+                                [matAutocomplete]="stateSelect"
+                            >
+                            <mat-autocomplete autoActiveFirstOption #stateSelect="matAutocomplete" (optionSelected)="onSelectState($event)">
+                                <mat-option *ngFor="let state of filteredState | async" [value]="state.name">
+                                    {{ state.name }}
+                                </mat-option>
+                            </mat-autocomplete>
+                        </mat-form-field>
+                        <span *ngIf="!state_name?.value" [class]="cssSpanValidation">
+                            *{{ 'messages.field_required' | translate }}
+                        </span>
+                    </div>
+                    <mat-spinner *ngIf="isLoadProvince" class="mt-3.5" color="accent" [diameter]="30"></mat-spinner>
+                </div>
+
+                <div class="relative lg:col-span-1 col-span-2 flex space-x-3" [ngClass]="{'error-form': getErrorLabel('city_name') !== ''}">
+                    <div class="w-full" >
+                        <mat-form-field class="w-full" appearance="outline" subscriptSizing="dynamic" [hideRequiredMarker]="true">
+                            <mat-label class="text-base-3">{{ "labels.city"  | translate}}</mat-label>
+                            <input
+                                type="text"
+                                matInput
+                                #autoCompleteState
+                                placeholder="{{ 'labels.city'  | translate}}"
+                                formControlName="city_name"
+                                required
+                                [matAutocomplete]="citiesSelect"
+                            >
+                            <mat-autocomplete autoActiveFirstOption #citiesSelect="matAutocomplete" (optionSelected)="onSelectCity($event)">
+                                <mat-option *ngFor="let city of filteredCities | async" [value]="city.name">
+                                    {{ city.name }}
+                                </mat-option>
+                            </mat-autocomplete>
+                        </mat-form-field>
+                        <span *ngIf="!city_name?.value && city_name?.touched" [class]="cssSpanValidation">
+                            *{{ getErrorLabel('city_name') | translate }}
+                        </span>
+                    </div>
+                    <mat-spinner *ngIf="isLoadCities" class="mt-3.5" color="accent" [diameter]="30"></mat-spinner>
+                </div>
+
+                <div class="relative lg:col-span-1 col-span-2" [ngClass]="{'error-form': getErrorLabel('zip_code') !== ''}" >
+                    <input id="zip_code" autocomplete="off" formControlName="zip_code" type="text" maxlength="8" [class]="cssInputTxt" placeholder="zip_code" />
+                    <label for="zip_code" [class]="cssFloatLabel">
+                        {{ 'labels.postal_code' | translate}}
+                    </label>
+                    <span *ngIf=" getErrorLabel('zip_code') !== '' " [class]="cssSpanValidation">
+                        *{{ getErrorLabel('zip_code') | translate }}
+                    </span>
+                </div>
+
+                <div class="relative col-span-2" [ngClass]="{'error-form':getErrorLabel('address') !== ''}">
+                    <input
+                        *ngIf="countrySelected != ''"
+                        id="meetAddress"
+                        ngx-google-places-autocomplete
+                        autocomplete="off"
+                        type="text"
+                        [options]="{
+                            componentRestrictions: {
+                                country: countrySelected
+                            },
+                            bounds: defaultBounds,
+                            types: [],
+                            fields: [],
+                            strictBounds: false,
+                            origin: defaultBounds
+                        }"
+                        [class]="cssInputTxt"
+                        formControlName="address"
+                        placeholder="meetAddress"
+                        (onAddressChange)="handleAddressChange($event)"
+                    />
+                    <input
+                        *ngIf="countrySelected == '' "
+                        disabled
+                        readonly
+                        id="meetAddress"
+                        autocomplete="off"
+                        type="text"
+                        [class]="cssInputTxt"
+                        placeholder="meetAddress"
+                    />
+                    <label for="meetAddress" [class]="cssFloatLabel">
+                        {{ 'labels.direction' | translate}}
+                    </label>
+                    <span *ngIf=" getErrorLabel('address') !== '' " [class]="cssSpanValidation">
+                        *{{ getErrorLabel('address') | translate }}
+                    </span>
+                </div>
+            </div>
+
+            <div class="buttons flex flex-row items-center justify-end space-x-3">
+                <button (click)="cancelEdit()" type="button" class="btn-base btn-gray px-4 flex justify-center">
+                    <span class="h-5 text-tl-dark-medium text-sm">{{ 'labels.cancel' | translate}}</span>
+                </button>
+
+                <button type="submit" class="btn-base bg-tl-primary px-4 flex justify-center">
+                    <span class="h-5 text-tl-blue text-sm">{{ 'labels.save' | translate}}</span>
+                </button>
+            </div>
+        </form>
+    </section>
+</ng-template>
+
+<ng-template #PhoneEdit>
+    <section class="lg:w-9/12 md:w-9/12 w-11/12 m-auto">
+        <h2 class="text-base semibold mb-1">{{ 'labels.phone_number' | translate }}</h2>
+
+        <form (ngSubmit)="onValidate(fields.PHONE)" [formGroup]="formUpdateProfile" >
+            <div class="grid grid-cols-2 gap-6 mt-6 mb-6">
+                <div class="relative col-span-2 lg:w-6/12 w-11/12" [ngClass]="{'error-form': getErrorLabel('phone_country_code') !== ''}">
+                    <mat-form-field appearance="outline" class="w-full" subscriptSizing="dynamic">
+                        <mat-label class="text-base-3">{{ "labels.country_region"  | translate}}</mat-label>
+                        <input
+                            type="text"
+                            matInput
+                            #autoCompleteCountry
+                            placeholder="Select a country"
+                            formControlName="phone_country_code"
+                            required
+                            [matAutocomplete]="codeCountrySelect"
+                        >
+                        <mat-autocomplete autoActiveFirstOption #codeCountrySelect="matAutocomplete" (optionSelected)="onSelectCountry($event)">
+                            <mat-option *ngFor="let country of filteredCountry | async" [value]="country.phonecode">
+                                {{ country.name }} ({{country.phonecode}})
+                            </mat-option>
+                        </mat-autocomplete>
+                    </mat-form-field>
+                    <span *ngIf="!phone_country_code?.value" [class]="cssSpanValidation">
+                        *{{ 'messages.field_required' | translate }}
+                    </span>
+                </div>
+
+                <div class="relative col-span-2 lg:w-6/12 w-11/12 mt-4" [ngClass]="{'error-form': getErrorLabel('phone') !== ''}">
+                    <input id="name" autocomplete="off" type="text" formControlName="phone" [class]="cssInputTxt" placeholder="Name" />
+                    <label for="name" [class]="cssFloatLabel">
+                        Número de teléfono
+                    </label>
+                    <span *ngIf="getErrorLabel('phone') !== '' " [class]="cssSpanValidation">
+                        *{{ getErrorLabel('phone') | translate }}
+                    </span>
+                </div>
+            </div>
+
+            <div class="buttons flex flex-row items-center justify-end space-x-3">
+                <button (click)="cancelEdit()"  type="button" class="btn-base btn-gray px-4 flex justify-center">
+                    <span class="h-5 text-tl-dark-medium text-sm">{{ 'labels.cancel' | translate}}</span>
+                </button>
+
+                <button type="submit" class="btn-base bg-tl-primary px-4 flex justify-center">
+                    <span class="h-5 text-tl-blue text-sm">{{ 'labels.save' | translate}}</span>
+                </button>
+            </div>
+        </form>
+    </section>
+</ng-template>
+
+<ng-template #EmailEdit>
+    <section class="lg:w-9/12 md:w-9/12 w-11/12 m-auto">
+        <h2 class="text-base semibold mb-1">Correo electrónico</h2>
+        <p class="text-sm">Supporting line text lorem ipsum dolor sit amet, consectetur. Supporting line text lorem ipsum dolor sit amet, consectetur</p>
+
+        <div class="grid grid-cols-2 gap-6 mt-6 mb-6">
+            <div class="relative lg:col-span-1 col-span-2">
+                <input id="name" autocomplete="off" value="dev@example.com" type="text" [class]="cssInputTxt" placeholder="Name" />
+                <label for="name" [class]="cssFloatLabel">
+                    Correo electrónico
+                </label>
+                <span [class]="cssSpanValidation">
+                    *{{ 'messages.field_required' | translate }}
+                </span>
+            </div>
+        </div>
+
+        <div class="buttons flex flex-row items-center justify-end space-x-3">
+            <button (click)="cancelEdit()"  type="button" class="btn-base btn-gray px-4 flex justify-center">
+                <span class="h-5 text-tl-dark-medium text-sm">{{ 'labels.cancel' | translate}}</span>
+            </button>
+
+            <button class="btn-base bg-tl-primary px-4 flex justify-center">
+                <span class="h-5 text-tl-blue text-sm">{{ 'labels.save' | translate}}</span>
+            </button>
+        </div>
+    </section>
+</ng-template>
+
+<ng-template #BirthdayEdit>
+    <section class="lg:w-9/12 md:w-9/12 w-11/12 m-auto">
+        <h2 class="text-base semibold mb-1">{{ 'labels.birthday' | translate }}</h2>
+        <p class="text-base-2">{{ 'pages.config_profile.info_birthday_view' | translate }}</p>
+
+        <form (ngSubmit)="onValidate(fields.BIRTHDAY)" [formGroup]="formUpdateProfile" >
+            <div class="grid grid-cols-2 gap-6 mt-6 mb-6">
+                <div class="relative lg:col-span-1 col-span-2" [ngClass]="{'error-form': getErrorLabel('birthdate') !== ''}">
+                    <mat-form-field appearance="outline" class="w-11/12" [hideRequiredMarker]="true">
+                        <mat-label class="text-base-3"> {{ 'labels.birthday' | translate }}</mat-label>
+                        <input matInput [matDatepicker]="picker" (dateChange)="onSelectDateBirthday( $event )" formControlName="birthDate">
+                        <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
+                        <mat-hint *ngIf="getErrorLabel('birthDate') !== '' " class="text-tl-dark-medium text-sm" >*{{ getErrorLabel('birthDate') | translate }}</mat-hint>
+                        <mat-datepicker #picker></mat-datepicker>
+                    </mat-form-field>
+                </div>
+            </div>
+
+            <div class="buttons flex flex-row items-center justify-end space-x-3">
+                <button (click)="cancelEdit()" type="button" class="btn-base btn-gray px-4 flex justify-center">
+                    <span class="h-5 text-tl-dark-medium text-sm">{{ 'labels.cancel' | translate}}</span>
+                </button>
+
+                <button type="submit" class="btn-base bg-tl-primary px-4 flex justify-center">
+                    <span class="h-5 text-tl-blue text-sm">{{ 'labels.save' | translate}}</span>
+                </button>
+            </div>
+        </form>
+    </section>
+
+    <section class="lg:w-9/12 md:w-9/12 w-11/12 mt-4 m-auto">
+        <h2 class="text-base semibold mb-1">{{ 'labels.gender_identity' | translate}}</h2>
+
+        <form (ngSubmit)="onValidate(fields.GENDER)" [formGroup]="formUpdateProfile" >
+        <div class="grid grid-cols-2 gap-6 mt-6 mb-6">
+            <div class="relative lg:col-span-1 col-span-2" [ngClass]="{'error-form': getErrorLabel('gender') !== ''}">
+                <mat-form-field appearance="outline" color="accent" subscriptSizing="dynamic" class="w-11/12" [hideRequiredMarker]="true">
+                    <mat-label class="text-base-3">{{ 'labels.gender_identity' | translate}}</mat-label>
+                    <mat-select formControlName="gender">
+                        <mat-option  class="mat-option-icon" *ngFor="let category of genderList" [value]="category.id">
+                            <span>{{ category.name | translate}}</span>
+                        </mat-option>
+                    </mat-select>
+                </mat-form-field>
+                <span *ngIf="getErrorLabel('gender') !== '' " [class]="cssSpanValidation">
+                    *{{ getErrorLabel('gender') | translate }}
+                </span>
+            </div>
+        </div>
+
+        <div class="buttons flex flex-row items-center justify-end space-x-3">
+            <button (click)="cancelEdit()" type="button" class="btn-base btn-gray px-4 flex justify-center">
+                <span class="h-5 text-tl-dark-medium text-sm">{{ 'labels.cancel' | translate}}</span>
+            </button>
+
+            <button type="submit" class="btn-base bg-tl-primary px-4 flex justify-center">
+                <span class="h-5 text-tl-blue text-sm">{{ 'labels.save' | translate}}</span>
+            </button>
+        </div>
+    </form>
+
+    </section>
+</ng-template>
+
+<ng-template #DniEdit>
+    <section class="lg:w-9/12 md:w-9/12 w-11/12 m-auto">
+        <h2 class="text-base semibold mb-1">{{ 'labels.dni' | translate }}</h2>
+        <p class="text-base-2">{{ 'pages.config_profile.info_dni' | translate }}</p>
+        <form (ngSubmit)="onValidate(fields.DNI)" [formGroup]="formUpdateProfile">
+            <div class="grid grid-cols-2 gap-6 mt-6 mb-6">
+                <div class="relative lg:col-span-1 col-span-2" [ngClass]="{'error-form': getErrorLabel('dni') !== ''}">
+                    <input id="dni-data" autocomplete="off" formControlName="dni" type="text" maxlength="9" [class]="cssInputTxt + ' uppercase'" placeholder="dni-data" />
+                    <label for="dni-data" [class]="cssFloatLabel">
+                        {{ 'labels.dni' | translate }} nº
+                    </label>
+                    <span *ngIf="getErrorLabel('dni') !== '' " [class]="cssSpanValidation">
+                        *{{ getErrorLabel('dni') | translate }}
+                    </span>
+                </div>
+            </div>
+
+            <div class="buttons flex flex-row items-center justify-end space-x-3">
+                <button (click)="cancelEdit()" type="button" class="btn-base btn-gray px-4 flex justify-center">
+                    <span class="h-5 text-tl-dark-medium text-sm">{{ 'labels.cancel' | translate}}</span>
+                </button>
+
+                <button type="submit" class="btn-base bg-tl-primary px-4 flex justify-center">
+                    <span class="h-5 text-tl-blue text-sm">{{ 'labels.save' | translate}}</span>
+                </button>
+            </div>
+        </form>
+    </section>
+</ng-template>
+
+<ng-template #NameEdit>
+    <section class="lg:w-9/12 md:w-9/12 w-11/12 m-auto">
+        <h2 class="text-base semibold mb-1">{{ 'labels.names_last_names' | translate}}</h2>
+
+        <form (ngSubmit)="onValidate(fields.NAME_LAST_NAME)" [formGroup]="formUpdateProfile">
+            <div class="grid grid-cols-2 gap-6 mt-6 mb-6">
+                <div class="relative lg:col-span-1 md:col-span-1 col-span-2" [ngClass]="{'error-form': getErrorLabel('name') !== ''}">
+                    <input id="name" autocomplete="off" formControlName="name" type="text" [class]="cssInputTxt" placeholder="Name" />
+                    <label for="name" [class]="cssFloatLabel">
+                        {{ 'labels.name' | translate}}
+                    </label>
+                    <span *ngIf="getErrorLabel('name') !== '' " [class]="cssSpanValidation">
+                        *{{ getErrorLabel('name') | translate }}
+                    </span>
+                </div>
+                <div class="relative lg:col-span-1 md:col-span-1 col-span-2" [ngClass]="{'error-form': getErrorLabel('last_name') !== ''}">
+                    <input id="last_name" autocomplete="off" formControlName="last_name" type="text" [class]="cssInputTxt" placeholder="last_name" />
+                    <label for="last_name" [class]="cssFloatLabel">
+                        {{ 'labels.last_name' | translate}}
+                    </label>
+                    <span *ngIf="getErrorLabel('last_name') !== '' " [class]="cssSpanValidation">
+                        *{{ getErrorLabel('last_name') | translate }}
+                    </span>
+                </div>
+            </div>
+
+            <div class="buttons flex flex-row items-center justify-end space-x-3">
+                <button (click)="cancelEdit()" type="button" class="btn-base btn-gray px-4 flex justify-center">
+                    <span class="h-5 text-tl-dark-medium text-sm">{{ 'labels.cancel' | translate}}</span>
+                </button>
+
+                <button type="submit" class="btn-base bg-tl-primary px-4 flex justify-center">
+                    <span class="h-5 text-tl-blue text-sm">{{ 'labels.save' | translate}}</span>
+                </button>
+            </div>
+        </form>
+
+    </section>
+
+    <section class="lg:w-9/12 md:w-9/12 w-11/12 m-auto mt-14">
+        <h2 class="text-base semibold mb-1"> {{ 'labels.profession' | translate}}</h2>
+        <p class="text-sm">{{ 'pages.config_profile.info_profesion' | translate}}</p>
+        <form (ngSubmit)="onValidate(fields.ALIAS)" [formGroup]="formUpdateProfile" >
+            <div class="grid grid-cols-2 gap-6 mt-6 mb-6">
+                <div class="relative lg:col-span-1 col-span-2" [ngClass]="{'error-form': getErrorLabel('alias') !== ''}">
+                    <input id="alias" autocomplete="off" formControlName="alias"  type="alias" [class]="cssInputTxt" placeholder="alias" />
+                    <label for="alias" [class]="cssFloatLabel">
+                        {{ 'labels.profession' | translate}}
+                    </label>
+                    <span *ngIf="getErrorLabel('alias') !== '' " [class]="cssSpanValidation">
+                        *{{ getErrorLabel('alias') | translate }}
+                    </span>
+                </div>
+            </div>
+
+            <div class="buttons flex flex-row items-center justify-end space-x-3">
+                <button (click)="cancelEdit()" type="button" class="btn-base btn-gray px-4 flex justify-center">
+                    <span class="h-5 text-tl-dark-medium text-sm">{{ 'labels.cancel' | translate}}</span>
+                </button>
+
+                <button class="btn-base bg-tl-primary px-4 flex justify-center">
+                    <span class="h-5 text-tl-blue text-sm">{{ 'labels.save' | translate}}</span>
+                </button>
+            </div>
+        </form>
+    </section>
+</ng-template>
+
+<ng-template #DescriptionEdit>
+    <section class="lg:w-9/12 md:w-9/12 w-11/12 m-auto">
+        <h2 class="text-base semibold mb-1">{{ 'labels.description' | translate }}</h2>
+        <form (ngSubmit)="onValidate(fields.DESCRIPTION)" [formGroup]="formUpdateProfile">
+            <div class="grid grid-cols-2 gap-6 mt-6 mb-6">
+                <div class="relative col-span-2" [ngClass]="{'error-form': getErrorLabel('description') !== ''}">
+                    <textarea id="user-description" autocomplete="off" formControlName="description" type="text" rows="6" maxlength="250" [class]="cssInputTxt" placeholder="user-description" ></textarea>
+                    <label for="user-description" [class]="cssFloatLabel">
+                        {{ 'pages.upload_prod.placeholder_add_description' | translate }}
+                    </label>
+                    <span [class]="cssSpanValidation + ' float-right'">
+                        {{ description?.value?.length ?? 0 }} / 250
+                    </span>
+                    <span *ngIf="getErrorLabel('description') !== '' " [class]="cssSpanValidation">
+                        *{{ getErrorLabel('description') | translate }}
+                    </span>
+                </div>
+            </div>
+
+            <div class="buttons flex flex-row items-center justify-end space-x-3">
+                <button (click)="cancelEdit()" type="button" class="btn-base btn-gray px-4 flex justify-center">
+                    <span class="h-5 text-tl-dark-medium text-sm">{{ 'labels.cancel' | translate}}</span>
+                </button>
+
+                <button type="submit" class="btn-base bg-tl-primary px-4 flex justify-center">
+                    <span class="h-5 text-tl-blue text-sm">{{ 'labels.save' | translate}}</span>
+                </button>
+            </div>
+        </form>
+    </section>
+</ng-template>

@@ -1,0 +1,60 @@
+.detail-product {
+    background: #F6FAFF;
+    border-radius: 16px;
+    padding: 12px;
+    .details{
+        padding: 12px;
+        div{
+            span,
+            h1{
+                font-size: 22px;
+            }
+        }
+    }
+    .product{
+        padding: 12px;
+        max-width: 260px;
+    }
+}
+
+.text-result{
+    font-size: 18px !important;
+}
+
+.content-msg{
+    position: relative;
+    height: 550px;
+    min-height: 500px;
+    width: 50%;
+    margin: auto;
+    min-width: 300px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    img{
+        position: absolute;
+        z-index: -1;
+        min-width: 430px;
+    }
+    h2{
+        width: 80%;
+    }
+}
+
+.card-form{
+    height: 300px;
+    mat-spinner{
+        z-index: -1;
+        position: absolute;
+    }
+    #redsys-hosted-pay-button{
+        background-color: red;
+    }
+}
+
+@media (max-width: 767px) {
+    .product{
+        max-width: 100% !important;
+    }
+}

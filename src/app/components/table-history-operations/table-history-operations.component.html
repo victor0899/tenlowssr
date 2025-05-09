@@ -1,0 +1,147 @@
+<div class="table">
+    <table class="table-auto" *ngIf="data.length && !isLoad">
+        <thead class="h-16">
+          <tr>
+            <th>
+                <h1 class=" semibold text-base text-center capitalize">{{ 'labels.item' | translate }}</h1>
+            </th>
+            <th>
+                <h1 class=" semibold text-base text-center capitalize">{{ 'labels.date' | translate }}</h1>
+            </th>
+            <th>
+                <h1 class=" semibold text-base text-center">{{ 'labels.price' | translate }}</h1>
+            </th>
+            <th>
+                <h1 class=" semibold text-base text-center">{{ 'labels.purchaser' | translate }}</h1>
+            </th>
+            <th>
+                <h1 class=" semibold text-base text-center">{{ 'labels.shipping_method' | translate  }}</h1>
+            </th>
+            <th>
+                <h1 class=" semibold text-base text-center">{{ 'labels.operation_type' | translate }}</h1>
+            </th>
+            <th>
+                <h1 class=" semibold text-base text-center">{{ 'labels.state' | translate }}</h1>
+            </th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr class="border-b-[0.5px] border-tl-light-silver" *ngFor="let item of data">
+            <td>
+                <div class="card-rating py-6 flex flex-row items-start space-x-3">
+                    <div class="w-[63px] h-[63px]  min-w-[63px] bg-tl-gray rounded-lg overflow-hidden">
+                        <img class="w-full h-full object-contain" [lazyLoad]="item.product.images[0].path" [defaultImage]="publicService.defaultImg" [alt]="item.product.title" >
+                    </div>
+                    <div class="content-comment flex flex-row items-start justify-between">
+                      <div>
+                        <h2 class="semibold text-base">{{ item.product.title  | uppercase }}</h2>
+                        <p class="text-tl-dark-gray text-sm font-light">{{ item.product.categories[0].name }}</p>
+                      </div>
+                    </div>
+                </div>
+            </td>
+
+            <td class="text-center">
+                <h2 class="text-base text-center">{{ item.init_date }} /</h2>
+                <h2 class="text-base text-center">{{  item.end_date }}</h2>
+            </td>
+
+            <td class="text-center">
+                <h2 class="text-base text-center">{{ item.amount | currency }}</h2>
+            </td>
+
+            <td class="text-center">
+                <h2 class="text-base">{{ item.product.user.name }}</h2>
+                <h2 class="text-base">{{ item.product.user.email }}</h2>
+            </td>
+
+            <td class="text-center">
+                <h2 class="text-base">{{ getTextShippingType(item.shipping_method) | translate }}</h2>
+            </td>
+
+            <td class="text-center">
+                <h2 class="text-base">{{ getTextOperationType(item.type) | translate }}</h2>
+            </td>
+
+            <td class="text-center">
+                <h2 class="text-base">{{ getTextState(item.status) | translate }}</h2>
+            </td>
+          </tr>
+        </tbody>
+    </table>
+
+    <table class="table-auto" *ngIf="isLoad">
+        <div [ngTemplateOutlet]="LoadTable" ></div>
+    </table>
+
+    <div class="w-full" *ngIf="!data.length && !isLoad">
+        <no-results [message]="msgEmpty" [status]="false"></no-results>
+    </div>
+
+</div>
+<div *ngIf="paginator && pagesIndex.length > 1" class="content-pag-items pl-4 pr-0 flex flex-row flex-wrap items-center justify-between">
+    <div class="pages flex flex-row flex-wrap items-center space-x-8">
+      <div
+        *ngFor="let item of pagesIndex"
+        class="text-tl-dark-light font-bold cursor-pointer"
+        (click)="selectPage(item+1)"
+        [ngClass]="{'opacity-100': item + 1 == currentPage, 'opacity-30': item + 1 !== currentPage}"
+    >{{ item  + 1 }}</div>
+    </div>
+    <mat-paginator
+        #matPaginator
+        class="demo-paginator"
+        (page)="handlePageEvent($event)"
+        [length]="paginator.total"
+        [pageSize]="15"
+        [pageSizeOptions]="[]"
+        [hidePageSize]="true"
+        [disabled]="isLoad"
+        color="primary"
+        [pageIndex]="paginator.currentPage - 1"
+        aria-label="Select page">
+    </mat-paginator>
+</div>
+
+
+
+<ng-template #LoadTable>
+    <tr class="border-b-[0.5px] border-tl-gray-lavender" *ngFor="let item of [1,2,3,4]">
+
+        <td class="w-6/12">
+            <div role="status" class="animate-pulse card-rating  py-6 flex flex-row items-start space-x-3">
+                <div class="avatar w-[63px] h-[63px]  min-w-[63px] rounded-full bg-tl-light-silver">
+                    <svg class="w-full h-full text-tl-dark-medium" aria-hidden="true" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-6-3a2 2 0 11-4 0 2 2 0 014 0zm-2 4a5 5 0 00-4.546 2.916A5.986 5.986 0 0010 16a5.986 5.986 0 004.546-2.084A5 5 0 0010 11z" clip-rule="evenodd"></path></svg>
+                </div>
+                <div class="content-rating">
+                  <div class="content-comment flex flex-row items-start justify-between">
+                    <div class="rating-comment mt-1.5 w-12/12">
+                        <div class="w-52 h-4 bg-gray-200 rounded-lg text-tl-dark-medium"></div>
+                        <div class="w-full h-8 mt-2 bg-gray-200 rounded-lg text-tl-dark-medium"></div>
+                    </div>
+                  </div>
+                </div>
+            </div>
+        </td>
+
+        <td>
+            <div class="text-center flex flex-col items-center animate-pulse" role="status" >
+                <div class="w-32 h-4 bg-gray-200 rounded-lg text-tl-dark-medium"></div>
+                <div class="w-32 h-4 mt-2 bg-gray-200 rounded-lg text-tl-dark-medium"></div>
+            </div>
+        </td>
+
+        <td>
+            <div class="text-center flex flex-col items-center animate-pulse" role="status" >
+                <div class="w-32 h-4 bg-gray-200 rounded-lg text-tl-dark-medium"></div>
+                <div class="w-32 h-4 mt-2 bg-gray-200 rounded-lg text-tl-dark-medium"></div>
+            </div>
+        </td>
+        <td>
+            <div class="text-center flex flex-col items-center animate-pulse" role="status" >
+                <div class="w-32 h-4 bg-gray-200 rounded-lg text-tl-dark-medium"></div>
+                <div class="w-32 h-4 mt-2 bg-gray-200 rounded-lg text-tl-dark-medium"></div>
+            </div>
+        </td>
+      </tr>
+</ng-template>

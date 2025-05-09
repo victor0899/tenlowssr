@@ -1,0 +1,45 @@
+<section class="header px-3 pt-5 pb-0">
+    <button (click)="close()">
+        <mat-icon class="text-tl-dark-medium">close</mat-icon>
+    </button>
+    <h2 class="text-center text-[22px] text-medium my-1">{{ 'components.filter_dates.select_days' | translate }}</h2>
+</section>
+<mat-dialog-content class="!pt-1">
+    <div class="px-3 pb-5 pt-0">
+        <section>
+            <div *ngIf="isLoading" class="flex justify-center">
+                <mat-spinner diameter="40"></mat-spinner>
+            </div>
+            
+            <ngx-daterangepicker-material
+                #materialSelect
+                *ngIf="!isLoading && isShowCalendar"
+                ngxDaterangepickerMd
+                [minDate]="minDate"
+                [maxDate]="maxDate"
+                [startDate]="startDay"
+                [endDate]="endDay"
+                [locale]="locale"
+                [isInvalidDate]="isDateDisabled"
+                [alwaysShowCalendars]="true"
+                [showClearButton]="false"
+                (choosedDate)="onRangeClicked($event)"
+                [autoApply]="true"
+                [linkedCalendars]="true"
+                [showWeekNumbers]="false"
+            ></ngx-daterangepicker-material>
+        </section>
+
+        <section>
+            <div class="buttons flex flex-row items-center lg:justify-end md:justify-end justify-center space-x-3 mt-4">
+                <button class="btn-base btn-gray px-5 flex justify-center" (click)="close()">
+                    <span class="h-5 text-tl-dark-medium text-sm">{{ 'components.filter_dates.delete_dates' | translate}}</span>
+                </button>
+
+                <button class="btn-base bg-tl-primary-medium px-5 flex justify-center" (click)="onSelectRange()">
+                    <span class="h-5 text-tl-light text-sm">{{ 'labels.continue' | translate }}</span>
+                </button>
+            </div>
+        </section>
+    </div>
+</mat-dialog-content>

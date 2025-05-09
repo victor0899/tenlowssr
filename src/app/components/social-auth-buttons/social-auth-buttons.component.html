@@ -1,0 +1,31 @@
+<div class="content-buttons lg:w-6/12 md:w-7/12  sm:w-8/12 w-10/12 m-auto">
+    <button (click)="authGoogle()" class="btn-base btn-primary flex flex-row items-center w-10/12 h-10 m-auto justify-center space-x-2 my-4">
+        <span>
+            <svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M13.2334 6.40001H7.12006V8.22001H11.4601C11.2401 10.76 9.12673 11.8467 7.12673 11.8467C4.57339 11.8467 2.33339 9.83334 2.33339 7.00001C2.33339 4.26668 4.46673 2.15334 7.13339 2.15334C9.19339 2.15334 10.4001 3.46668 10.4001 3.46668L11.6667 2.14668C11.6667 2.14668 10.0401 0.333344 7.06673 0.333344C3.28006 0.333344 0.353394 3.53334 0.353394 7.00001C0.353394 10.3667 3.10673 13.6667 7.16673 13.6667C10.7334 13.6667 13.3334 11.22 13.3334 7.60668C13.3334 6.84001 13.2334 6.40001 13.2334 6.40001Z" fill="#075A81"/>
+            </svg>
+        </span>
+        <span *ngIf="isLogin" class="text-white h-5">{{ 'components.social_auth.auth_google' | translate  }}</span>
+        <span *ngIf="!isLogin" class="text-white h-5">{{ 'components.social_auth.register_google' | translate  }}</span>
+    </button>
+
+    <button (click)="authFacebook()" class="btn-base btn-primary flex flex-row items-center w-10/12 h-10 m-auto justify-center space-x-2 my-4">
+        <span>
+            <svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M13.6667 6.99998C13.6667 3.31998 10.68 0.333313 7.00004 0.333313C3.32004 0.333313 0.333374 3.31998 0.333374 6.99998C0.333374 10.2266 2.62671 12.9133 5.66671 13.5333V8.99998H4.33337V6.99998H5.66671V5.33331C5.66671 4.04665 6.71337 2.99998 8.00004 2.99998H9.66671V4.99998H8.33337C7.96671 4.99998 7.66671 5.29998 7.66671 5.66665V6.99998H9.66671V8.99998H7.66671V13.6333C11.0334 13.3 13.6667 10.46 13.6667 6.99998Z" fill="#075A81"/>
+            </svg>
+        </span>
+        <span *ngIf="isLogin" class="text-white h-5">{{ 'components.social_auth.auth_facebook' | translate  }}</span>
+        <span *ngIf="!isLogin" class="text-white h-5">{{ 'components.social_auth.register_facebook' | translate  }}</span>
+    </button>
+
+    <!-- <button (click)="auth()" class="btn-base btn-primary flex flex-row items-center w-10/12 h-10 m-auto justify-center space-x-2 my-4">
+        <span>
+            <svg width="11" height="13" viewBox="0 0 11 13" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M8.86661 11.52C8.21328 12.1533 7.49995 12.0533 6.81328 11.7533C6.08661 11.4467 5.41995 11.4333 4.65328 11.7533C3.69328 12.1667 3.18661 12.0467 2.61328 11.52C-0.640054 8.16667 -0.160053 3.06 3.53328 2.87333C4.43328 2.92 5.05995 3.36667 5.58661 3.40667C6.37328 3.24667 7.12661 2.78667 7.96661 2.84667C8.97328 2.92667 9.73328 3.32667 10.2333 4.04667C8.15328 5.29333 8.64661 8.03333 10.5533 8.8C10.1733 9.8 9.67995 10.7933 8.85995 11.5267L8.86661 11.52ZM5.51995 2.83333C5.41995 1.34667 6.62661 0.12 8.01328 0C8.20661 1.72 6.45328 3 5.51995 2.83333Z" fill="#075A81"/>
+            </svg>
+        </span>
+        <span *ngIf="isLogin" class="text-white h-5">{{ 'components.social_auth.auth_apple' | translate  }}</span>
+        <span *ngIf="!isLogin" class="text-white h-5">{{ 'components.social_auth.register_apple' | translate  }}</span>
+    </button> -->
+</div>

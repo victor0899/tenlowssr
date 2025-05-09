@@ -1,0 +1,54 @@
+* {
+    font-family: "BalooTamma";
+}
+
+mat-toolbar{
+    background: var(---light);
+}
+
+mat-dialog-content{
+    padding-top: 4px !important;
+}
+
+.title{
+    font-size: 22px;
+    line-height: 30px;
+    color: var(--dark);
+}
+
+.content{
+    padding: 0px 25px;
+    text-align: center;
+}
+
+p{
+    width: 90%;
+    max-width: 400px;
+    margin: auto;
+    margin-top: 20px;
+    font-size: 16px;
+    line-height: 18px;
+    color: var(--dark);
+}
+
+@media (max-width:600px) {
+    .content{
+        padding: 0 20px;
+    }
+}
+
+@media (max-width: 585px) {
+    .content-buttons{
+        button{
+            width: 100% !important;
+        }
+    }
+}
+
+button{
+    outline: none;
+}
+
+// mat-dialog-content{
+//     padding: 0 !important;
+// }

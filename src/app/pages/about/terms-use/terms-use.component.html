@@ -1,0 +1,12 @@
+<div class="min-screen p-5 container content">
+    <div [ngTemplateOutlet]="TermsEng" *ngIf="locale == 'en' "></div>
+    <div [ngTemplateOutlet]="TermsEsp" *ngIf="locale == 'es' "></div>
+</div>
+
+<ng-template #TermsEng>
+    <app-terms-es></app-terms-es>
+</ng-template>
+
+<ng-template #TermsEsp>
+    <app-terms-es></app-terms-es>
+</ng-template>

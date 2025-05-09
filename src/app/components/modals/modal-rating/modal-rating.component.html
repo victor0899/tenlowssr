@@ -1,0 +1,127 @@
+<loader-overlay *ngIf="isShowLoader"></loader-overlay>
+<mat-toolbar>
+    <mat-toolbar-row>
+      <button mat-dialog-close >
+        <svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M14 2.0585L12.59 0.72583L7 6.00926L1.41 0.72583L0 2.0585L5.59 7.34193L0 12.6254L1.41 13.958L7 8.6746L12.59 13.958L14 12.6254L8.41 7.34193L14 2.0585Z" fill="#60757C"/>
+        </svg>
+      </button>
+    </mat-toolbar-row>
+</mat-toolbar>
+<mat-dialog-content class="!pr-2.5 !max-h-[80vh]">
+
+    <div class="content" *ngIf="isShowRatingTenlow">
+        <h1 class="title-modal text-medium text-center">{{ 'components.rating.how_was_experience_in_tenlow' | translate }}</h1>
+
+        <div class="rating-product">
+            <p class="text-base">{{ 'components.rating.your_comments_help_upgrade' | translate }}</p>
+            <p class="text-base mt-7 mb-3">{{ 'components.report_user.write_a_comment' | translate }}</p>
+
+            <div class="relative comment" [ngClass]="{'error-form': commentTenlow.length < 1}">
+                <textarea
+                    id="descriptionProd"
+                    maxlength="600"
+                    autocomplete="off"
+                    type="text"
+                    rows="6"
+                    [(ngModel)]="commentTenlow"
+                    [class]="publicService.cssInputBase"
+                    (change)="isCommentErrTenlow = false"
+                    placeholder="descriptionProd"
+                ></textarea>
+                <span *ngIf="isCommentErrTenlow" [class]="publicService.cssSpanValidationBase">
+                    {{ msgErrCommentTenlow | translate }}
+                </span>
+            </div>
+        </div>
+
+        <button class="btn-send bg-tl-primary px-5 h-10 rounded-3xl flex justify-center items-center mx-3 my-1 disabled:bg-tl-primary-opaque" [disabled]="isShowLoader" (click)="ratingTenlow()">
+            <span class="text-tl-blue text-sm">{{ 'components.rating.send_rating' | translate }}</span>
+        </button>
+    </div>
+
+    <div class="content" *ngIf="!isShowRatingTenlow">
+        <h1 class="title-modal text-medium text-center">{{ 'components.rating.title_modal' | translate }}</h1>
+
+        <div class="rating-product">
+            <h3 class="text-base" innerHTML="{{ 'components.rating.select_stars_product' | translate }}" ></h3>
+
+            <div class="flex items-center my-3">
+                <button class="appearance-none" *ngFor="let item of [1,2,3,4,5]" (click)="updateRating( item )">
+                    <svg class="w-6 h-6" *ngIf="item <= ratingProduct"><use class="scale-[1.3]" href="#star-select"></use></svg>
+                    <svg class="w-6 h-6" *ngIf="item > ratingProduct"><use class="scale-[1.3]" href="#star-no-select"></use></svg>
+                </button>
+            </div>
+
+            <p class="text-base my-3">{{ 'components.report_user.write_a_comment' | translate }}</p>
+
+            <div class="relative comment" [ngClass]="{'error-form': commentProduct.length < 1}">
+                <textarea
+                    id="descriptionProd"
+                    maxlength="600"
+                    autocomplete="off"
+                    type="text"
+                    rows="6"
+                    [(ngModel)]="commentProduct"
+                    [class]="publicService.cssInputBase"
+                    (change)="isCommentErr = false"
+                    placeholder="descriptionProd"
+                ></textarea>
+                <span *ngIf="isCommentErr" [class]="publicService.cssSpanValidationBase">
+                    {{ msgErrComment | translate }}
+                </span>
+            </div>
+        </div>
+
+        <div class="rating-owner mt-6">
+            <h3 class="text-base" innerHTML="{{ 'components.rating.qualify_owner' | translate }}" ></h3>
+
+            <div class="flex items-center my-3">
+                <button class="appearance-none" *ngFor="let item of [1,2,3,4,5]" (click)="updateRatingOwner( item )">
+                    <svg class="w-6 h-6" *ngIf="item <= ratingOwner"><use class="scale-[1.3]" href="#star-select"></use></svg>
+                    <svg class="w-6 h-6" *ngIf="item > ratingOwner"><use class="scale-[1.3]" href="#star-no-select"></use></svg>
+                </button>
+            </div>
+
+            <p class="text-base my-3">{{ 'components.report_user.write_a_comment' | translate }}</p>
+
+
+            <div class="relative comment" [ngClass]="{'error-form': commentOwner.length < 1}">
+                <textarea
+                    id="descriptionProd"
+                    maxlength="600"
+                    autocomplete="off"
+                    type="text"
+                    rows="6"
+                    [(ngModel)]="commentOwner"
+                    [class]="publicService.cssInputBase"
+                    (change)="isCommentErrOwner = false"
+                    placeholder="descriptionProd"
+                ></textarea>
+
+                <span *ngIf="isCommentErrOwner" [class]="publicService.cssSpanValidationBase">
+                    {{ msgErrCommentOwner | translate }}
+                </span>
+            </div>
+        </div>
+
+
+        <button class="btn-send bg-tl-primary px-5 h-10 rounded-3xl flex justify-center items-center mx-3 my-1 disabled:bg-tl-primary-opaque" [disabled]="isShowLoader" (click)="validate()">
+            <span class="text-tl-blue text-sm">{{ 'components.rating.send_rating' | translate }}</span>
+        </button>
+    </div>
+
+</mat-dialog-content>
+
+<svg class="hidden">
+    <defs>
+        <symbol id="star-select" width="17" height="16" viewBox="0 0 17 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M3.61113 15.4167L4.89759 9.85521L0.583008 6.11458L6.28301 5.61979L8.49967 0.375L10.7163 5.61979L16.4163 6.11458L12.1018 9.85521L13.3882 15.4167L8.49967 12.4677L3.61113 15.4167Z" fill="#FFB959"/>
+        </symbol>
+
+        <symbol id="star-no-select" width="17" height="17" viewBox="0 0 17 17" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M16.4163 6.71083L10.7243 6.22L8.49967 0.979164L6.27509 6.22791L0.583008 6.71083L4.90551 10.4554L3.60717 16.0208L8.49967 13.0679L13.3922 16.0208L12.1018 10.4554L16.4163 6.71083ZM8.49967 11.5875L5.52301 13.3846L6.31467 9.99625L3.68634 7.71625L7.15384 7.41541L8.49967 4.225L9.85342 7.42333L13.3209 7.72416L10.6926 10.0042L11.4843 13.3925L8.49967 11.5875Z" fill="#1C1B1F"/>
+        </symbol>
+
+    </defs>
+</svg>

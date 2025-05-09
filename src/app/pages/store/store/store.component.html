@@ -1,0 +1,237 @@
+<div class="container m-auto pb-4 p-4 md:p-1 lg:p-2 animated-show-item min-screen">
+    <section class="flex flex-row justify-between items-center flex-wrap bg-white py-3">
+        <nav class="flex" aria-label="Breadcrumb">
+            <ol class="inline-flex items-center space-x-1 md:space-x-3">
+              <li class="inline-flex items-center">
+                <a href="{{ getBaseStoreUrl() }}" class="inline-flex items-center text-sm cursor-pointer font-medium text-tl-dark hover:text-tl-dark-medium" (click)="handleClick($event, getBaseStoreUrl())">
+                  {{ 'pages.detail_prod.home' | translate }}
+                </a>
+              </li>
+              <li *ngIf="!isSearch">
+                <div class="flex items-center">
+                    <div [ngTemplateOutlet]="ArrowBreadcrumb" *ngIf="categorySelected"></div>
+                    <a [href]="getCategoryUrl(categorySelected)" class="ml-1 text-sm font-medium text-tl-dark hover:text-tl-dark-medium" *ngIf="categorySelected" (click)="handleClick($event, getCategoryUrl(categorySelected))"> {{ categorySelected.name }}</a>
+                    <div [ngTemplateOutlet]="ArrowBreadcrumb" *ngIf="subcategorieSelected"></div>
+                    <a [href]="getSubcategoryUrl(subcategorieSelected)" class="ml-1 text-sm font-medium text-tl-dark hover:text-tl-dark-medium" *ngIf="subcategorieSelected" (click)="handleClick($event, getSubcategoryUrl(subcategorieSelected))"> {{ subcategorieSelected.name }}</a>
+                </div>
+              </li>
+            </ol>
+        </nav>
+        <nav  *ngIf="isSearch">
+            <h1 class="text-xl" *ngIf="!isLoadProducts">{{ 'pages.store.results_search' | translate }} "{{ querySearch }}"</h1>
+        </nav>
+    </section>
+
+    <section
+        *ngIf="isLoadSubcategorie && !isSearch"
+        appScrollableList
+        [scrollUnit]="160"
+        #list="appScrollableList"
+        class="flex items-center space-x-3.5 py-2 px-5"
+    >
+        <div role="status" *ngFor="let item of [1,2,3,4,5]" class="animate-pulse w-36 h-9 rounded-md overflow-hidden flex flex-col items-end relative">
+            <div class="h-full w-full bg-tl-gray rounded-full text-tl-dark-medium mb-2"></div>
+        </div>
+    </section>
+
+    <section *ngIf="isParamCategory">
+        <div>
+          <h1 class="text-xl font-bold py-2">
+            {{ lang._locale === 'es' ? 'Alquiler de Productos de ' : 'Rent ' }}{{ categorySelected.name }}
+          </h1>
+          <p class="text-sm text-gray-600 mb-4" *ngIf="lang._locale === 'es'">
+            Encuentra los mejores productos de {{ categorySelected.name }} para alquilar entre particulares
+          </p>
+          <p class="text-sm text-gray-600 mb-4" *ngIf="lang._locale !== 'es'">
+            Find the best {{ categorySelected.name }} products for peer-to-peer rental
+          </p>
+        </div>
+      </section>
+
+    <section
+        *ngIf="!isLoadSubcategorie && !isSearch"
+        class="flex items-center"
+    >
+        <div class="nav-slide-prev" *ngIf="list.isOverflow" (click)="list.scroll(-1)">
+            <svg width="14" height="14" viewBox="0 0 6 8" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M5.09932 0.380432C5.20588 0.486992 5.25916 0.610192 5.25916 0.750032C5.25916 0.890192 5.20588 1.01355 5.09932 1.12011L2.20924 4.01019L5.1094 6.91035C5.20924 7.01019 5.25916 7.13019 5.25916 7.27035C5.25916 7.41019 5.20588 7.53339 5.09932 7.63995C4.99916 7.74011 4.8774 7.79019 4.73404 7.79019C4.59068 7.79019 4.46908 7.74011 4.36924 7.63995L1.039 4.31019C0.992595 4.26347 0.959315 4.21515 0.939155 4.16523C0.919315 4.11531 0.909395 4.06363 0.909395 4.01019C0.909395 3.95675 0.919315 3.90507 0.939155 3.85515C0.959315 3.80523 0.992595 3.75691 1.039 3.71019L4.37932 0.370352C4.48588 0.263472 4.60748 0.213392 4.74412 0.220112C4.88076 0.226832 4.99916 0.280272 5.09932 0.380432Z" fill="#1C1B1F"/>
+            </svg>
+        </div>
+        <div appScrollableList
+        [scrollUnit]="180"
+        #list="appScrollableList" class="w-[90%] categories-slider relative overflow-hidden scroll-smooth py-2 space-x-3.5 px-5">
+            <a 
+                *ngFor="let item of listSubcategories"
+                [href]="getSubcategoryUrl(item)"
+                (click)="handleClick($event, getSubcategoryUrl(item))"
+                [ngClass]="{'subcategorie-selected': subcategorieSelected && item.id == subcategorieSelected.id}"
+                class="bg-white text-tl-dark py-1.5 px-4 border-1-dark-transparent text-sm cursor-pointer rounded-full flex-shrink-0"
+            >
+                <label class="cursor-pointer opacity-30 semibold">
+                  {{ item.name | translate }}
+                </label>
+            </a>
+        </div>
+        <div class="nav-slide-next" *ngIf="list.isOverflow" (click)="list.scroll(1)">
+            <svg width="14" height="14" viewBox="0 0 6 8" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M1.06926 7.62985C0.962704 7.52329 0.909424 7.40009 0.909424 7.26025C0.909424 7.12009 0.962704 6.99673 1.06926 6.89017L3.95934 4.00009L1.05918 1.09993C0.959344 1.00009 0.909424 0.880093 0.909424 0.739933C0.909424 0.600093 0.962704 0.476893 1.06926 0.370333C1.16942 0.270173 1.29118 0.220093 1.43454 0.220093C1.5779 0.220093 1.6995 0.270173 1.79934 0.370333L5.12958 3.70009C5.17598 3.74681 5.20926 3.79513 5.22942 3.84505C5.24926 3.89497 5.25918 3.94665 5.25918 4.00009C5.25918 4.05353 5.24926 4.10521 5.22942 4.15513C5.20926 4.20505 5.17598 4.25337 5.12958 4.30009L1.78926 7.63993C1.6827 7.74681 1.5611 7.79689 1.42446 7.79017C1.28782 7.78345 1.16942 7.73001 1.06926 7.62985Z" fill="#1C1B1F"/>
+            </svg>
+        </div>
+    </section>
+    <section class="filters flex flex-row flex-wrap items-center justify-between mt-4 mb-3 lg:px-8 px-0" *ngIf="!isSearch">
+        <div class="flex flex-row flex-wrap items-center">
+            <a [href]="getCategoriesFilterUrl()" 
+               class="bg-white text-tl-dark border-1-dark-transparent py-1.5 px-4 text-sm cursor-pointer rounded-full flex-shrink-0 m-1"
+               (click)="handleClick($event, 'openFilterCategory')">
+                <label class="cursor-pointer opacity-30 semibold">
+                  {{ 'labels.categories' | translate }}
+                </label>
+            </a>
+
+            <a [href]="getBaseStoreUrl()" *ngIf="categorySelected" 
+               class="m-1 bg-tl-blue-water text-tl-blue border border-tl-primary-medium py-1.5 px-4 text-sm cursor-pointer rounded-full flex-shrink-0"
+               (click)="handleClick($event, 'resetStore')">
+                <span class="cursor-pointer semibold flex items-center">
+                    {{ categorySelected.name }}
+                    <mat-icon class="icon-close">close</mat-icon>
+                </span>
+            </a>
+        </div>
+
+        <div class="flex flex-row items-center flex-wrap">
+            <button (click)="removeFilter('map')" *ngIf="isFilterByMap" class="m-1 bg-tl-blue-water text-tl-blue border border-tl-primary-medium py-1.5 px-4 text-sm cursor-pointer rounded-full flex-shrink-0">
+                <span class="cursor-pointer  semibold flex items-center">
+                    {{ 'pages.store.filter_map' | translate }}
+                    <mat-icon class="icon-close">close</mat-icon>
+                </span>
+            </button>
+            <button (click)="removeFilter('price')" *ngIf="isFilterByPrice" class="m-1 bg-tl-blue-water text-tl-blue border border-tl-primary-medium py-1.5 px-4 text-sm cursor-pointer rounded-full flex-shrink-0">
+                <span class="cursor-pointer  semibold flex items-center">
+                    {{ 'pages.store.filter_price' | translate }}
+                    <mat-icon class="icon-close">close</mat-icon>
+                </span>
+            </button>
+            <button (click)="removeFilter('availability')" *ngIf="isFilterByDate" class="m-1 bg-tl-blue-water text-tl-blue border border-tl-primary-medium py-1.5 px-4 text-sm cursor-pointer rounded-full flex-shrink-0">
+                <span class="cursor-pointer  semibold flex items-center">
+                    {{ 'pages.store.filter_availability' | translate }}
+                    <mat-icon class="icon-close">close</mat-icon>
+                </span>
+            </button>
+            <div [class]="cssFilterBtn + ' m-1' " (click)="openMap()">
+                <span>
+                    <svg width="15" height="15" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M3.33337 10.6667L8.33337 8.33334L10.6667 3.33334L5.66671 5.66668L3.33337 10.6667ZM7.00004 7.66668C6.81115 7.66668 6.65293 7.60268 6.52537 7.47468C6.39737 7.34712 6.33337 7.1889 6.33337 7.00001C6.33337 6.81112 6.39737 6.65268 6.52537 6.52468C6.65293 6.39712 6.81115 6.33334 7.00004 6.33334C7.18893 6.33334 7.34737 6.39712 7.47537 6.52468C7.60293 6.65268 7.66671 6.81112 7.66671 7.00001C7.66671 7.1889 7.60293 7.34712 7.47537 7.47468C7.34737 7.60268 7.18893 7.66668 7.00004 7.66668ZM7.00004 13.6667C6.07782 13.6667 5.21115 13.4916 4.40004 13.1413C3.58893 12.7916 2.88337 12.3167 2.28337 11.7167C1.68337 11.1167 1.20849 10.4111 0.858707 9.60001C0.508485 8.7889 0.333374 7.92223 0.333374 7.00001C0.333374 6.07779 0.508485 5.21112 0.858707 4.40001C1.20849 3.5889 1.68337 2.88334 2.28337 2.28334C2.88337 1.68334 3.58893 1.20823 4.40004 0.85801C5.21115 0.508232 6.07782 0.333344 7.00004 0.333344C7.92226 0.333344 8.78893 0.508232 9.60004 0.85801C10.4112 1.20823 11.1167 1.68334 11.7167 2.28334C12.3167 2.88334 12.7916 3.5889 13.1414 4.40001C13.4916 5.21112 13.6667 6.07779 13.6667 7.00001C13.6667 7.92223 13.4916 8.7889 13.1414 9.60001C12.7916 10.4111 12.3167 11.1167 11.7167 11.7167C11.1167 12.3167 10.4112 12.7916 9.60004 13.1413C8.78893 13.4916 7.92226 13.6667 7.00004 13.6667ZM7.00004 12.3333C8.48893 12.3333 9.75004 11.8167 10.7834 10.7833C11.8167 9.75001 12.3334 8.4889 12.3334 7.00001C12.3334 5.51112 11.8167 4.25001 10.7834 3.21668C9.75004 2.18334 8.48893 1.66668 7.00004 1.66668C5.51115 1.66668 4.25004 2.18334 3.21671 3.21668C2.18337 4.25001 1.66671 5.51112 1.66671 7.00001C1.66671 8.4889 2.18337 9.75001 3.21671 10.7833C4.25004 11.8167 5.51115 12.3333 7.00004 12.3333Z" fill="#9EAAAD"/>
+                    </svg>
+                </span>
+                <span class="h-4 w-14 text-center text-tl-dark opacity-30">{{ 'pages.store.map' | translate}}</span>
+                <span class="icon-arrow">
+                    <img [src]="imgArrowUp" alt="" srcset="" *ngIf="isOpenMap">
+                    <img [src]="imgArrowDown" alt="" srcset="" *ngIf="!isOpenMap">
+                </span>
+            </div>
+
+            <div [class]="cssFilterBtn  + ' m-1'" (click)="openFilterPrice()">
+                <span>
+                    <svg width="15" height="15" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M7.60003 11.6C6.35576 11.6 5.25576 11.2445 4.30002 10.5336C3.34429 9.8221 2.67762 8.9109 2.30002 7.79996H0.400024V6.59996H2.03362C2.01122 6.44423 2.00002 6.26636 2.00002 6.06636C2.00002 5.86636 2.01122 5.64423 2.03362 5.39996H0.400024V4.19996H2.30002C2.67762 3.08903 3.34429 2.17783 4.30002 1.46636C5.25576 0.75543 6.35576 0.399963 7.60003 0.399963C8.38882 0.399963 9.12483 0.54983 9.80803 0.849563C10.4918 1.14983 11.0891 1.56103 11.6 2.08316L10.7504 2.93356C10.3504 2.52236 9.88083 2.1973 9.34163 1.95836C8.80296 1.71943 8.22242 1.59996 7.60003 1.59996C6.69976 1.59996 5.89149 1.84156 5.17522 2.32476C4.45842 2.80796 3.92776 3.43303 3.58322 4.19996H7.60003V5.39996H3.23362C3.21122 5.5221 3.19736 5.6861 3.19202 5.89196C3.18616 6.0973 3.20002 6.3333 3.23362 6.59996H7.60003V7.79996H3.58322C3.92776 8.5669 4.45842 9.19196 5.17522 9.67516C5.89149 10.1584 6.69976 10.4 7.60003 10.4C8.22242 10.4 8.80296 10.2805 9.34163 10.0416C9.88083 9.80263 10.3504 9.47756 10.7504 9.06636L11.6 9.91676C11.0891 10.4389 10.4918 10.8501 9.80803 11.1504C9.12483 11.4501 8.38882 11.6 7.60003 11.6Z" fill="#9EAAAD"/>
+                    </svg>
+                </span>
+                <span class="h-4 w-14 text-center text-tl-dark opacity-30">{{ 'pages.store.price' | translate}}</span>
+                <span class="icon-arrow">
+                    <!-- <img [src]="imgArrowUp" alt="" srcset="" *ngIf="isOpenMap"> -->
+                    <img [src]="imgArrowDown" alt="" srcset="">
+                </span>
+            </div>
+
+            <div [class]="cssFilterBtn  + ' m-1'" (click)="openFilterAvailability()">
+                <span>
+                    <svg width="15" height="15" viewBox="0 0 12 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M1.33333 13.6667C0.966667 13.6667 0.652667 13.5362 0.391333 13.2753C0.130444 13.014 0 12.7 0 12.3333V3.00001C0 2.63334 0.130444 2.31957 0.391333 2.05868C0.652667 1.79734 0.966667 1.66668 1.33333 1.66668H2V0.333344H3.33333V1.66668H8.66667V0.333344H10V1.66668H10.6667C11.0333 1.66668 11.3473 1.79734 11.6087 2.05868C11.8696 2.31957 12 2.63334 12 3.00001V12.3333C12 12.7 11.8696 13.014 11.6087 13.2753C11.3473 13.5362 11.0333 13.6667 10.6667 13.6667H1.33333ZM1.33333 12.3333H10.6667V5.66668H1.33333V12.3333ZM1.33333 4.33334H10.6667V3.00001H1.33333V4.33334ZM6 8.33334C5.81111 8.33334 5.65289 8.26934 5.52533 8.14134C5.39733 8.01379 5.33333 7.85557 5.33333 7.66668C5.33333 7.47779 5.39733 7.31934 5.52533 7.19134C5.65289 7.06379 5.81111 7.00001 6 7.00001C6.18889 7.00001 6.34733 7.06379 6.47533 7.19134C6.60289 7.31934 6.66667 7.47779 6.66667 7.66668C6.66667 7.85557 6.60289 8.01379 6.47533 8.14134C6.34733 8.26934 6.18889 8.33334 6 8.33334ZM3.33333 8.33334C3.14444 8.33334 2.986 8.26934 2.858 8.14134C2.73044 8.01379 2.66667 7.85557 2.66667 7.66668C2.66667 7.47779 2.73044 7.31934 2.858 7.19134C2.986 7.06379 3.14444 7.00001 3.33333 7.00001C3.52222 7.00001 3.68067 7.06379 3.80867 7.19134C3.93622 7.31934 4 7.47779 4 7.66668C4 7.85557 3.93622 8.01379 3.80867 8.14134C3.68067 8.26934 3.52222 8.33334 3.33333 8.33334ZM8.66667 8.33334C8.47778 8.33334 8.31956 8.26934 8.192 8.14134C8.064 8.01379 8 7.85557 8 7.66668C8 7.47779 8.064 7.31934 8.192 7.19134C8.31956 7.06379 8.47778 7.00001 8.66667 7.00001C8.85556 7.00001 9.01378 7.06379 9.14133 7.19134C9.26933 7.31934 9.33333 7.47779 9.33333 7.66668C9.33333 7.85557 9.26933 8.01379 9.14133 8.14134C9.01378 8.26934 8.85556 8.33334 8.66667 8.33334ZM6 11C5.81111 11 5.65289 10.936 5.52533 10.808C5.39733 10.6805 5.33333 10.5222 5.33333 10.3333C5.33333 10.1445 5.39733 9.98623 5.52533 9.85868C5.65289 9.73068 5.81111 9.66668 6 9.66668C6.18889 9.66668 6.34733 9.73068 6.47533 9.85868C6.60289 9.98623 6.66667 10.1445 6.66667 10.3333C6.66667 10.5222 6.60289 10.6805 6.47533 10.808C6.34733 10.936 6.18889 11 6 11ZM3.33333 11C3.14444 11 2.986 10.936 2.858 10.808C2.73044 10.6805 2.66667 10.5222 2.66667 10.3333C2.66667 10.1445 2.73044 9.98623 2.858 9.85868C2.986 9.73068 3.14444 9.66668 3.33333 9.66668C3.52222 9.66668 3.68067 9.73068 3.80867 9.85868C3.93622 9.98623 4 10.1445 4 10.3333C4 10.5222 3.93622 10.6805 3.80867 10.808C3.68067 10.936 3.52222 11 3.33333 11ZM8.66667 11C8.47778 11 8.31956 10.936 8.192 10.808C8.064 10.6805 8 10.5222 8 10.3333C8 10.1445 8.064 9.98623 8.192 9.85868C8.31956 9.73068 8.47778 9.66668 8.66667 9.66668C8.85556 9.66668 9.01378 9.73068 9.14133 9.85868C9.26933 9.98623 9.33333 10.1445 9.33333 10.3333C9.33333 10.5222 9.26933 10.6805 9.14133 10.808C9.01378 10.936 8.85556 11 8.66667 11Z" fill="#9EAAAD"/>
+                    </svg>
+                </span>
+                <span class="h-4 text-center text-tl-dark opacity-30 mx-3">{{ dateSelected ? dateSelected.chosenLabel : 'pages.store.availability' | translate}}</span>
+                <span class="icon-arrow">
+                    <!-- <img [src]="imgArrowUp" alt="" srcset="" *ngIf="isOpenMap"> -->
+                    <img [src]="imgArrowDown" alt="" srcset="">
+                </span>
+            </div>
+        </div>
+    </section>
+
+    <span *ngIf="isParamCategory && !categorySelected" class="lg:w-9/12 md:w-10/12 sm:w-11/12 w-11/12 my-5 px-5 py-3 rounded-lg text-tl-blue bg-tl-bagde-chat-date font-semibold text-sm flex align-center justify-between cursor-pointer active:bg-gray-300 transition duration-300 ease">
+        {{  'pages.store.category_doesnt_exist' | translate }}
+        <button class="bg-transparent hover focus:outline-none" (click)="hiddenErrNoCategory()">
+            <svg aria-hidden="true" focusable="false" data-prefix="fas" data-icon="times"
+                class="w-3 ml-3" role="img" xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 352 512">
+                <path fill="currentColor"
+                d="M242.72 256l100.07-100.07c12.28-12.28 12.28-32.19 0-44.48l-22.24-22.24c-12.28-12.28-32.19-12.28-44.48 0L176 189.28 75.93 89.21c-12.28-12.28-32.19-12.28-44.48 0L9.21 111.45c-12.28 12.28-12.28 32.19 0 44.48L109.28 256 9.21 356.07c-12.28 12.28-12.28 32.19 0 44.48l22.24 22.24c12.28 12.28 32.2 12.28 44.48 0L176 322.72l100.07 100.07c12.28 12.28 32.2 12.28 44.48 0l22.24-22.24c12.28-12.28 12.28-32.19 0-44.48L242.72 256z">
+                </path>
+            </svg>
+        </button>
+    </span>
+
+    <section class="grid grid-cols-4 gap-y-10 gap-x-4 mt-10" [ngClass]="{'grid-cols-7': isOpenMap}">
+        <div class="lg:col-span-2 md:col-span-7 sm:col-span-7 col-span-7" *ngIf="isOpenMap"  [ngClass]="{'lg:col-span-3': isOpenMap}">
+            <filter-by-map
+                [filterParams]="{
+                    latitude: this.filterParam.latitude ?? 0,
+                    longitude: this.filterParam.longitude ?? 0,
+                    distance_range: this.distanceFilter
+                }"
+                (onCancelFilter)="openMap()"
+                (onApplyfilter)="filterByMap($event)"
+            ></filter-by-map>
+        </div>
+        <div class="animated-show-item lg:col-span-4 md:col-span-6 sm:col-span-6 col-span-6" [ngClass]="{'lg:col-span-3 md:col-span-7 sm:col-span-7 col-span-7': isOpenMap}">
+            <div class="container-recomendations animated-show-item grid md:grid-cols-3 sm:grid-cols-2 grid-cols-1 gap-4 lg:grid-cols-4" *ngIf="!isLoadProducts && listProducts.length" [ngClass]="{'lg:grid-cols-2': isOpenMap}">
+                <div *ngFor="let item of listProducts">
+                    <a [href]="getProductUrl(item)" (click)="handleClick($event, getProductUrl(item))">
+                        <card-product [showFavorites]="true" [product]="item" [enabledActions]="false"></card-product>
+                    </a>
+                </div>
+            </div>
+            <no-results  *ngIf="!listProducts.length && !isLoadProducts" [status]="false"></no-results>
+
+            <div *ngIf="paginatorProd && pagesIndex.length > 1 && !categorySelected" class="content-pag-items my-9 pl-4 pt-4 pr-0 flex flex-row flex-wrap items-center justify-between">
+                <div class="pages flex flex-row flex-wrap items-center space-x-8">
+                  <div
+                    *ngFor="let item of pagesIndex"
+                    class="text-tl-dark-light font-bold cursor-pointer"
+                    (click)="selectPage(item+1)"
+                    [ngClass]="{'opacity-100': item + 1 == currentPage, 'opacity-30': item + 1 !== currentPage}"
+                >{{ item  + 1 }}</div>
+                </div>
+                <mat-paginator
+                    #paginator
+                    class="demo-paginator"
+                    (page)="handlePageEvent($event)"
+                    [length]="paginatorProd.total"
+                    [pageSize]="15"
+                    [pageSizeOptions]="[]"
+                    [hidePageSize]="true"
+                    [disabled]="isLoadProducts"
+                    color="primary"
+                    [pageIndex]="paginatorProd.currentPage - 1"
+                    aria-label="Select page">
+                </mat-paginator>
+            </div>
+        </div>
+    </section>
+
+    <div class="seo-category-links" aria-hidden="true">
+    <h2 class="visually-hidden">Todas las categorías disponibles</h2>
+    <ul class="visually-hidden">
+        <li *ngFor="let category of listCategories">
+            <a [href]="getCategoryUrl(category)" [title]="category.name | translate">
+                {{ category.name | translate }}
+            </a>
+        </li>
+    </ul>
+</div>
+
+</div>
+
+<ng-template #ArrowBreadcrumb>
+    <svg aria-hidden="true" class="w-6 h-6 text-tl-dark" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"></path></svg>
+</ng-template>

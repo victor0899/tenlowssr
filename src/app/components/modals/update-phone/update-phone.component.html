@@ -1,0 +1,102 @@
+<loader-overlay *ngIf="isSend"></loader-overlay>
+
+<mat-toolbar>
+    <mat-toolbar-row>
+      <button mat-dialog-close>
+        <svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M14 2.0585L12.59 0.72583L7 6.00926L1.41 0.72583L0 2.0585L5.59 7.34193L0 12.6254L1.41 13.958L7 8.6746L12.59 13.958L14 12.6254L8.41 7.34193L14 2.0585Z" fill="#60757C"/>
+        </svg>
+      </button>
+    </mat-toolbar-row>
+</mat-toolbar>
+<mat-dialog-content>
+    <div class="content" *ngIf="!isEnterCode">
+        <section class="animated-show-item flex flex-col items-center">
+            <h1 class="text-2xl semibold text-tl-dark-gray text-center mb-10">
+                {{ 'components.update_phone.verify_phone' | translate }}
+            </h1>
+
+            <p class="text-tl-dark text-base max-w-[440px] text-center">
+                {{ 'components.update_phone.info_verify_phone' | translate }}
+            </p>
+
+            <form (ngSubmit)="onValidate()" [formGroup]="formUpdatePhone">
+                <div class="info-phone">
+                    <div class="grid grid-cols-5 gap-2">
+                        <div class="relative lg:col-span-2 md:col-span-2 col-span-5" [ngClass]="{'error-form': getErrorLabel('phone_country_code')}">
+                            <mat-form-field appearance="outline" class="w-full" subscriptSizing="dynamic">
+                                <!-- <mat-label class="text-lg">{{ "labels.country_region"  | translate}}</mat-label> -->
+                                <input
+                                    type="text"
+                                    matInput
+                                    #autoCompleteCountry
+                                    placeholder="Select a country"
+                                    formControlName="phone_country_code"
+                                    required
+                                    id="code-phone"
+                                    [class]="cssInputTxt"
+                                    [matAutocomplete]="codeCountrySelect"
+                                >
+                                <label for="code-phone" [class]="cssFloatLabel">
+                                    {{ 'labels.code' | translate }}
+                                </label>
+                                <mat-autocomplete autoActiveFirstOption #codeCountrySelect="matAutocomplete">
+                                    <mat-option *ngFor="let country of filteredCountry | async" [value]="country.phonecode">
+                                        {{ country.name }} ({{country.phonecode}})
+                                    </mat-option>
+                                </mat-autocomplete>
+                            </mat-form-field>
+                            <span class="validation-span" *ngIf="getErrorLabel('phone_country_code') !== '' " [class]="cssSpanValidation">
+                                *{{ getErrorLabel('phone_country_code') | translate }}
+                            </span>
+                        </div>
+
+                        <div class="relative lg:col-span-3 md:col-span-3 col-span-5" [ngClass]="{'error-form': getErrorLabel('phone')}">
+                            <input id="phone-number" autocomplete="off" type="text" formControlName="phone" maxlength="20" [class]="cssInputTxt" placeholder="phone-number" />
+                            <label for="phone-number" [class]="cssFloatLabel">
+                                {{ 'labels.phone_number' | translate }}
+                            </label>
+                            <span class="validation-span" *ngIf="getErrorLabel('phone') !== '' " [class]="cssSpanValidation">
+                                *{{ getErrorLabel('phone') | translate }}
+                            </span>
+                        </div>
+                    </div>
+                </div>
+
+                <p class="text-tl-dark text-base max-w-[440px] text-center mb-7">
+                    {{ 'components.update_phone.phone_is_secret' | translate }}
+                </p>
+
+                <button class="bg-tl-primary px-5 h-10 rounded-3xl flex justify-center items-center my-3 w-8/12 m-auto" [disabled]="formUpdatePhone.invalid">
+                    <span class="text-tl-blue text-sm">{{ 'components.update_phone.send_code' | translate }}</span>
+                </button>
+            </form>
+
+        </section>
+    </div>
+
+    <!-- FORM UPDATE EMAIL -->
+    <section class="w-8/12 m-auto p-4 text-center form-update-phone animated-show-item" *ngIf="isEnterCode">
+        <h2 class="text-2xl semibold text-tl-dark-gray mb-1">{{ 'components.update_phone.verify_phone' | translate }}</h2>
+        <p class="text-base text-tl-dark ">{{ 'components.update_phone.enter_verification_code'  | translate:{ phone: phoneNumber } }}</p>
+
+        <form [formGroup]="formValidatePhone"  (ngSubmit)="validateFormCode()">
+            <div class="grid grid-cols-2 gap-6 mt-6 mb-6">
+                <div class="relative col-span-2" [ngClass]="{'error-form': getErrorLabel('code')}">
+                    <input id="code-verify" autocomplete="off" formControlName="code" type="text" maxlength="6" [class]="cssInputTxt" placeholder="code-verify" />
+                    <label for="code-verify" [class]="cssFloatLabel">
+                        {{ 'components.update_email.code_verify' | translate }}
+                    </label>
+                    <span [class]="cssSpanValidation" *ngIf="getErrorLabel('code') !== '' ">
+                        {{ getErrorLabel('code') | translate }}
+                    </span>
+                </div>
+            </div>
+
+            <button class="bg-tl-primary px-5 h-10 rounded-3xl flex justify-center items-center my-3 w-full" [disabled]="formUpdatePhone.invalid" >
+                <span class="text-tl-blue text-sm text-medium">{{ 'labels.update' | translate }}</span>
+            </button>
+        </form>
+
+    </section>
+</mat-dialog-content>

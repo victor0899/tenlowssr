@@ -1,0 +1,81 @@
+<loader-overlay *ngIf="isLoading"></loader-overlay>
+<mat-dialog-content>
+    <section class="animated-show-item flex flex-col items-center">
+        <h2 class="text-base semibold mb-1">{{ 'pages.payments_panel.add_bank_account' | translate }}</h2>
+        <p class="text-sm">{{ 'pages.payments_panel.enter_valid_data' | translate }}</p>
+        <form (ngSubmit)="validateForm()" [formGroup]="formBankAccount">
+            <div class="grid grid-cols-2 gap-6 mt-6 mb-6">
+                <div class="relative col-span-2" [ngClass]="{'error-form':getErrorLabel('name') !== ''}">
+                    <input id="name_complete" autocomplete="off" formControlName="name" maxlength="60" type="text"
+                        [class]="cssInputTxt" placeholder="name_complete" />
+                    <label for="name_complete" [class]="cssFloatLabel">
+                        {{ 'labels.complete_name' | translate }}
+                    </label>
+                    <span [class]="cssSpanValidation" *ngIf="getErrorLabel('name') != '' ">
+                        *{{ getErrorLabel('name') | translate }}
+                    </span>
+                </div>
+
+                <div class="relative col-span-2" [ngClass]="{'error-form':getErrorLabel('iban') !== ''}">
+                    <input id="IBAN" autocomplete="off" maxlength="29" formControlName="iban"
+                        (keypress)="formattedIban($event)" value="" type="text" [class]="cssInputTxt"
+                        placeholder="IBAN" />
+                    <label for="IBAN" [class]="cssFloatLabel">
+                        IBAN
+                    </label>
+                    <span [class]="cssSpanValidation" *ngIf="getErrorLabel('iban') != '' ">
+                        *{{ getErrorLabel('iban') | translate }}
+                    </span>
+                </div>
+                <div class="relative col-span-2" [ngClass]="{'error-form':getErrorLabel('address') !== ''}">
+                    <input id="direction" autocomplete="off" type="text" maxlength="100" formControlName="address"
+                        [class]="cssInputTxt" placeholder="direction" />
+                    <label for="direction" [class]="cssFloatLabel">
+                        {{ 'labels.direction' | translate }}
+                    </label>
+                    <span [class]="cssSpanValidation" *ngIf="getErrorLabel('address') != '' ">
+                        *{{ getErrorLabel('address') | translate }}
+                    </span>
+                </div>
+
+                <div class="relative col-span-1">
+                    <mat-form-field appearance="outline" class="w-full" color="accent" subscriptSizing="dynamic"
+                        [hideRequiredMarker]="true">
+                        <!-- <mat-label class="text-base-3">{{ "labels.country_region"  | translate}}</mat-label> -->
+                        <input type="text" matInput #autoCompleteCountry placeholder="Select a country"
+                            formControlName="country" required [class]="cssInputTxt" [matAutocomplete]="countrySelect">
+                        <label for="country" [class]="cssFloatLabel">
+                            {{ 'labels.country_region' | translate }}
+                        </label>
+                        <mat-autocomplete autoActiveFirstOption #countrySelect="matAutocomplete">
+                            <mat-option *ngFor="let country of filteredCountry | async" [value]="country.name">
+                                {{ country.name }}
+                            </mat-option>
+                        </mat-autocomplete>
+                    </mat-form-field>
+                    <span [class]="cssSpanValidation" [ngClass]="{'!text-tl-error': getErrorLabel('country') != ''}"
+                        *ngIf="getErrorLabel('country') != '' ">
+                        *{{ getErrorLabel('country') | translate }}
+                    </span>
+                </div>
+
+                <div class="relative col-span-1" [ngClass]="{'error-form':getErrorLabel('zip_code') !== ''}">
+                    <input id="postal_code" autocomplete="off" type="text" formControlName="zip_code" maxlength="5"
+                        [class]="cssInputTxt" placeholder="postal_code" />
+                    <label for="postal_code" [class]="cssFloatLabel">
+                        {{ 'labels.postal_code' | translate }}
+                    </label>
+                    <span [class]="cssSpanValidation" *ngIf="getErrorLabel('zip_code') != '' ">
+                        *{{ getErrorLabel('zip_code') | translate }}
+                    </span>
+                </div>
+            </div>
+
+            <div class="buttons flex flex-row items-center justify-end space-x-3">
+                <button class="btn-base bg-tl-primary px-4 flex justify-center" type="submit">
+                    <span class="h-5 text-tl-blue text-sm text-medium"> {{ 'labels.save' | translate }}</span>
+                </button>
+            </div>
+        </form>
+    </section>
+</mat-dialog-content>

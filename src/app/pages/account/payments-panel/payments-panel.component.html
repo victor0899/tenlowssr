@@ -1,0 +1,281 @@
+<loader-overlay *ngIf="isLoading"></loader-overlay>
+
+<div class="container m-auto p-2 pb-10">
+    <h1 class="lg:text-3.5xl text-2xl flex flex-wrap  flex-col mt-3 mb-6">
+        {{ 'pages.payments_panel.title' | translate }}
+        <button (click)="back()" class="h-[38px] flex items-center justify-start">
+            <mat-icon class="w-5 h-5 text-xl">arrow_back</mat-icon>
+            <span class="text-base-2 h-3">{{ 'labels.back_to' | translate }}</span>
+        </button>
+    </h1>
+
+    <div class="grid lg:grid-cols-3 gap-5 grid-cols-1">
+        <div class="col-span-1">
+            <div
+                *ngFor="let item of optionsFieldsEdit;let i = index"
+                class="item-edit"
+                [ngClass]="{'opacity-30': currentView !== item.title, '!opacity-100': currentView == item.view}"
+                (click)="selectView(item.view)"
+            >
+                <h2 class="text-base semibold mb-1">
+                    {{ item.title  | translate}}
+                    <span class="float-right font-light text-sm pt-0.5" *ngIf="i == 2">{{ 'labels.edit' | translate | lowercase }}</span>
+                </h2>
+                <p class="text-base-2">{{ item.subtitle | translate }}</p>
+            </div>
+        </div>
+
+        <div class="lg:col-span-2 md:col-span-2 col-span-3" *ngIf="!currentView">
+            <empty-view></empty-view>
+        </div>
+
+        <div class="col-span-2" *ngIf="currentView">
+            <!-- <div class="animated-show-item" *ngIf="currentView == 'PAYMENT_METHOD' " [ngTemplateOutlet]="PaymentWays"></div> -->
+            <div class="animated-show-item" *ngIf="currentView == 'MY_PAYMENTS' " [ngTemplateOutlet]="UserPayments"></div>
+            <div class="animated-show-item" *ngIf="currentView == 'MY_CHARGES' " [ngTemplateOutlet]="TableCharges"></div>
+            <div class="animated-show-item" *ngIf="currentView == 'BANK_DATA' " [ngTemplateOutlet]="BankData"></div>
+        </div>
+    </div>
+</div>
+
+<ng-template #BankData>
+    <section class="w-9/12 m-auto">
+        <h2 class="text-base semibold mb-1">{{ 'pages.payments_panel.add_bank_account' | translate }}</h2>
+        <p class="text-sm">{{ 'pages.payments_panel.enter_valid_data' | translate }}</p>
+        <form (ngSubmit)="validateForm()" [formGroup]="formBankAccount" >
+            <div class="grid grid-cols-2 gap-6 mt-6 mb-6">
+                <div class="relative col-span-2" [ngClass]="{'error-form':getErrorLabel('name') !== ''}">
+                    <input id="name_complete" autocomplete="off" formControlName="name" maxlength="60" type="text" [class]="cssInputTxt" placeholder="name_complete" />
+                    <label for="name_complete" [class]="cssFloatLabel">
+                        {{ 'labels.complete_name' | translate }}
+                    </label>
+                    <span [class]="cssSpanValidation" *ngIf="getErrorLabel('name') != '' ">
+                        *{{ getErrorLabel('name') | translate }}
+                    </span>
+                </div>
+
+                <div class="relative col-span-2" [ngClass]="{'error-form':getErrorLabel('iban') !== ''}">
+                    <input id="IBAN" autocomplete="off" maxlength="29" formControlName="iban" (keypress)="formattedIban($event)" value="" type="text" [class]="cssInputTxt" placeholder="IBAN" />
+                    <label for="IBAN" [class]="cssFloatLabel">
+                        IBAN
+                    </label>
+                    <span [class]="cssSpanValidation" *ngIf="getErrorLabel('iban') != '' ">
+                        *{{ getErrorLabel('iban') | translate }}
+                    </span>
+                </div>
+                <div class="relative col-span-2" [ngClass]="{'error-form':getErrorLabel('address') !== ''}">
+                    <input id="direction" autocomplete="off" type="text" maxlength="100" formControlName="address" [class]="cssInputTxt" placeholder="direction" />
+                    <label for="direction" [class]="cssFloatLabel">
+                        {{ 'labels.direction' | translate }}
+                    </label>
+                    <span [class]="cssSpanValidation" *ngIf="getErrorLabel('address') != '' ">
+                        *{{ getErrorLabel('address') | translate }}
+                    </span>
+                </div>
+
+                <div class="relative col-span-1">
+                    <mat-form-field appearance="outline" class="w-full" color="accent" subscriptSizing="dynamic" [hideRequiredMarker]="true">
+                        <mat-label class="text-base-3">{{ "labels.country_region"  | translate}}</mat-label>
+                        <input
+                            type="text"
+                            matInput
+                            #autoCompleteCountry
+                            placeholder="Select a country"
+                            formControlName="country"
+                            required
+                            [matAutocomplete]="countrySelect"
+                        >
+                        <mat-autocomplete autoActiveFirstOption #countrySelect="matAutocomplete">
+                            <mat-option *ngFor="let country of filteredCountry | async" [value]="country.name">
+                                {{ country.name }}
+                            </mat-option>
+                        </mat-autocomplete>
+                    </mat-form-field>
+                    <span [class]="cssSpanValidation" [ngClass]="{'!text-tl-error': getErrorLabel('country') != ''}" *ngIf="getErrorLabel('country') != '' ">
+                        *{{ getErrorLabel('country') | translate }}
+                    </span>
+                </div>
+
+                <div class="relative col-span-1" [ngClass]="{'error-form':getErrorLabel('zip_code') !== ''}">
+                    <input id="postal_code" autocomplete="off" type="text" formControlName="zip_code" maxlength="5" [class]="cssInputTxt" placeholder="postal_code" />
+                    <label for="postal_code" [class]="cssFloatLabel">
+                        {{ 'labels.postal_code' | translate }}
+                    </label>
+                    <span [class]="cssSpanValidation" *ngIf="getErrorLabel('zip_code') != '' ">
+                        *{{ getErrorLabel('zip_code') | translate }}
+                    </span>
+                </div>
+            </div>
+
+            <div class="buttons flex flex-row items-center justify-end space-x-3">
+                <button  type="button" (click)="selectView('PAYMENT_METHOD')" class="btn-base btn-gray px-4 flex justify-center">
+                    <span class="h-5 text-tl-dark-medium text-sm text-medium">  {{ 'labels.cancel' | translate }}</span>
+                </button>
+
+                <button class="btn-base bg-tl-primary px-4 flex justify-center" type="submit">
+                    {{ stripe_id ? ('labels.edit' | translate) : ('labels.create' | translate) }}
+                </button>
+            </div>
+        </form>
+    </section>
+</ng-template>
+
+<ng-template #PaymentWays>
+    <section class="w-9/12 m-auto">
+        <h2 class="text-base semibold mb-1">Añade los datos de la tarjeta</h2>
+        <p class="text-sm">Esta forma de pago nos permite guardar tu dinero para devolvértelo si algo sale mal. Por eso no utilizamos herramientas cómo Bizum.</p>
+
+        <div class="grid grid-cols-2 gap-6 mt-6 mb-6">
+            <div class="relative col-span-2">
+                <input id="card" autocomplete="off" value="XXXX XXXX XXXX XXXX" type="text" [class]="cssInputTxt" placeholder="Name" />
+                <label for="card" [class]="cssFloatLabel">
+                    Número de tarjeta
+                </label>
+                <span [class]="cssSpanValidation">
+                    *{{ 'messages.field_required' | translate }}
+                </span>
+            </div>
+
+            <div class="relative col-span-1">
+                <input id="expiration" autocomplete="off" type="text" [class]="cssInputTxt" placeholder="Name" />
+                <label for="expiration" [class]="cssFloatLabel">
+                    Caducidad
+                </label>
+                <span [class]="cssSpanValidation">
+                    *{{ 'messages.field_required' | translate }}
+                </span>
+            </div>
+            <div class="relative col-span-1">
+                <input id="cvv" autocomplete="off" type="text" [class]="cssInputTxt" placeholder="Name" />
+                <label for="cvv" [class]="cssFloatLabel">
+                    CVV
+                </label>
+                <span [class]="cssSpanValidation">
+                    *{{ 'messages.field_required' | translate }}
+                </span>
+            </div>
+
+            <div class="relative col-span-1">
+                <input id="postal_code" autocomplete="off" type="text" [class]="cssInputTxt" placeholder="Name" />
+                <label for="postal_code" [class]="cssFloatLabel">
+                    Código postal
+                </label>
+                <span [class]="cssSpanValidation">
+                    *{{ 'messages.field_required' | translate }}
+                </span>
+            </div>
+            <div class="relative col-span-1">
+                <input id="country_region" autocomplete="off" type="text" [class]="cssInputTxt" placeholder="Name" />
+                <label for="country_region" [class]="cssFloatLabel">
+                    País/Región
+                </label>
+                <span [class]="cssSpanValidation">
+                    *{{ 'messages.field_required' | translate }}
+                </span>
+            </div>
+        </div>
+
+        <div class="buttons flex flex-row items-center justify-end space-x-3">
+            <button class="btn-base btn-gray px-4 flex justify-center">
+                <span class="h-5 text-tl-dark-medium text-sm">Cancelar</span>
+            </button>
+
+            <button class="btn-base bg-tl-primary px-4 flex justify-center">
+                <span class="h-5 text-tl-blue text-sm">Guardar</span>
+            </button>
+        </div>
+    </section>
+</ng-template>
+
+<ng-template #TableCharges>
+    <section class="w-full p-3">
+        <div class="table-payments">
+            <table mat-table [dataSource]="charges" class="mat-elevation-z8 demo-table">
+                <!-- Position Column -->
+                <ng-container matColumnDef="product">
+                  <th mat-header-cell *matHeaderCellDef class="semibold text-tl-dark">{{ 'pages.payments_panel.item' | translate}}</th>
+                  <td mat-cell *matCellDef="let element">{{ element.product.title | titlecase}}</td>
+                </ng-container>
+
+                <!-- Name Column -->
+                <ng-container matColumnDef="status">
+                  <th mat-header-cell *matHeaderCellDef class="semibold text-tl-dark">{{ 'pages.payments_panel.period_rental' | translate}}</th>
+                  <td mat-cell *matCellDef="let element">{{ element.operation.init_date | date:'d/M/y'}} - {{ element.operation.end_date | date:'d/M/y' }}</td>
+                </ng-container>
+
+                <!-- Weight Column -->
+                <ng-container matColumnDef="amount">
+                  <th mat-header-cell *matHeaderCellDef class="semibold text-tl-dark">{{ 'labels.price' | translate}}</th>
+                  <td mat-cell *matCellDef="let element">{{element.amount | currency}}</td>
+                </ng-container>
+
+                <!-- shipping_method Column -->
+                <ng-container matColumnDef="shipping_method">
+                  <th mat-header-cell *matHeaderCellDef class="semibold text-tl-dark">{{ 'pages.payments_panel.shipping_method' | translate }}</th>
+                  <td mat-cell *matCellDef="let element">{{ getLabelShippingMethod(element.operation.shipping_method) | translate }}</td>
+                </ng-container>
+
+                <tr class="text-center" mat-header-row *matHeaderRowDef="myChargesColumns"></tr>
+                <tr class="text-center" mat-row *matRowDef="let row; columns: myChargesColumns;"></tr>
+            </table>
+            <mat-paginator
+                #matPagCharges
+                [length]="paginatorCharges.total"
+                [pageSize]="10"
+                aria-label="Seleccionar página de mis cobros"
+                (page)="eventChargesTable($event)"
+                [hidePageSize]="true"
+                [disabled]="isLoadCharges"
+                color="primary"
+                [pageIndex]="paginatorCharges.currentPage - 1"
+            ></mat-paginator>
+        </div>
+    </section>
+</ng-template>
+
+<ng-template #UserPayments>
+    <section class="w-full p-3">
+        <div class="table-payments">
+            <table mat-table [dataSource]="payments" class="mat-elevation-z8 demo-table">
+                <!-- product.title Column -->
+                <ng-container matColumnDef="product_id">
+                  <th mat-header-cell *matHeaderCellDef class="semibold text-tl-dark">{{ 'pages.payments_panel.item' | translate}}</th>
+                  <td mat-cell *matCellDef="let element">{{ element.operation.product.title | titlecase }}</td>
+                </ng-container>
+
+                <!-- created_at Column -->
+                <ng-container matColumnDef="status">
+                  <th mat-header-cell *matHeaderCellDef class="semibold text-tl-dark">{{ 'labels.date' | translate}}</th>
+                  <td mat-cell *matCellDef="let element">{{ element.created_at  | date:'d/M/yy' }}</td>
+                </ng-container>
+
+                <!-- amount Column -->
+                <ng-container matColumnDef="amount">
+                  <th mat-header-cell *matHeaderCellDef class="semibold text-tl-dark">{{ 'labels.price' | translate}}</th>
+                  <td mat-cell *matCellDef="let element">{{ element.amount | currency}}</td>
+                </ng-container>
+
+                <!-- shipping_method Column -->
+                <ng-container matColumnDef="shipping_method">
+                  <th mat-header-cell *matHeaderCellDef class="semibold text-tl-dark">{{ 'pages.payments_panel.shipping_method' | translate}}</th>
+                  <td mat-cell *matCellDef="let element">{{ getLabelShippingMethod(element.operation.shipping_method) | translate }}</td>
+                </ng-container>
+
+                <tr class="text-center" mat-header-row *matHeaderRowDef="myPaymentsColumns"></tr>
+                <tr class="text-center" mat-row *matRowDef="let row; columns: myPaymentsColumns;"></tr>
+            </table>
+            <mat-paginator
+                #matPagPayments
+                [length]="paginatorPayments.total"
+                [pageSize]="10"
+                aria-label="Seleccionar página de mis pagos"
+                (page)="eventPaymentsTable($event)"
+                [hidePageSize]="true"
+                [disabled]="isLoadPayments"
+                color="primary"
+                [pageIndex]="paginatorPayments.currentPage - 1"
+            ></mat-paginator>
+        </div>
+    </section>
+</ng-template>
+

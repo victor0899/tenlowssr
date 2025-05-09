@@ -1,0 +1,55 @@
+<loader-overlay *ngIf="isShowLoader"></loader-overlay>
+<div class="container min-screen m-auto p-6 pb-10">
+    <h1 class="lg:text-3.5xl text-2xl flex flex-wrap flex-col mt-3 mb-6">
+        {{ 'pages.manage_products.products' | translate }}
+        <button (click)="back()" class="h-[38px] flex items-center justify-start">
+            <mat-icon class="w-5 h-5 text-xl">arrow_back</mat-icon>
+            <span class="text-base-2 h-3">{{ 'labels.back_to' | translate }}</span>
+        </button>
+    </h1>
+
+    <div class="buttons flex items-center justify-start space-x-3 my-5">
+        <button class="btn-base bg-tl-primary px-4 flex justify-center" [ngClass]="{'btn-gray': !isShowActive}" (click)="isShowActive = true">
+            <span class="h-5 text-tl-blue  text-sm" [ngClass]="{'!text-tl-dark  opacity-[0.38]': !isShowActive}">{{ 'pages.manage_products.active' | translate }}</span>
+        </button>
+
+        <button class="btn-base bg-tl-primary px-4 flex justify-center" [ngClass]="{'btn-gray': isShowActive}"  (click)="isShowActive = false">
+            <span class="h-5 text-tl-blue text-sm" [ngClass]="{'!text-tl-dark opacity-[0.38]': isShowActive}">{{ 'pages.manage_products.disabled' | translate }}</span>
+        </button>
+    </div>
+
+    <div *ngIf="isShowActive && !isLoadProds && listProducts.length" class="container-recomendations px-6 grid md:grid-cols-3 lg:grid-cols-4 sm:grid-cols-2 grid-cols-1 gap-6 animated-show-item">
+        <div *ngFor="let item of listProducts">
+            <a [href]="getProductUrl(item)">
+              <card-product
+                  [product]="item"
+                  [showManage]="true"
+                  [activeProduct]="isShowActive"
+                  (onEdit)="editProduct(item)"
+                  (onDisabled)="confirmDisabledProduct(item)">
+              </card-product>
+            </a>
+          </div>
+    </div>
+
+    <div *ngIf="isLoadProds" class="container-recomendations px-6 grid md:grid-cols-3 lg:grid-cols-4 sm:grid-cols-2 grid-cols-1 gap-6 animated-show-item">
+        <app-loader-card-product *ngFor="let item of dev"></app-loader-card-product>
+    </div>
+
+    <no-results  *ngIf="isShowActive && !listProducts.length && !isLoadProds" [status]="false"></no-results>
+
+    <div *ngIf="!isShowActive" class="container-recomendations px-6 grid md:grid-cols-3 lg:grid-cols-4 sm:grid-cols-2 grid-cols-1 gap-6 animated-show-item">
+            <card-product
+                *ngFor="let item of productsDeleted"
+                [product]="item"
+                [showManage]="true"
+                [showDelete]="true"
+                [activeProduct]="isShowActive"
+                (onDelete)="confirmDeleteProduct(item)"
+                (onRestore)="restoreProduct(item)"
+            ></card-product>
+    </div>
+
+    <no-results  *ngIf="!isShowActive && !productsDeleted.length && !isLoadProds" [status]="false"></no-results>
+
+</div>

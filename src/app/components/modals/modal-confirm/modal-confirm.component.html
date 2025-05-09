@@ -1,0 +1,24 @@
+<mat-toolbar>
+    <mat-toolbar-row>
+      <button mat-dialog-close>
+        <svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M14 2.0585L12.59 0.72583L7 6.00926L1.41 0.72583L0 2.0585L5.59 7.34193L0 12.6254L1.41 13.958L7 8.6746L12.59 13.958L14 12.6254L8.41 7.34193L14 2.0585Z" fill="#60757C"/>
+        </svg>
+      </button>
+    </mat-toolbar-row>
+</mat-toolbar>
+<mat-dialog-content>
+    <div class="content">
+        <h1 class="title semibold text-center">{{ title | translate }}{{ title2 }}</h1>
+        <p class="text-base">{{ msg | translate }}</p>
+        <div class="flex flex-wrap justify-center items-center mt-5 mb-5 content-buttons">
+            <button class="px-5 bg-tl-gray rounded-3xl flex justify-center items-center mx-3 my-1 h-10" (click)="close()" >
+                <span class="text-tl-dark-medium  text-sm">{{ txtCancel | translate }}</span>
+            </button>
+
+            <button class="bg-tl-primary px-5 h-10 rounded-3xl flex justify-center items-center mx-3 my-1" (click)="confirm()">
+                <span class="text-tl-blue text-sm">{{ txtOk | translate }}</span>
+            </button>
+        </div>
+    </div>
+</mat-dialog-content>

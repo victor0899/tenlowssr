@@ -1,0 +1,32 @@
+* {
+    font-family: 'BalooTamma';
+}
+
+mat-toolbar{
+    background: transparent;
+}
+
+mat-dialog-content{
+    padding-top: 0 !important;
+}
+
+.form-reset{
+    min-width: 250px;
+    width: 30vw;
+    max-width: 500px;
+}
+
+.content{
+    padding: 0px 90px 30px;
+}
+
+@media (max-width:600px) {
+    .content{
+        padding: 0 20px 10px;
+    }
+}
+
+.info-email{
+    margin: 32px 0;
+    text-align: center;
+}

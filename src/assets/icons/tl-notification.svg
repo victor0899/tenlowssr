@@ -1,0 +1,9 @@
+<svg version="1.2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 30 30" width="30" height="30">
+	<title>Proyecto nuevo</title>
+	<defs>
+		<image width="24" height="24" id="img1" href="data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiPz48c3ZnIHdpZHRoPSI1N3B4IiBoZWlnaHQ9IjU3cHgiIHN0cm9rZS13aWR0aD0iMiIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSJub25lIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIGNvbG9yPSIjMDAwMDAwIj48cGF0aCBkPSJNMTguMTM0IDExQzE4LjcxNSAxNi4zNzUgMjEgMTggMjEgMThIM3MzLTIuMTMzIDMtOS42YzAtMS42OTcuNjMyLTMuMzI1IDEuNzU3LTQuNTI1QzguODgzIDIuNjc1IDEwLjQxIDIgMTIgMmMuMzM3IDAgLjY3Mi4wMyAxIC4wOU0xOSA4YTMgMyAwIDEwMC02IDMgMyAwIDAwMCA2ek0xMy43MyAyMWExLjk5OSAxLjk5OSAwIDAxLTMuNDYgMCIgc3Ryb2tlPSIjMDAwMDAwIiBzdHJva2Utd2lkdGg9IjIiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCI+PC9wYXRoPjwvc3ZnPg=="/>
+	</defs>
+	<style>
+	</style>
+	<use id="tl-notification" href="#img1" transform="matrix(.792,-0.002,.002,.792,5.982,5.018)"/>
+</svg>

@@ -1,0 +1,103 @@
+<section class="header px-3 pt-5 pb-0">
+    <button (click)="close()">
+        <mat-icon class="text-tl-dark-medium">close</mat-icon>
+    </button>
+    <h2 class="text-center text-[22px]">{{ 'components.filter_price.select_price_range' | translate }}</h2>
+</section>
+<mat-dialog-content class="lg:max-w-[700px] lg:w-[700px] !pt-0">
+    <div class="container m-auto lg:px-6 md:px-6 pb-2 text-tl-dark">
+
+        <section class="!mt-1">
+
+            <div class="my-5">
+                <h2 class="text-base text-tl-dark">{{ 'components.filter_price.select_period' | translate }}</h2>
+                <mat-radio-group aria-label="Select an option" [(ngModel)]="periodFilter" (change)="onChangePeriod($event)">
+                    <mat-radio-button value="day" color="accent" class="my-2 mx-3" [labelPosition]="'before'">
+                        <span class="text-sm">{{ 'labels.day' | translate }}</span>
+                    </mat-radio-button>
+                    <mat-radio-button value="week" color="accent" class="my-2 mx-3" [labelPosition]="'before'">
+                        <span class="text-sm">{{ 'labels.week' | translate }}</span>
+                    </mat-radio-button>
+                    <mat-radio-button value="month" color="accent" class="my-2 mx-3" [labelPosition]="'before'">
+                        <span class="text-sm">{{ 'labels.month' | translate }}</span>
+                    </mat-radio-button>
+                </mat-radio-group>
+            </div>
+
+            <div class="mb-10 w-full m-auto" *ngIf="pricesLimitFilter">
+                <!-- <canvas baseChart
+                    [data]="barChartData"
+                    [options]="barChartOptions"
+                    type="bar"
+                >
+                </canvas> -->
+
+                <mat-slider class="w-full" [min]="pricesLimitFilter.min" [max]="pricesLimitFilter.max" step="1" color="accent"  discrete [displayWith]="formatLabel">
+                    <input  matSliderStartThumb [(ngModel)]="minPrice" (valueChange)="onSlideRange($event, 'min')">
+                    <input  matSliderEndThumb [(ngModel)]="maxPrice" (valueChange)="onSlideRange($event, 'max')">
+                </mat-slider>
+            </div>
+
+            <div class="flex items-center justify-between flex-wrap gap-3">
+                <div class="my-1">
+                    <div class="relative price-input">
+                        <input id="lowprice" [disabled]="!pricesLimitFilter"  autocomplete="off" type="text" [(ngModel)]="minPrice" [class]="cssInputTxt" placeholder="Name" />
+                        <label for="lowprice" [class]="cssFloatLabel">
+                            {{ 'labels.from' | translate }}
+                        </label>
+                        <span  [class]="cssMoneyIconInput">€</span>
+                    </div>
+                    <!-- <span [class]="cssSpanValidation">
+                        {{ 'messages.field_required' | translate }}
+                    </span> -->
+                </div>
+
+                <div class="my-1">
+                    <div class="relative price-input">
+                        <input id="maxprice" [disabled]="!pricesLimitFilter"  autocomplete="off" type="text" [(ngModel)]="maxPrice" [class]="cssInputTxt" placeholder="Name" />
+                        <label for="maxprice" [class]="cssFloatLabel">
+                            {{ 'labels.to' | translate }}
+                        </label>
+                        <span  [class]="cssMoneyIconInput">€</span>
+                    </div>
+                    <!-- <span [class]="cssSpanValidation">
+                        {{ 'messages.field_required' | translate }}
+                    </span> -->
+                </div>
+            </div>
+
+        </section>
+
+        <section>
+            <h2 class="text-base text-tl-dark mb-5">{{ 'components.filter_price.order_by_price' | translate }}</h2>
+            <mat-radio-group aria-label="Select an option"  class="mat-filter-price" [(ngModel)]="orderSelect" (change)="onChangeOrderFilterPrice($event)">
+                <mat-radio-button [value]="ORDER_PRICE.LOW_TO_TOP" color="primary" [labelPosition]="'before'">
+                    <span class="text-sm">{{ 'components.filter_price.order_low_to_top' | translate }}</span>
+                </mat-radio-button>
+                <mat-radio-button [value]="ORDER_PRICE.TOP_TO_LOW" color="primary" [labelPosition]="'before'">
+                    <span class="text-sm">{{ 'components.filter_price.order_top_to_low' | translate }}</span>
+                </mat-radio-button>
+            </mat-radio-group>
+
+            <div class="flex flex-row flex-wrap items-center mt-12 justify-between mb-5">
+                <span class="text-base">{{ 'pages.upload_prod.rental_op_buy' | translate}}</span>
+                <label class="relative inline-flex items-center cursor-pointer">
+                    <input type="checkbox" [checked]="withOptionBuy" class="sr-only peer" (change)="onToggleBuyOp( $event )">
+                    <div [class]="cssInputToggle"></div>
+                </label>
+            </div>
+        </section>
+
+        <section>
+            <div class="buttons flex flex-row items-center lg:justify-end md:justify-end justify-center space-x-3">
+                <button class="btn-base btn-gray px-5 flex justify-center" (click)="close()">
+                    <span class="h-5 text-tl-dark-medium text-sm">{{ 'labels.cancel' | translate }}</span>
+                </button>
+
+                <button class="btn-base bg-tl-primary-medium px-5 flex justify-center" (click)="filterByPrice()">
+                    <span class="h-5 text-white text-sm">{{ 'labels.continue' | translate }}</span>
+                </button>
+            </div>
+        </section>
+    </div>
+</mat-dialog-content>

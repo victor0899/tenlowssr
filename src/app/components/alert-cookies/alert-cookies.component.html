@@ -1,0 +1,11 @@
+<div class="flex items-center justify-center p-5">
+    <p class="!p-0" innerHTML="{{data.msg | translate}}"></p>
+    <div class="flex flex-wrap !gap-2 btns-action">
+        <button (click)="close()">
+            <span>{{ 'labels.accept' | translate }}</span>
+        </button>
+        <button (click)="close()">
+            <span>{{ 'components.cookies.reject' | translate }}</span>
+        </button>
+    </div>
+</div>

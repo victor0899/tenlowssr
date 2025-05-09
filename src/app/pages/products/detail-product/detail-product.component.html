@@ -1,0 +1,406 @@
+<loader-overlay *ngIf="isLoader"></loader-overlay>
+<div class="container m-auto px-3 min-screen" *ngIf="!noExist" >
+  <section class="flex flex-row justify-between items-center flex-wrap sticky top-0 py-3 my-2">
+    <nav class="flex my-2" aria-label="Breadcrumb">
+      <ol class="inline-flex items-center space-x-1 md:space-x-3">
+        <li class="inline-flex items-center">
+          <a [routerLink]="['/shopping/store']" routerLinkActive="router-link-active"
+            class="inline-flex items-center text-sm font-medium text-tl-dark hover:text-tl-dark-medium">
+            {{ 'pages.detail_prod.home' | translate }}
+          </a>
+        </li>
+        <li *ngIf="!noExist">
+          <div class="flex items-center">
+            <div [ngTemplateOutlet]="ArrowBreadcrumb"></div>
+            <a [routerLink]="['/shopping/store/category', product.categories[0].name, product.categories[0].id]"
+              routerLinkActive="router-link-active"
+              class="ml-1 text-sm font-medium text-tl-dark hover:text-tl-dark-medium" *ngIf="product"> {{
+              product.categories[0].name }}</a>
+          </div>
+        </li>
+        <li aria-current="page" *ngIf="!noExist">
+          <div class="flex items-center">
+            <div [ngTemplateOutlet]="ArrowBreadcrumb"></div>
+            <span class="ml-1 text-sm font-medium text-tl-dark  md:ml-2 " *ngIf="product">{{ product.title }}</span>
+          </div>
+        </li>
+      </ol>
+    </nav>
+    <div class="container-select-category my-2">
+      <button (click)="openFilterCategory()"
+        class="flex flex-row items-center justify-between  btn-categories cursor-pointer">
+        <label class="cursor-pointer opacity-30 semibold text-sm h-[18px]">
+          {{ 'labels.categories' | translate }}
+        </label>
+      </button>
+    </div>
+  </section>
+
+  <section class="pt-3 pb-7">
+    <div class="grid grid-cols-2 gap-[38px]">
+
+      <div class="images-viewer col-span-2 sm:col-span-2 lg:col-span-1 md:col-span-2 grid grid-cols-4">
+
+        <div class="main-image col-span-4 h-[400px] bg-tl-gray rounded-2xl" *ngIf="product && product.images.length">
+          <img *ngIf="imgSelected" 
+          class="w-full h-full object-contain" 
+          [defaultImage]="defaultImg"
+          [errorImage]="defaultImg" 
+          [lazyLoad]="imgSelected.path" 
+          alt="{{ product.title }}" 
+          width="400" 
+          height="400"
+          fetchpriority="high">
+        </div>
+        <div class="col-span-4 pt-2 pb-4 mt-3.5 flex overflow-x-auto space-x-3.5 scroll-smooth"
+          *ngIf="product && product.images.length">
+          <div *ngFor="let item of product.images" [ngClass]="{'selected-img': imgSelected.id == item.id}"
+            class="w-36 h-32 bg-tl-gray rounded-2xl flex-shrink-0 overflow-hidden">
+            <img (click)="selectImage(item)" class="w-full h-full object-cover cursor-pointer"
+              [defaultImage]="defaultImg" [errorImage]="defaultImg" [lazyLoad]="item.path" alt="" srcset="">
+          </div>
+        </div>
+
+        <div class="detail-prod-mobile col-span-4 my-8">
+          <div [ngTemplateOutlet]="DetailPriceProduct"></div>
+        </div>
+
+        <div class="col-span-4">
+          <div class="mt-8">
+            <div class="description">
+              <h2 class="text-2xl h-11">{{ 'labels.description' | translate }}</h2>
+              <p *ngIf="!isLoadProduct" class="text-base">{{ product.description }}</p>
+              <div *ngIf="isLoadProduct" class="h-28 bg-tl-gray rounded text-tl-dark-medium w-11/12 mb-2"></div>
+            </div>
+
+            <div class="ubication mt-16" *ngIf="product">
+              <h2 class="text-2xl h-11">{{ 'labels.ubication' | translate }}</h2>
+              <p *ngIf="!isLoadProduct && product.location" class="text-base my-4">{{ product.location.delivery_address
+                }}</p>
+              <div *ngIf="isLoadProduct" class="h-2.5 bg-tl-gray rounded-full text-tl-dark-medium w-8/12 mb-2"></div>
+              <google-map [options]="mapOptions" [center]="center" [zoom]="zoom">
+                <map-marker *ngIf="markerPosition" [position]="markerPosition"></map-marker>
+              </google-map>
+            </div>
+
+            <div class="ratings mt-5 mb-6" *ngIf="product">
+              <h2 class="text-2xl h-11">{{ 'labels.ratings' | translate }}</h2>
+              <div class="ratings-container w-full">
+                <card-rating *ngFor="let item of califications" [calification]="item"></card-rating>
+                <no-results message="pages.profile.no_have_rating" *ngIf="!product?.califications?.length" [status]="false"></no-results>
+              </div>
+              <div class="text-end py-4 mt-4" *ngIf="product.califications.length > 2">
+                <a class="cursor-pointer text-black  hover:text-tl-dark-medium" *ngIf="califications.length < 3"
+                  (click)="addAllCalifications()">
+                  {{ 'pages.detail_prod.show_all_ratings' | translate }}
+                </a>
+                <a class="cursor-pointer text-black  hover:text-tl-dark-medium" *ngIf="califications.length > 3"
+                  (click)="hiddenAllCalifications()">
+                  {{ 'pages.detail_prod.hidden_all_ratings' | translate }}
+                </a>
+              </div>
+            </div>
+
+            <div class="recommendations mt-5 mb-14">
+              <h2 class="text-2xl mb-9">{{ 'pages.detail_prod.other_people_watched' | translate }}</h2>
+              <div *ngIf="!suggestedProducts.length">
+                <h2>{{ 'pages.detail_prod.no_products_suggested' | translate }}</h2>
+              </div>
+
+              <div appScrollableList [scrollUnit]="200" #list="appScrollableList"
+                class="container-recomendations flex flex-row overflow-hidden scroll-smooth">
+                <div *ngFor="let item of suggestedProducts" class="w-[190px] min-w-[190px] overflow-hidden mr-4"
+                  (click)="goProduct( item )">
+                  <card-product [product]="item" class="w-full" [disabledClick]="true"
+                    [enabledActions]="false"></card-product>
+                </div>
+              </div>
+
+              <div class="content-pag-items my-9 flex flex-row items-center justify-end">
+                <!-- <div class="pages flex flex-row items-center space-x-8">
+                        <div *ngFor="let item of [1,2,3,4]" class="text-tl-primary font-bold" [ngClass]="{'opacity-100': item == 1, 'opacity-30': item > 1}">{{ item }}</div>
+                      </div> -->
+                <div class="buttons buttons-page-items flex flex-row items-center">
+                  <button class="w-7 mr-8" *ngIf="list.isOverflow" (click)="list.scroll(-1)">
+                    <svg width="9" height="16" viewBox="0 0 9 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                      <path d="M7.5 15.5L0 8L7.5 0.5L8.83125 1.83125L2.6625 8L8.83125 14.1688L7.5 15.5Z"
+                        fill="#075A81" />
+                    </svg>
+                  </button>
+                  <button class="w-7" *ngIf="list.isOverflow" (click)="list.scroll(1)">
+                    <svg width="10" height="16" viewBox="0 0 10 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                      <path
+                        d="M2.01875 15.5L0.6875 14.1688L6.85625 8L0.6875 1.83125L2.01875 0.5L9.51875 8L2.01875 15.5Z"
+                        fill="#075A81" />
+                    </svg>
+                  </button>
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+      </div>
+
+      <div class="detail-prod col-span-2 sm:col-span-2 lg:col-span-1 md:col-span-2">
+        <div id="fixed-detail-prod">
+          <div [ngTemplateOutlet]="DetailPriceProduct"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+</div>
+
+<div *ngIf="noExist" class="flex flex-col m-auto px-3 min-screen color-co items-center justify-center" >
+  <no-results *ngIf="noExist" [message]="msgNoExist" [status]="true"></no-results>
+
+</div>
+
+
+<ng-template #ArrowBreadcrumb>
+  <svg aria-hidden="true" class="w-6 h-6 text-tl-dark" fill="currentColor" viewBox="0 0 20 20"
+    xmlns="http://www.w3.org/2000/svg">
+    <path fill-rule="evenodd"
+      d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z"
+      clip-rule="evenodd"></path>
+  </svg>
+</ng-template>
+
+
+<ng-template #DetailPriceProduct>
+  <div class="sticky top-20">
+    <name-product-actions [isLoadProduct]="isLoadProduct" [product]="product"></name-product-actions>
+
+    <div class="small-details-prod flex flex-row justify-between items-center flex-wrap w-11/12">
+
+      <div class="flex items-center mr-2 mt-2 mb-2" [ngClass]="{'gap-1.5': publicService.isIosMobile()}"
+        *ngIf="product">
+        <button class="appearance-none cursor-default" [ngClass]="{'scale-[1.3]': publicService.isIosMobile()}"
+          *ngFor="let item of [1,2,3,4,5]">
+          <svg class="w-6 h-6" *ngIf="item <= product.rating">
+            <use [ngClass]="{'scale-[1.3]': !publicService.isIosMobile()}" href="#star-select"></use>
+          </svg>
+          <svg class="w-6 h-6" *ngIf="item > product.rating">
+            <use [ngClass]="{'scale-[1.3]': !publicService.isIosMobile()}" href="#star-no-select"></use>
+          </svg>
+        </button>
+        <label class="h-5 ml-1 text-base">({{ product.rating }})</label>
+      </div>
+
+      <div class="h-5 text-base m-2 text-medium" *ngIf="!isLoadProduct">
+        {{ 'pages.detail_prod.state' | translate }}
+        {{ getTextStateProduct(product.condition) | translate }}
+      </div>
+
+      <div class="h-5 text-base text-medium" *ngIf="isLoadProduct">
+        {{ 'pages.detail_prod.state' | translate }}
+        <div class="h-2.5 bg-tl-gray rounded-full text-tl-dark-medium w-14 mb-2"></div>
+      </div>
+
+      <div class="h-5 text-base m-2 text-medium" *ngIf="!isLoadProduct">
+        {{ 'pages.detail_prod.product_of' | translate }}
+        <a [routerLink]="['/user/'+product.user.id]" routerLinkActive="router-link-active"
+          class="semibold text-tl-dark hover:text-tl-dark-medium"> {{ product.user.name }} </a>
+      </div>
+
+      <div class="h-5 text-base text-medium" *ngIf="isLoadProduct">
+        {{ 'pages.detail_prod.product_of' | translate }}
+        <div class="h-2.5 bg-tl-gray rounded-full text-tl-dark-medium w-14 mb-2"></div>
+      </div>
+
+    </div>
+
+    <div class="bg-tl-light-opaque rounded-3xl w-full px-12 pb-14 pt-[67px] mt-5" *ngIf="!isShowCart">
+      <div *ngIf="product"
+        class="time-price flex flex-row flex-wrap items-center gap-3 lg:justify-between md:justify-around sm:justify-center justify-center">
+        <div
+          class="bg-tl-blue-light text-tl-blue text-medium text-center text-base-2 w-[150px] py-2 px-2 m-1 rounded-full cursor-pointer"
+          (click)="openFilterAvailability('days')" *ngIf="product.daily_price">
+          <h2>
+            {{ periodRental.days > 0 ? periodRental.days : '' }}
+            {{ (periodRental.days > 1 ? 'labels.days' : 'labels.day') | translate }}
+          </h2>
+          <h2>{{ product.daily_price | currency }} / {{ 'labels.day' | translate }}</h2>
+        </div>
+
+        <div *ngIf="!product.daily_price"
+          class="bg-tl-light-opaque text-medium text-center text-base-2 w-[150px] py-2 px-2 m-1 rounded-full cursor-pointer">
+        </div>
+
+        <div
+          class="bg-tl-blue-light text-tl-blue text-medium  text-center text-base-2 w-[150px] py-2 px-2 m-1 rounded-full cursor-pointer"
+          (click)="openFilterAvailability('weeks')" *ngIf="product.weekly_price">
+          <h2>
+            {{ periodRental.weeks > 0 ? periodRental.weeks : ''}}
+            {{ (periodRental.weeks > 1 ? 'labels.weeks' : 'labels.week') | translate }}
+          </h2>
+          <h2>{{ product.weekly_price | currency }} / {{ 'labels.week' | translate }}</h2>
+        </div>
+
+        <div *ngIf="!product.weekly_price"
+          class="bg-tl-light-opaque text-medium text-center text-base-2 w-[150px] py-2 px-2 m-1 rounded-full cursor-pointer">
+        </div>
+
+        <div
+          class="bg-tl-blue-light text-tl-blue text-medium  text-center text-base-2 w-[150px] py-2 px-2 m-1 rounded-full cursor-pointer"
+          (click)="openFilterAvailability('months')" *ngIf="product.monthly_price">
+          <h2>
+            {{ periodRental.months > 0 ? periodRental.months : '' }}
+            {{ (periodRental.months > 1 ? 'labels.months' : 'labels.month') | translate }}
+          </h2>
+          <h2>{{ product.monthly_price | currency }} / {{ 'labels.month' | translate }}</h2>
+        </div>
+
+        <div *ngIf="!product.monthly_price"
+          class="bg-tl-light-opaque text-medium text-center text-base-2 w-[150px] py-2 px-2 m-1 rounded-full cursor-pointer">
+        </div>
+
+        <div (click)="checkProductAvailable()" *ngIf="product.user.id !== userCurrent?.id"
+          class="bg-tl-primary-medium text-white text-sm w-full cursor-pointer h-16 py-2 px-4 m-2 rounded-full flex flex-row justify-center items-center">
+          <label class="text-center cursor-pointer text-base text-medium">
+            {{ 'pages.detail_prod.ask_price_available' | translate}}
+          </label>
+        </div>
+      </div>
+
+      <div *ngIf="isLoadProduct" class="time-price flex flex-row justify-center items-center">
+        <mat-spinner color="primary" diameter="40"></mat-spinner>
+      </div>
+    </div>
+
+    <div class="details mt-3" *ngIf="!isShowCart">
+      <p class="text-base-2">{{ 'pages.detail_prod.better_to_you_and_planet' | translate }}</p>
+      <div class="flex flex-row items-center space-x-1 mb-2 mt-2">
+        <img src="assets/icons/tl-tag.svg" alt="" srcset="">
+        <label class="h-5 text-xs">-64% {{ 'pages.detail_prod.discount_vs_new' | translate }}</label>
+      </div>
+      <div class="flex flex-row items-center space-x-1">
+        <img src="assets/icons/tl-planet.svg" alt="" srcset="">
+        <label class="h-5 text-xs leading-4">{{ 'pages.detail_prod.tech_save_energy' | translate }}</label>
+      </div>
+    </div>
+
+    <div class="bg-tl-light-opaque rounded-3xl w-full px-6 pb-8 pt-9 mt-5" *ngIf="isShowCart">
+      <div class="time-price flex flex-row flex-wrap items-center justify-between border-b-1 py-2 px-8">
+        <div class="flex items-center space-x-2">
+          <p> {{ rentalData.duration }} {{ rentalData.labelPeriod | translate }} </p>
+          <p class="text-medium"> {{ rentalData.date }} </p>
+        </div>
+
+        <button class="cursor-pointer text-medium text-black" (click)="openCart()">
+          {{ 'labels.change' | translate }}
+        </button>
+      </div>
+
+      <div class="time-price flex flex-col flex-wrap items-center justify-between border-b-1 pb-5 px-8 mt-7">
+        <div class="w-full flex items-center justify-between flex-wrap my-2">
+          <p class="m-1">{{ rentalData.cost | currency }} x {{ rentalData.duration }} {{ rentalData.labelPeriod |
+            translate }} </p>
+          <p class="m-1">{{ rentalData.cost * rentalData.duration | currency }}</p>
+        </div>
+        <div class="w-full flex items-center justify-between flex-wrap my-2">
+          <p class="m-1">{{ 'pages.detail_prod.service_spend' | translate }}</p>
+          <p class="m-1">0 €</p>
+        </div>
+      </div>
+
+      <div
+        class="time-price flex flex-row flex-wrap items-center justify-between pt-16 pb-7 px-8 text-black text-[22px]">
+        <p>{{ 'labels.total' | translate }}</p>
+        <p> {{ rentalData.cost * rentalData.duration | currency }} </p>
+      </div>
+
+      <div (click)="checkout()"
+        class="bg-tl-primary-medium text-white text-sm cursor-pointer h-12 py-2 px-1 m-2 mx-8 rounded-full flex flex-row justify-center items-center">
+        <label class="h-5 cursor-pointer text-base text-medium">
+          {{ 'pages.detail_prod.booking_now' | translate}}
+        </label>
+      </div>
+    </div>
+  </div>
+</ng-template>
+
+<!-- Schema.org markup para productos -->
+<script type="application/ld+json" *ngIf="isValidProductForSchema()">
+  {
+    "@context": "https://schema.org/",
+    "@type": "Product",
+    "name": "{{ product.title }}",
+    "image": [
+      <ng-container *ngFor="let img of product.images; let i = index">
+      "{{ img.path }}"{{ i < product.images.length - 1 ? ',' : '' }}
+      </ng-container>
+    ],
+    "description": "{{ product.description }}",
+    <ng-container *ngIf="product.id">
+    "sku": "{{ product.id }}",
+    </ng-container>
+    "offers": {
+      "@type": "Offer",
+      "url": "{{ window.location.href }}",
+      "priceCurrency": "EUR",
+      "price": "{{ getProductPrice() }}",
+      "priceValidUntil": "{{ getNextYear() }}",
+      "availability": "{{ getSchemaAvailability() }}",
+      "itemCondition": "{{ getSchemaCondition() }}"
+    }
+    <ng-container *ngIf="product.rating > 0 && product.califications && product.califications.length > 0">
+    ,
+    "aggregateRating": {
+      "@type": "AggregateRating",
+      "ratingValue": "{{ product.rating }}",
+      "bestRating": "5",
+      "worstRating": "1",
+      "ratingCount": "{{ product.califications.length }}"
+    }
+    <ng-container *ngIf="product.califications && product.califications.length > 0">
+    ,
+    "review": [
+      <ng-container *ngFor="let item of product.califications; let i = index">
+      {
+        "@type": "Review",
+        "author": {
+          "@type": "Person",
+          "name": "{{ item.user?.name || 'Usuario' }} {{ item.user?.last_name || '' }}"
+        },
+        "datePublished": "{{ item.created_at | date: 'yyyy-MM-dd' }}",
+        "reviewRating": {
+          "@type": "Rating",
+          "ratingValue": "{{ item.rating || 0 }}",
+          "bestRating": "5",
+          "worstRating": "1"
+        },
+        "reviewBody": "{{ item.comment || '' }}"
+      }{{ i < product.califications.length - 1 ? ',' : '' }}
+      </ng-container>
+    ]
+    </ng-container>
+    </ng-container>
+  }
+  </script>
+
+
+<svg class="hidden">
+  <defs>
+    <symbol id="star-select" width="17" height="16" viewBox="0 0 17 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path
+        d="M3.61113 15.4167L4.89759 9.85521L0.583008 6.11458L6.28301 5.61979L8.49967 0.375L10.7163 5.61979L16.4163 6.11458L12.1018 9.85521L13.3882 15.4167L8.49967 12.4677L3.61113 15.4167Z"
+        fill="#FFB959" />
+    </symbol>
+
+    <symbol id="star-no-select" width="17" height="17" viewBox="0 0 17 17" fill="none"
+      xmlns="http://www.w3.org/2000/svg">
+      <path
+        d="M16.4163 6.71083L10.7243 6.22L8.49967 0.979164L6.27509 6.22791L0.583008 6.71083L4.90551 10.4554L3.60717 16.0208L8.49967 13.0679L13.3922 16.0208L12.1018 10.4554L16.4163 6.71083ZM8.49967 11.5875L5.52301 13.3846L6.31467 9.99625L3.68634 7.71625L7.15384 7.41541L8.49967 4.225L9.85342 7.42333L13.3209 7.72416L10.6926 10.0042L11.4843 13.3925L8.49967 11.5875Z"
+        fill="#313B3F" />
+    </symbol>
+  </defs>
+</svg>
+
+
+<ng-template #VoidButton>
+  <div
+    class="bg-tl-light-opaque text-medium text-center text-base-2 w-[150px] py-2 px-2 m-1 rounded-full cursor-pointer">
+  </div>
+</ng-template>

@@ -1,0 +1,23 @@
+*{
+    font-family: 'BalooTamma';
+}
+
+mat-toolbar{
+    background: transparent;
+}
+
+.content-signup{
+    height: 96vh;
+    min-height: 564px;
+    max-height: 800px;
+}
+
+.mat-mdc-dialog-content{
+    min-height: 90%;
+    padding-top:  0 !important;
+}
+
+
+.signup{
+    max-width: 525px;
+}

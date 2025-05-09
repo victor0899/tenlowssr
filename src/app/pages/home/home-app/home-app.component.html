@@ -1,0 +1,175 @@
+<div class="home-page">
+    <div>
+        <div class="construction-container">
+            <div class="overlay-text">¡Muy pronto estaremos listos! Mientras echa un vistazo</div>
+            <img src="assets/images/home/under_construction.png" *ngIf="!isMobile" alt="Under construction Tenlow"
+                class="construction-image">
+        </div>
+        <div class="banner-home relative flex flex-col justify-center items-start">
+            <img src="assets/images/home/banner.webp" *ngIf="!isMobile" alt="Banner de la pantalla principal de Tenlow"
+                srcset="" class="banner-img">
+            <img src="assets/images/home/banner_mobile.webp" *ngIf="isMobile"
+                alt="Banner de la pantalla principal de Tenlow" srcset="" class="banner-img">
+            <!-- <img src="assets/images/home/gps-shapes.svg" alt="gps-shapes" class="absolute shapes-gps"> -->
+            <div class="details-banner">
+                <h1>{{ 'pages.home.banner_title' | translate }}</h1>
+                <h3 class="home-subtitle">{{ 'pages.home.banner_subtitle' | translate }}</h3>
+                <div class="flex flex-row items-center justify-start w-full mt-10" *ngIf="!isMobile">
+                    <app-searchbar placeholder="pages.home.text_search" class="searchbar"></app-searchbar>
+                </div>
+            </div>
+        </div>
+
+        <div class="container categories-mobile m-auto mb-16 mt-7" *ngIf="listCategories.length > 0">
+            <h1 class="text-4xl ml-4">{{ 'labels.categories' | translate }}</h1>
+            <div class="flex items-center my-8 px-3 relative">
+                <div class="nav-slide-prev" *ngIf="list.isOverflow" (click)="list.scroll(-1)">
+                    <svg width="14" height="14" viewBox="0 0 6 8" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path
+                            d="M5.09932 0.380432C5.20588 0.486992 5.25916 0.610192 5.25916 0.750032C5.25916 0.890192 5.20588 1.01355 5.09932 1.12011L2.20924 4.01019L5.1094 6.91035C5.20924 7.01019 5.25916 7.13019 5.25916 7.27035C5.25916 7.41019 5.20588 7.53339 5.09932 7.63995C4.99916 7.74011 4.8774 7.79019 4.73404 7.79019C4.59068 7.79019 4.46908 7.74011 4.36924 7.63995L1.039 4.31019C0.992595 4.26347 0.959315 4.21515 0.939155 4.16523C0.919315 4.11531 0.909395 4.06363 0.909395 4.01019C0.909395 3.95675 0.919315 3.90507 0.939155 3.85515C0.959315 3.80523 0.992595 3.75691 1.039 3.71019L4.37932 0.370352C4.48588 0.263472 4.60748 0.213392 4.74412 0.220112C4.88076 0.226832 4.99916 0.280272 5.09932 0.380432Z"
+                            fill="#1C1B1F" />
+                    </svg>
+                </div>
+
+                <div class="flex items-center relative overflow-hidden scroll-smooth " appScrollableList
+                    [scrollUnit]="114" #list="appScrollableList">
+                    <div *ngFor="let category of listCategories"
+                        class="item-category-mobile relative flex flex-col items-center justify-center m-1 cursor-pointer"
+                        (click)="openStore(category.id, category.name)">
+                        <!-- <object type="image/svg+xml" [data]="safeUrl(category.icon)" class="w-8 h-8">
+                        {{ category.name | translate }}
+                    </object> -->
+                        <img [defaultImage]="defaultImg" [errorImage]="defaultImg" [lazyLoad]="category.icon"
+                            class="w-8 h-8" />
+                        <p class="relative text-center text-xs w-28 mt-2 semibold">{{ category.name | translate }}</p>
+                    </div>
+                </div>
+
+
+                <div class="nav-slide-next" *ngIf="list.isOverflow" (click)="list.scroll(1)">
+                    <svg width="14" height="14" viewBox="0 0 6 8" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path
+                            d="M1.06926 7.62985C0.962704 7.52329 0.909424 7.40009 0.909424 7.26025C0.909424 7.12009 0.962704 6.99673 1.06926 6.89017L3.95934 4.00009L1.05918 1.09993C0.959344 1.00009 0.909424 0.880093 0.909424 0.739933C0.909424 0.600093 0.962704 0.476893 1.06926 0.370333C1.16942 0.270173 1.29118 0.220093 1.43454 0.220093C1.5779 0.220093 1.6995 0.270173 1.79934 0.370333L5.12958 3.70009C5.17598 3.74681 5.20926 3.79513 5.22942 3.84505C5.24926 3.89497 5.25918 3.94665 5.25918 4.00009C5.25918 4.05353 5.24926 4.10521 5.22942 4.15513C5.20926 4.20505 5.17598 4.25337 5.12958 4.30009L1.78926 7.63993C1.6827 7.74681 1.5611 7.79689 1.42446 7.79017C1.28782 7.78345 1.16942 7.73001 1.06926 7.62985Z"
+                            fill="#1C1B1F" />
+                    </svg>
+                </div>
+            </div>
+        </div>
+
+        <div
+            class="container flex flex-row flex-wrap lg:justify-between md:justify-between justify-center m-auto my-16 p-4 pb-8">
+            <div *ngFor="let detail of tenlowDetails"
+                class="flex flex-col items-center p-1 lg:w-3/12 md:w-6/12 sm:w-9/12">
+                <img [src]="detail.image" alt="{{ detail.title | translate }}" class="mb-3 min-h-[120px]">
+                <h1 class="mb-3.5 text-base semibold">{{ detail.title | translate }}</h1>
+                <p class="text-center text-base-2 text-tl-crayola">{{ detail.description | translate }}</p>
+            </div>
+        </div>
+
+        <div class="info-how-works">
+            <img src="assets/images/home/cloud.svg" alt="Forma de nuber - Tenlow" class="absolute">
+            <!-- <img src="assets/images/home/rectangle.svg" alt="gps-shapes" class="absolute"> -->
+            <h1 class="text-4xl text-tl-blue">{{ 'pages.home.tenlow_easy_secure' | translate }}</h1>
+            <h3 class="text-[22px] leading-7 text-tl-blue mt-3.5">{{ 'pages.home.discover_tenlow' | translate }}</h3>
+            <button class="rounded-full mt-7 bg-tl-blue h-10 !px-6" (click)="navigate('https://tenlow.es/como-funciona/')">
+                <span class="text-sm text-tl-light">{{ 'pages.home.how_work' | translate }}</span>
+            </button>
+        </div>
+
+        <div class="container categories-web m-auto mt-8">
+            <h1 class="text-4xl ml-24">{{ 'labels.categories' | translate }}</h1>
+            <div class="cat-main">
+                <div class="cat-container">
+                    <!-- <div *ngFor="let category of listCategories" class="beehive" (click)="openStore(category.id)"> -->
+                    <div *ngFor="let category of listCategories" class="beehive">
+                        <div
+                            class="categorie-item relative flex flex-col items-center justify-center m-1 cursor-pointer">
+                            <div class="categorie-border absolute"></div>
+                            <div class="categorie-bg absolute"></div>
+                            <img [defaultImage]="defaultImg" [errorImage]="defaultImg" [lazyLoad]="category.icon"
+                                class="relative" alt="">
+                            <p class="relative text-center text-xs w-28 mt-2">{{ category.name | translate }}</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="information-tenlow container m-auto grid lg:grid-cols-2 gap-y-28 gap-x-4 sm:grid-cols-1">
+            <div class="img-information">
+                <img class="w-full h-full" src="assets/images/information_1.svg"
+                    alt="{{  'pages.home.information_title_1' | translate }}" srcset="">
+            </div>
+            <div class="information-text px-4">
+                <h1>{{ 'pages.home.information_title_1' | translate }}</h1>
+                <p class="mt-7">{{ 'pages.home.description_information_1' | translate }}</p>
+                <button class="rounded-full mt-8" (click)="navAuth()">{{ 'pages.home.btn_earn_money' | translate
+                    }}</button>
+            </div>
+            <div class="img-information lg:hidden">
+                <img class="w-full h-full" src="assets/images/information_2.svg"
+                    alt="{{  'pages.home.information_title_2' | translate }}" srcset="">
+            </div>
+            <div class="information-text px-4 lg:pt-20 md:pt-10">
+                <h1>{{ 'pages.home.information_title_2' | translate }}</h1>
+                <p class="mt-7">{{ 'pages.home.description_information_2' | translate }}</p>
+                <button class="rounded-full mt-8" (click)="navAuth()">{{ 'pages.home.btn_begin_save' | translate
+                    }}</button>
+            </div>
+            <div class="img-information hidden lg:flex">
+                <img class="w-full h-full" src="assets/images/information_2.svg"
+                    alt="{{  'pages.home.information_title_2' | translate }}" srcset="">
+            </div>
+        </div>
+
+        <div class="together-change lg:max-w-[667px] md:max-w-[75%] max-w-[90%] text-center m-auto mt-28 mb-20">
+            <h1 class="text-change-reality text-tl-dark"
+                innerHTML="{{ 'pages.home.together_change_reality' | translate }}"></h1>
+            <p class="text-tl-dark-light mt-6">{{ 'pages.home.together_change_reality_info' | translate }}</p>
+        </div>
+
+        <div class="container m-auto flex items-center justify-center flex-wrap">
+            <div class="card-extra-info">
+                <h1>{{ 'pages.home.committed_goals_2030' | translate }}</h1>
+                <p>{{ 'pages.home.info_committed_goals_2030' | translate }}</p>
+                <a class="rounded-full min-h-[40px] bg-tl-primary-medium h-10 px-4"
+                    href="https://tenlow.es/eco_fiendly/">
+                    <span class="text-sm text-tl-light">{{ 'pages.home.our_ods' | translate }}</span>
+                </a>
+            </div>
+            <div class="card-extra-info">
+                <h1>{{ 'pages.home.make_difference' | translate }}</h1>
+                <p>{{ 'pages.home.info_make_difference' | translate }}</p>
+                <button class="rounded-full min-h-[40px] bg-tl-primary-medium h-10 px-4" (click)="openTreeNation()">
+                    <span class="text-sm text-tl-light">{{ 'pages.home.plant_tree_nation' | translate }}</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- SEO Links - Visualmente ocultos pero accesibles para crawlers -->
+        <div class="seo-category-links" aria-hidden="true">
+            <h2 class="visually-hidden">Todas las categorías disponibles</h2>
+            <ul class="visually-hidden">
+                <li *ngFor="let category of listCategories">
+                    <a [href]="getCategoryUrl(category)" [title]="category.name | translate">
+                        {{ category.name | translate }}
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </div>
+</div>
+<!-- <div class="tab-menu">
+    <div
+        *ngFor="let item of tabMenu"
+        class="flex flex-col items-center justify-center h-20"
+        [ngClass]="{
+            'wd-85': item.label == 'components.navbar.tablon',
+            'wd-60': item.label == 'labels.search_txt'
+        }"
+        (click)="navigate(item.route)"
+    >
+        <mat-icon class="icon-tab">{{ item.icon }}</mat-icon>
+        <span class="mt-2">{{ item.label | translate }}</span>
+    </div>
+</div> -->

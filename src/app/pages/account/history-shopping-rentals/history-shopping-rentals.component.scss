@@ -1,0 +1,9 @@
+button{
+    transition: all .5s;
+}
+
+@media (max-width: 460px) {
+    .btn-op{
+        margin-left: 80%;
+    }
+}

@@ -1,0 +1,46 @@
+<mat-toolbar>
+    <mat-toolbar-row>
+      <button mat-dialog-close>
+        <svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M14 2.0585L12.59 0.72583L7 6.00926L1.41 0.72583L0 2.0585L5.59 7.34193L0 12.6254L1.41 13.958L7 8.6746L12.59 13.958L14 12.6254L8.41 7.34193L14 2.0585Z" fill="#60757C"/>
+        </svg>
+      </button>
+    </mat-toolbar-row>
+</mat-toolbar>
+<mat-dialog-content>
+    <div class="content">
+        <h1 class="text-base semibold text-center title">{{ 'components.cancel_rental.please_select_option' | translate }}</h1>
+
+        <mat-radio-group
+            aria-labelledby="example-radio-group-label"
+            class="group-options"
+            [(ngModel)]="reason"
+        >
+            <mat-radio-button color="accent" *ngFor="let option of optionsCancel" [value]="option">
+                {{ option.label | translate }}
+            </mat-radio-button>
+        </mat-radio-group>
+
+        <div class="relative comment" *ngIf="reason && reason.value == 'others' ">
+            <textarea
+                id="descriptionProd"
+                maxlength="600"
+                autocomplete="off"
+                type="text"
+                rows="2"
+                [(ngModel)]="comment"
+                [class]="publicService.cssInputBase"
+                placeholder="descriptionProd"
+            ></textarea>
+            <label for="descriptionProd" [class]="publicService.cssFloatLabelBase">
+                {{ 'components.cancel_rental.explain_quickly' | translate }}
+            </label>
+        </div>
+
+        <div class="flex flex-wrap justify-center items-center mt-5 mb-5 content-buttons">
+            <button class="bg-tl-primary px-5 h-10 rounded-3xl flex justify-center items-center mx-3 my-1 w-11/12" (click)="cancelRental()">
+                <span class="text-tl-blue text-sm">{{ 'labels.send' | translate }}</span>
+            </button>
+        </div>
+    </div>
+</mat-dialog-content>

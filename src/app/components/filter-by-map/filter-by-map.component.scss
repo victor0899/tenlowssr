@@ -1,0 +1,20 @@
+.filter-map{
+    background: linear-gradient(0deg, #FFFFFF, #FFFFFF), #F9FDFF;
+    box-shadow: 0px 1px 2px rgba(0, 0, 0, 0.3), 0px 1px 3px 1px rgba(0, 0, 0, 0.15);
+    border-radius: 16px;
+    padding: 26px;
+
+    google-map{
+        border-radius: 16px;
+        margin: 24px 0;
+    }
+}
+
+mat-slider{
+    width: 100% !important;
+    margin: auto;
+}
+
+.searchbar{
+    max-width: 100%;
+}

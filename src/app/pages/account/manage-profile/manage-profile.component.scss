@@ -1,0 +1,28 @@
+.semibold{
+    span{
+        font-family: 'BalooTamma';
+        font-size: 12px;
+    }
+}
+
+.panel-slider{
+    display: none;
+    .item-panel{
+        min-width: 175px;
+    }
+}
+
+@media (max-width: 767px) {
+    .panel-options{
+        display: none;
+    }
+    .panel-slider{
+        display: flex;
+    }
+}
+
+.btn-base{
+    span{
+        font-family: "BalooTamma-Medium";
+    }
+}

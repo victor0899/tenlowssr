@@ -1,0 +1,31 @@
+.img-empty{
+    max-width: 250px;
+    min-width: 190px;
+    // margin: 20px 0;
+}
+
+.margin-top-4{
+    margin-top: 4rem;
+}
+
+.margin-top--4{
+    margin-top: -8rem;
+}
+
+.no-results{
+	h1{
+		font-size: 57px;
+		line-height: 64px;
+		color: var(--blue);
+        padding: 1.5rem;
+	}
+    label{
+		font-size: 30px;
+		color: var(--blue);
+	}
+}
+
+.class-text{
+    padding: 0 0.5rem 0 0;
+}
+

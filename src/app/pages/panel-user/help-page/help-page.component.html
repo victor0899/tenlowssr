@@ -1,0 +1,81 @@
+<div class="container min-screen m-auto p-2 pb-10">
+    <h1 *ngIf="user" class="text-4xl mt-12 mb-6 text-center">{{ 'pages.help.title' | translate:{ name: user.name } }}</h1>
+    <h1 *ngIf="!user" class="text-4xl mt-12 mb-6 text-center">{{ 'pages.help.title_no_user' | translate }}</h1>
+
+    <div class="grid grid-cols-2 gap-6">
+        <div class="faqs lg:col-span-1 md:col-span-2 sm:col-span-2 col-span-2">
+            <h2 class="text-2xl my-5">{{ 'pages.help.faqs' | translate }}</h2>
+            <mat-accordion>
+                <mat-expansion-panel
+                    (opened)="item.isOpen = true"
+                    (closed)="item.isOpen = false"
+                    [hideToggle]="true"
+                    *ngFor="let item of faqs; let i = index;"
+                >
+                  <mat-expansion-panel-header>
+                    <mat-panel-title class="text-base-2 !text-tl-dark-gray">
+                        <span class="mr-4 text-xl">{{ i + 1 }}</span>
+                        {{ item.question }}
+                    </mat-panel-title>
+                    <mat-panel-description>
+                        <mat-icon *ngIf="!item.isOpen" color="dark">add</mat-icon>
+                        <mat-icon *ngIf="item.isOpen">remove</mat-icon>
+                    </mat-panel-description>
+                  </mat-expansion-panel-header>
+                  <p  class="text-base-2 !text-tl-dark-gray" [innerHTML]="item.answer"></p>
+                </mat-expansion-panel>
+            </mat-accordion>
+
+            <!-- <button class="rounded-full m-auto mt-6 bg-tl-primary-medium h-10 px-6">
+                <span class="text-sm text-white">{{  'labels.show_more' | translate }}</span>
+            </button> -->
+        </div>
+
+        <div class="more-questions lg:col-span-1 md:col-span-2 sm:col-span-2 col-span-2">
+            <mat-tab-group dynamicHeight class="tab-faqs">
+                <mat-tab label="{{ 'pages.help.iam_owner' | translate }}">
+                    <div class="content-answers">
+                        <mat-accordion>
+                            <mat-expansion-panel
+                                [hideToggle]="true"
+                                *ngFor="let item of faqsOwner; let i = index;"
+                            >
+                              <mat-expansion-panel-header>
+                                <mat-panel-title class="text-base-2 !text-tl-dark-gray">
+                                    {{ item.question }}
+                                </mat-panel-title>
+                                <mat-panel-description>
+                                    <mat-icon *ngIf="!item.isOpen">add</mat-icon>
+                                    <mat-icon *ngIf="item.isOpen">remove</mat-icon>
+                                </mat-panel-description>
+                              </mat-expansion-panel-header>
+                              <p class="text-base-2 !text-tl-dark-gray" [innerHTML]="item.answer"></p>
+                            </mat-expansion-panel>
+                        </mat-accordion>
+                    </div>
+                </mat-tab>
+                <mat-tab label="{{ 'pages.help.im_tenant' | translate }}">
+                    <div class="content-answers">
+                        <mat-accordion>
+                            <mat-expansion-panel
+                                [hideToggle]="true"
+                                *ngFor="let item of faqsClient; let i = index;"
+                            >
+                              <mat-expansion-panel-header>
+                                <mat-panel-title class="text-base-2 !text-tl-dark-gray">
+                                    {{ item.question }}
+                                </mat-panel-title>
+                                <mat-panel-description>
+                                    <mat-icon *ngIf="!item.isOpen">add</mat-icon>
+                                    <mat-icon *ngIf="item.isOpen">remove</mat-icon>
+                                </mat-panel-description>
+                              </mat-expansion-panel-header>
+                              <p class="text-base-2 !text-tl-dark-gray" [innerHTML]="item.answer"></p>
+                            </mat-expansion-panel>
+                        </mat-accordion>
+                    </div>
+                </mat-tab>
+            </mat-tab-group>
+        </div>
+    </div>
+</div>

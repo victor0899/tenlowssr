@@ -1,0 +1,448 @@
+.banner-home{
+    width: 100%;
+    height: 66vh;
+    overflow: hidden;
+    min-height: 672px;
+	background: #B9EFF9;
+	.shapes-gps{
+		right: 50px;
+    	top: 50px;
+	}
+    .banner-img{
+        object-fit: none;
+        max-width: 100%;
+        min-width: 100%;
+        min-height: 100%;
+		position: absolute;
+    }
+    .details-banner{
+		padding-left: 60px;
+		max-width: 880px;
+		width: 65%;
+		z-index: 2;
+        h1{
+            font-size: 57px;
+            line-height: 64px;
+        }
+        h3{
+            font-size: 28px;
+            line-height: 36px;
+            margin-top: 30px;
+			max-width: 611px;
+        }
+		.searchbar{
+			max-width: 550px;
+		}
+        .btn-search{
+            background: var(--primary);
+            border: none;
+            height: 40px;
+            label{
+                height: 21px;
+                display: flex;
+            }
+        }
+    }
+}
+.construction-message {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 80vh;
+    font-size: 2rem;
+    text-align: center;
+}
+
+.information-tenlow {
+    margin-top: 90px;
+}
+
+
+.categorie-item{
+    .categorie-bg{
+        clip-path: polygon(30% 0%, 70% 0%, 100% 30%, 100% 70%, 70% 100%, 30% 100%, 0% 70%, 0% 30%);
+        background: var(--light-2);
+        transform: rotate(67deg);
+        width: 128px;
+        height: 128px;
+    }
+    .categorie-border{
+        clip-path: polygon(30% 0%, 70% 0%, 100% 30%, 100% 70%, 70% 100%, 30% 100%, 0% 70%, 0% 30%);
+        background: var(--primary-medium);
+        transform: rotate(67deg);
+        width: 130px;
+        height: 130px;
+    }
+	transition: all .45s ease-in-out;
+    width: 130px;
+    height: 130px;
+	margin: auto;
+	img{
+		width: 52px;
+		height: 52px;
+	}
+	p{
+		font-size: 11px;
+		font-family: "BalooTamma-Medium";
+		line-height: 16px;
+		letter-spacing: 0.5px;
+	}
+}
+
+.categorie-item:hover{
+	transform: scale(1.18);
+}
+
+.item-bottom{
+    bottom: -69px;
+}
+
+
+@media (max-width: 924px) {
+	.shapes-gps{
+		opacity: 0;
+	}
+    .banner-home{
+		height: 60vh;
+		.banner-img{
+			object-fit: cover;
+		}
+    }
+
+    .details-banner{
+		width: 60% !important;
+		margin-top: 20px;
+        h1{
+            font-size: 42px !important;
+            line-height: 46px !important;
+        }
+        h3{
+            font-size: 26px !important;
+            line-height: 30px !important;
+		}
+	}
+}
+
+@media (max-width: 700px) {
+	.banner-home{
+		justify-content: start;
+		min-height: 618px;
+    }
+	.home-subtitle,
+	app-searchbar{
+		display: none !important;
+	}
+}
+
+@media (max-width: 560px) {
+    .banner-home{
+		.details-banner{
+			padding-left: 20px !important;
+			width: 86% !important;
+			margin-top: 28px;
+		}
+    }
+}
+
+.home-page{
+    padding-bottom: 30px;
+    overflow-x: hidden;
+}
+
+.information-text{
+	h1{
+		font-size: 30px;
+		line-height: 34px;
+		letter-spacing: -0.39px;
+		color: var(--black);
+	}
+	p{
+		font-size: 20px;
+		line-height: 26px;
+		padding-right: 5px;
+		color: var(--crayola);
+	}
+    button{
+        background: var(--primary-medium);
+        color: var(--light);
+        padding: 0px 24px;
+        height: 40px;
+    }
+}
+
+body {
+	overflow-x: hidden;
+}
+
+.load-spinner{
+	width: 51px !important;
+	height: 51px !important;
+	margin: auto;
+}
+
+.info-how-works{
+	color: var(--blue);
+	background-color: var(--blue-light);
+	height: 260px;
+	width: 100%;
+	text-align: center;
+	position: relative;
+	margin-bottom: 50px;
+    margin-top: 160px;
+	img{
+		top: -200px;
+		z-index: -1;
+		width: 100vw;
+		min-width: 1300px;
+		height: 100%;
+	}
+}
+
+.img-information{
+	img{
+		max-width: 500px;
+		margin: auto;
+	}
+}
+
+.card-extra-info{
+	max-width: 580px;
+	background: #F2FFFE;
+    box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.1);
+    border-radius: 16px;
+    min-height: 488px;
+    padding: 50px 27px 34px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    margin: 16px;
+	h1{
+		color: var(--blue);
+		font-size: 36px;
+		line-height: 44px;
+		min-height: 132px;
+	}
+	p{
+		color: var(--crayola);
+		font-size: 20px;
+		line-height: 26px;
+	}
+	button{
+		width: max-content;
+	}
+}
+
+.categories-web{
+	margin-bottom: 140px;
+}
+
+
+.together-change{
+	.text-change-reality{
+		font-size: 45px;
+		line-height: 52px;
+		text-align: center;
+	}
+	p{
+		font-size: 20px;
+		line-height: 26px;
+		color: var(--crayola);
+	}
+}
+//////////////////////////////
+.cat-main {
+	margin: auto;
+	margin-top: 16px;
+	display:flex;
+	--size: 130px;  /* size  */
+	--margin: 0px;    /* margin */
+	--font-size: calc(1.732 * var(--size) + 4 * var(--margin)  - 1px);
+}
+
+.cat-container {
+	font-size: 0; /*disable white space between inline block element */
+	padding: 0 36px;
+}
+
+.cat-container div.beehive {
+	padding: 10px;
+	width: 20%;
+	margin: var(--margin);
+	height: calc(var(--size)*1.1547);
+	display: inline-block;
+	font-size:initial;
+	margin-bottom: calc(var(--margin) - var(--size)*0.2885);
+}
+
+.cat-container::before {
+	content: "";
+	width: 10%;
+	float: left;
+	height: 120%;
+	shape-outside: repeating-linear-gradient(#0000 0 calc(var(--font-size) - 3px),#000  0 var(--font-size));
+}
+
+.categories-mobile{
+	display: none;
+}
+
+.item-category-mobile{
+	color: var(--auro-metal);
+	font-size: 17px;
+	img,
+	object{
+		filter: invert(42%) sepia(26%) saturate(256%) hue-rotate(152deg) brightness(97%) contrast(90%);
+	}
+}
+
+@media (max-width: 790px) {
+	.cat-container::before{
+		height: auto;
+	}
+	.cat-container div.beehive {
+		margin: 0 !important;
+	}
+
+	.categories-web{
+		display: none;
+	}
+	.categories-mobile{
+		display: block;
+	}
+}
+
+.nav-slide-prev,
+.nav-slide-next{
+	background: var(--blank);
+    border: 1px solid var(--dark);
+}
+
+
+///////////
+.tab-menu{
+	transition: all .4s;
+	animation: revealItemAnimation .4s ease-in;
+	background: var(--tab-bg);
+    height: 100px;
+    padding: 12px;
+    position: fixed;
+    bottom: 0;
+    width: 100%;
+    z-index: 5;
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	cursor: pointer;
+	span,
+	.icon-tab{
+		color: var(--auro-metal);
+		text-align: center;
+	}
+}
+
+
+@media (min-width: 680px ) {
+	.tab-menu{
+		display: none;
+	}
+}
+
+.wd-85{
+	width: 85px;
+}
+.wd-60{
+	width: 60px;
+}
+
+@media (max-width: 630px) {
+	.banner-img{
+		object-fit: none !important;
+		right: 0;
+		bottom: 0;
+		min-width: fit-content !important;
+		min-height: fit-content !important;
+	}
+}
+
+.categorie-item{
+	.ng-failed-lazyloaded{
+		border-radius: 100%;
+		overflow: hidden;
+	}
+}
+
+.item-category-mobile{
+	.ng-failed-lazyloaded{
+		border-radius: 100%;
+		overflow: hidden;
+		filter: none !important;
+	}
+}
+
+.construction-container {
+    position: relative;
+    text-align: center; /* Centra el contenido */
+    display: flex;
+    justify-content: center; /* Centra horizontalmente */
+    align-items: center; /* Centra verticalmente */
+    height: 100%; /* Ajusta esto según necesites */
+}
+
+.construction-image {
+    max-width: 30%; /* Ajusta el tamaño de la imagen */
+    height: auto; /* Mantiene la proporción */
+	// opacity: 0.8;
+}
+
+.overlay-text {
+    // position: absolute;
+    // bottom: 5px; /* Posiciona el texto en la parte inferior de la imagen */
+    // left: 50%; /* Centra el texto horizontalmente respecto a la imagen */
+    // transform: translateX(-50%) rotate(-7deg); /* Ajusta para centrar y rotar el texto */
+    // color: #000; /* Ajusta el color del texto según necesites */
+    // font-size: 40px; /* Hace el texto más grande */
+    // font-weight: bold; /* Hace el texto en negrita */
+    // padding: 20px; /* Añade algo de espacio alrededor del texto */
+    // opacity: 1; /* Asegura que el texto sea completamente opaco */
+
+	position: absolute;
+    bottom: 5px; /* Posiciona el texto en la parte inferior de la imagen */
+    left: 25%; /* Centra el texto horizontalmente respecto a la imagen */
+    // transform: translateX(-50%) rotate(-7deg); /* Ajusta para centrar y rotar el texto */
+    color: #000; /* Ajusta el color del texto según necesites */
+    font-size: 40px; /* Hace el texto más grande */
+    font-weight: bold; /* Hace el texto en negrita */
+    padding: 20px; /* Añade algo de espacio alrededor del texto */
+    opacity: 1; /* Asegura que el texto sea completamente opaco */
+}
+
+.mobile-construction-image {
+    max-width: 80%;
+    height: auto;
+    opacity: 0.7; /* Ajusta según necesites */
+}
+
+.mobile-overlay-text {
+    font-size: 16px; /* Menor para dispositivos móviles */
+    padding: 10px;
+    transform: rotate(0deg); /* Si prefieres sin rotación en móviles */
+	bottom: -15px;
+	left: 0px;
+}
+
+.visually-hidden {
+    position: absolute !important;
+    width: 1px !important;
+    height: 1px !important;
+    padding: 0 !important;
+    margin: -1px !important;
+    overflow: hidden !important;
+    clip: rect(0, 0, 0, 0) !important;
+    white-space: nowrap !important;
+    border: 0 !important;
+}
+
+.seo-category-links {
+    display: block;
+    visibility: visible;
+}

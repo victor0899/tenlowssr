@@ -1,0 +1,71 @@
+.header {
+  position: relative;
+
+  button {
+    position: absolute;
+    right: 15px;
+    top: 20px;
+  }
+}
+
+::ng-deep {
+  .daterangepicker {
+    td {
+      &.available:not(.off):not(.active):not(.in-range):not(.disabled) {
+        color: #000 !important;
+        
+        &:hover {
+          color: #000 !important;
+        }
+      }
+
+      &.disabled {
+        text-decoration: line-through;
+        background-color: #f0f0f0 !important;
+        color: #999 !important;
+        cursor: not-allowed !important;
+        
+        &:hover {
+          background-color: #f0f0f0 !important;
+          color: #999 !important;
+        }
+      }
+      
+      &.in-range {
+        background-color: var(--blue-electric);
+      }
+      
+      &.active {
+        background-color: #357ebd;
+        color: #fff !important;
+        
+        &:hover {
+          background-color: #357ebd !important;
+          color: #fff !important;
+        }
+      }
+
+      &.available:not(.disabled):hover {
+        background-color: #eee;
+      }
+    }
+
+    .calendar-table {
+      border: none;
+    }
+  }
+
+  .md-drppicker {
+    td {
+      &.available:not(.off):not(.active):not(.in-range):not(.disabled) {
+        color: #000 !important;
+        opacity: 1 !important;
+      }
+      
+      &.disabled {
+        opacity: 1 !important;
+        color: #999 !important;
+      }
+    }
+  }
+}

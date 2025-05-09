@@ -1,0 +1,62 @@
+<loader-overlay *ngIf="sended"></loader-overlay>
+<mat-toolbar>
+    <mat-toolbar-row>
+      <button mat-dialog-close>
+        <svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M14 2.0585L12.59 0.72583L7 6.00926L1.41 0.72583L0 2.0585L5.59 7.34193L0 12.6254L1.41 13.958L7 8.6746L12.59 13.958L14 12.6254L8.41 7.34193L14 2.0585Z" fill="#60757C"/>
+        </svg>
+      </button>
+    </mat-toolbar-row>
+</mat-toolbar>
+<mat-dialog-content>
+    <div class="w-full text-center mb-10">
+        <h1 class="text-2xl text-tl-crayola">
+            {{ 'pages.login.hello_again' | translate }}
+        </h1>
+    </div>
+    <div class="lg:w-7/12 md:w-8/12 sm:w-11/12 w-12/12 m-auto">
+        <form [formGroup]="loginForm" (ngSubmit)="validateForm()">
+            <div class="relative" [ngClass]="{'error-form': (email?.errors && email?.touched)}">
+                <input id="name" autocomplete="off" type="text" formControlName="email" [class]="cssInputBase" />
+                <label for="name" [class]="cssFloatLabel">
+                    {{ 'labels.placeholder_email' | translate }}
+                </label>
+                <span [class]="cssSpanValidation" *ngIf="(sended || email?.dirty || email?.touched) && email?.errors">
+                    *{{ getValidationEmailMsg() | translate }}
+                </span>
+            </div>
+
+            <div class="relative mt-4" [ngClass]="{'error-form': (password?.errors && password?.touched)}">
+                <input id="password" autocomplete="off" [type]="typePasswordInput" formControlName="password" [class]="cssInputBase" />
+                <label for="password" [class]="cssFloatLabel">
+                    {{ 'labels.password' | translate }}
+                </label>
+                <button class="btn-show-password" type="button" (click)="changeTypeInput()">
+                    <ion-icon class="text-3xl" [name]="iconBtnEye"></ion-icon>
+                </button>
+                <span [class]="cssSpanValidation" *ngIf="(sended || password?.dirty || password?.touched) && password?.errors">
+                    *{{ getValidationPasswordMsg() | translate }}
+                </span>
+            </div>
+
+
+            <button type="submit" class="btn-base btn-primary flex flex-row items-center w-full h-10 m-auto justify-center space-x-2 my-4">
+                <span class="text-white h-2">{{ 'labels.continue' | translate }}</span>
+            </button>
+        </form>
+    </div>
+    <section class="grid grid-cols-2 gap-5 lg:w-7/12 md:w-8/12 sm:w-11/12 w-12/12 m-auto text-center text-sm mt-10 mb-20 text-tl-crayola">
+        <div class="cursor-pointer hover:opacity-40" (click)="openModalRecoeryPassword()">{{  'pages.login.i_forget_password' | translate }}</div>
+        <div class="hover:opacity-40">
+            <a routerLink="/autentificacion/registro" mat-dialog-close>{{  'pages.login.signup_here' | translate }}</a>
+        </div>
+        <div class="col-span-2">
+            <div class="col-span-2">
+                {{  'pages.login.to_continue_accept' | translate }}
+                <a matDialogClose href="https://tenlow.es/privacidad/"  class="text-medium" routerLinkActive="router-link-active"> {{  'pages.login.policy_privacy' | translate }}</a>
+                {{  'pages.login.and_our' | translate }}
+                <a matDialogClose href="https://tenlow.es/terminos-condiciones/"  class="text-medium" routerLinkActive="router-link-active"> {{  'pages.login.use_conditions_general' | translate }}</a>
+            </div>
+        </div>
+    </section>
+</mat-dialog-content>

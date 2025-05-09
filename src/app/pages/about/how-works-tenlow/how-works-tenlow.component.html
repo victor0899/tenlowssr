@@ -1,0 +1,54 @@
+<div class="container m-auto lg:p-0 sm:p-1 md:p-0 p-3 animated-show-item">
+    <div class="information-content grid lg:grid-cols-2 grid-cols-1 ">
+        <div class="info-text">
+            <span class="text-tl-blue text-base text-medium">{{ 'pages.about_us.how_work' | translate }}</span>
+            <h1>{{ 'pages.about_us.items_always_safe' | translate }}</h1>
+            <p class="text-tl-dark-gray text-base mt-4 max-w-[464px]">{{ 'pages.about_us.info_how_works' | translate }}</p>
+            <button class="rounded-full mt-8 bg-tl-blue h-10 px-5" (click)="navAuth()">
+                <span class="text-white text-sm">{{  'pages.about_us.signup_free' | translate }}</span>
+            </button>
+        </div>
+        <div class="info-image">
+            <img src="assets/images/how-works.webp" alt="como-funciona-tenlow">
+        </div>
+    </div>
+
+    <div class="px-5 mt-24">
+        <h1 class="title-info mt-3 mb-8">{{  'pages.about_us.i_need_saving' | translate }}</h1>
+
+        <div class="details-rentals">
+            <div class="info-card" *ngFor="let info of infoNeedSave">
+                <div class="image-card">
+                    <img class="image-card" [src]="info.image" alt="{{ info.title | translate }}">
+                </div>
+                <h2>{{ info.title | translate }}</h2>
+                <p>{{ info.subtitle | translate }}</p>
+            </div>
+        </div>
+
+        <h1 class="title-info mt-24 mb-8">{{  'pages.about_us.i_need_earn_money' | translate }}</h1>
+
+        <div class="details-rentals">
+            <div class="info-card" *ngFor="let item of infoEarnMoney">
+                <div class="image-card">
+                    <img class="image-card" [src]="item.image" alt="{{ item.title | translate }}">
+                </div>
+                <h2>{{ item.title | translate }}</h2>
+                <p>{{ item.subtitle | translate }}</p>
+            </div>
+        </div>
+
+        <div class="join-community">
+            <h1 class="text-medium">{{ 'pages.about_us.your_items_are_safe' | translate }}</h1>
+            <button  class="rounded-full mt-6 bg-tl-primary h-10 !px-6" (click)="navAuth()">
+                <span class="text-sm semibold">{{  'pages.about_us.join_community' | translate }}</span>
+            </button>
+        </div>
+    </div>
+
+    <div class="shape-bottom">
+        <svg height="376" viewBox="0 0 1440 376" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <ellipse cx="720" cy="242.5" rx="788" ry="242.5" fill="#D4F4F2"/>
+        </svg>
+    </div>
+</div>

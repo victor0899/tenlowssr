@@ -1,0 +1,131 @@
+.active-product {
+    width: 20px;
+    display: flex;
+    height: 20px;
+    background: var(--light);
+    border-radius: 15px;
+    border: 6px solid var(--primary);
+}
+
+.disabled-product {
+    width: 20px;
+    display: flex;
+    height: 20px;
+    background: var(--error);
+    border-radius: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    ion-icon {
+        color: var(--light);
+        font-size: 20px;
+        opacity: 1;
+    }
+}
+
+.image-card {
+    width: 100%;
+    height: 160px; 
+    overflow: hidden;
+    
+    img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+}
+
+.detail-item {
+    height: auto; // Cambiado de 5.5rem a auto
+    min-height: 8rem; // Agregado para mantener una altura mínima
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    background: var(--light);
+    
+    h2 {
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+        height: 2.5rem;
+        margin-bottom: 0.25rem;
+        line-height: 1.2;
+    }
+
+    .product-description {
+        font-size: 0.75rem; // 12px
+        color: var(--dark-medium);
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+        margin-bottom: 0.5rem;
+        line-height: 1.2;
+    }
+
+    .item-info {
+        height: 2.25rem;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        
+        .name-owner {
+            overflow: hidden;
+            white-space: nowrap;
+            text-overflow: ellipsis;
+            margin-bottom: 0.125rem;
+            color: var(--dark-medium);
+        }
+    }
+}
+
+.no-img {
+    background-color: #E9EEF1;
+    width: 100%;
+    height: 100%;
+    
+    img {
+        width: 100%;
+        height: 100%;
+        object-fit: contain;
+    }
+}
+
+.touchable-area {
+    width: 100%;
+    height: 100%;
+    position: absolute;
+}
+
+.buttons {
+    min-height: 3rem; 
+    padding: 0.5rem;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 0.5rem;
+}
+
+:host {
+    display: block;
+    
+    > div {
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+    }
+}
+
+.btn-fav-product {
+    background: white;
+    border-radius: 50%;
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}

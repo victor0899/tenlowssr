@@ -1,0 +1,123 @@
+.card-profile-img{
+    background: linear-gradient(0deg, rgba(0, 101, 145, 0.05), rgba(0, 101, 145, 0.05)), #FCFCFF;
+    border: 1px solid rgba(217, 217, 217, 0.78);
+    box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.1);
+    border-radius: 28px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 85%;
+    height: fit-content;
+    padding: 0 18px 20px;
+    img.img-profile{
+        margin: 27px 0;
+        width: 190px;
+        height: 190px;
+        border-radius: 190px;
+        object-fit: contain;
+        border: 1px solid var(--gray);
+    }
+    .detail{
+        padding: 16px;
+        width: 100%;
+        display: flex;
+        flex-direction: row;
+        justify-content: space-between;
+    }
+}
+
+
+.my-achievements{
+    h2{
+        font-size: 32px;
+        line-height: 52px;
+    }
+    div.money,
+    label{
+        margin-left: 10px;
+        h3{
+            font-size: 32px;
+            // height: 32px;
+            line-height: .8;
+        }
+    }
+}
+
+.header-profile{
+    // height: 290px;
+    margin-bottom: 16px;
+}
+
+.btn-fav{
+    width: 55px;
+    height: 55px;
+    border-radius: 50%;
+    right: 0;
+    img{
+        width: 55px;
+        height: 55px;
+        margin: 0;
+    }
+}
+
+.searchbar{
+    background: var(--blank);
+    border: 0.831541px solid #79747E;
+    border-radius: 62.166px;
+    height: 48px;
+}
+
+@media (max-width: 1330px) {
+    .my-achievements{
+        position: initial;
+        border-radius: 16px;
+    }
+
+    .header-profile{
+        height: auto;
+    }
+}
+
+@media (max-width: 1023px) {
+    .my-achievements,
+    .detail-profile{
+        width: 100%;
+    }
+
+
+    .profile-section{
+        margin: auto;
+        width: 100%;
+        padding: 20px 30px;
+    }
+}
+
+div.btn-base{
+    padding: 10px;
+    min-width: 115px;
+    border-radius: 25px;
+    span{
+      height: 18px;
+      display: flex;
+      justify-content: center;
+    }
+}
+
+label.btn-upload-profile-img {
+    cursor: pointer;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+input.upload-img {
+    opacity: 0;
+    position: absolute;
+    z-index: -1;
+}
+
+.icon-tag{
+    transform: scale(1.25);
+}

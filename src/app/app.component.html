@@ -1,0 +1,69 @@
+<mat-sidenav-container [hasBackdrop]="true">
+    <mat-sidenav
+        [fixedInViewport]="true"
+        [fixedTopGap]="0"
+        [fixedBottomGap]="0"
+        [autoFocus]="true"
+        position="end"
+        class="lg:w-2/12 md:w-6/12 sm:w-7/12 w-8/12"
+        #sidenav
+        mode="over"
+    >
+        <div class="flex flex-col items-start" *ngIf="isLoadLang">
+            <button class="close-menu-btn" (click)="sidenav.toggle()">
+                <mat-icon>close</mat-icon>
+            </button>
+            <div class="card-rating flex flex-col items-center self-center pt-8 pb-6">
+                <div class="cursor-pointer avatar w-[100px] h-[100px]  min-w-[100px] rounded-full bg-tl-gray" *ngIf="user">
+                    <img [defaultImage]="publicService.defaultAvatar" [lazyLoad]="user.profile_photo_path" class="rounded-full">
+                </div>
+                <h2 class="text-tl-dark-light text-lg semibold text-center mt-2" *ngIf="user">{{ user.name + ' ' + user.last_name }}</h2>
+            </div>
+
+            <div class="searchbar relative py-1 px-4 flex flex-row items-center" [ngClass]="{'mt-50': !user}" *ngIf="currentUrl !== 'app/home' && currentUrl !== '' ">
+                <img src="assets/icons/tl-search.svg" alt="" srcset="">
+                <input type="text" name="" id="searchInput" (keyup)="onEnterKey($event)" autofocus="off" [(ngModel)]="textSearch" placeholder="{{ 'pages.home.search_txt' | translate }}" class="ml-2">
+            </div>
+
+            <div class="nav-item py-2 px-3 mt-3" [ngClass]="{'mt-20': !user && currentUrl == 'app/home'}">
+                <a class="px-3 py-2 flex items-center font-bold  hover:opacity-75 text-base cursor-pointer" href="https://tenlow.es/">
+                    {{ 'labels.home' | translate}}
+                </a>
+            </div>
+            <div class="nav-item py-2 px-3" *ngFor="let item of menuOptions" [ngClass]="{'hidden': isHiddenOption(item) , 'notification-item': item.route == 'account/notifications-panel'}">
+                <a *ngIf="item.route !== 'tablon'" class="px-3 py-2 flex items-center font-bold  hover:opacity-75 text-base cursor-pointer" (click)="navigate(item.route)">
+                    {{ item.label | translate }}
+                </a>
+                <badge-notification *ngIf="item.route == 'account/notifications-panel' " ></badge-notification>
+            </div>
+            <div class="nav-item py-2 px-3" *ngIf="user">
+                <a class="px-3 py-2 flex items-center font-bold  hover:opacity-75 text-base cursor-pointer" (click)="navigate('/account/options')">
+                    {{ 'labels.account' | translate }}
+                </a>
+            </div>
+            <div class="nav-item py-2 px-3" *ngIf="!user && currentUrl !== 'app/home' && currentUrl !== '' ">
+                <a class="px-3 py-2 flex items-center font-bold  hover:opacity-75 text-base cursor-pointer" (click)="navigate('/auth')">
+                    {{ 'components.navbar.login' | translate}}
+                </a>
+            </div>
+            <div class="nav-item py-2 px-3" *ngIf="!user && currentUrl !== 'app/home' && currentUrl !== '' ">
+                <a class="px-3 py-2 flex items-center font-bold  hover:opacity-75 text-base cursor-pointer" (click)="navigate('/auth/register')">
+                    {{ 'components.navbar.signup' | translate}}
+                </a>
+            </div>
+            <div class="nav-item py-2 px-3" *ngIf="user" (click)="logout()">
+                <a class="px-3 py-2 flex items-center font-bold  hover:opacity-75 text-base cursor-pointer">
+                    {{ 'labels.logout' | translate}}
+                </a>
+            </div>
+        </div>
+    </mat-sidenav>
+    <mat-sidenav-content [ngClass]="{'bg-opaque-primary': isNavFaqs}">
+        <div class="min-h-screen flex flex-col items-center justify-center bg-white" *ngIf="!isLoadLang">
+            <ng-lottie [options]="optionsLoad"></ng-lottie>
+        </div>
+        <app-navbar *ngIf="isLoadLang"></app-navbar>
+        <router-outlet *ngIf="isLoadLang"></router-outlet>
+        <app-footer *ngIf="isLoadLang"></app-footer>
+    </mat-sidenav-content>
+</mat-sidenav-container>

@@ -1,0 +1,57 @@
+<div class="flex flex-col filter-map animated-show-item">
+    <div class="searchbar py-1 px-4 flex flex-row items-center">
+        <img src="assets/icons/tl-search.svg" alt="" srcset="">
+        <input
+            id="meetAddress"
+            ngx-google-places-autocomplete
+            autocomplete="off"
+            type="text"
+            [options]="optionsAutocomplete"
+            (onAddressChange)="handleAddressChange($event)"
+            placeholder="{{ 'components.filter_map.search_address' | translate }}"
+            class="ml-2"
+        >
+    </div>
+
+    <google-map
+        [options]="mapOptions"
+        [center]="center"
+        [zoom]="zoom"
+        (mapClick)="addMarker($event)"
+    >
+        <map-marker
+            (mapDragend)="dragMarker($event)"
+            *ngIf="markerPosition"
+            [position]="markerPosition"
+            [options]="markerOptions"
+        ></map-marker>
+        <map-circle
+            [options]="optionsCircle"
+            *ngIf="markerPosition"
+            [center]="markerPosition"
+            [radius]="radiusMarker"
+        ></map-circle>
+    </google-map>
+
+    <div class="w-full">
+        <mat-slider min="1" max="25" step="1" discrete  [displayWith]="formatLabel">
+            <input matSliderThumb (valueChange)="onSlideRange($event)" [value]="radiusMarker / 1000">
+        </mat-slider>
+        <div class="flex flex-row flex-wrap items-center justify-between">
+            <span class="text-xs" >{{ ((radiusMarker / 1000) > 99 ) ? '+' : '' }} {{ radiusMarker / 1000 }} km</span>
+            <span class="text-xs">{{ 'labels.no_limit' | translate }}</span>
+        </div>
+    </div>
+
+    <div class="w-full mt-5">
+        <div class="buttons flex flex-row items-center justify-end space-x-3">
+            <button class="btn-base btn-gray px-4 flex justify-center" (click)="closeMap()">
+                <span class="h-5 text-tl-dark-medium text-sm">{{ 'labels.cancel' | translate }}</span>
+            </button>
+
+            <button class="btn-base bg-tl-primary px-4 flex justify-center" (click)="applyFilter()">
+                <span class="h-5 text-tl-blue text-sm">{{ 'labels.filter' | translate }}</span>
+            </button>
+        </div>
+    </div>
+</div>

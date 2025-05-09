@@ -1,0 +1,38 @@
+<footer class="w-full left-0 bottom-0 flex justify-center items-center bg-white text-2xl md:p-8">
+    <div class="container flex flex-row flex-wrap items-center lg:justify-between justify-center sm:m-8 lg:m-1 md:m-4">
+        <ul class="flex flex-wrap items-start mt-3 text-base sm:mt-0">
+            <li *ngFor="let item of filteredFooterItems; let i = index" (click)="navigate(item.route)">
+                <a class="mr-4 hover:underline md:mr-6 cursor-pointer text-tl-crayola">{{  (i == 0) ?  '© ' + year : ' '}} {{ item.label | translate }}</a>
+            </li>
+        </ul>
+        <ul class="flex flex-wrap items-start mt-3 text-base sm:mt-0">
+            <li class="mr-6" [matMenuTriggerFor]="beforeMenu">
+                <div class="hover:underline md:mr-4 cursor-pointer text-tl-crayola">
+                    <div class="op-lang">
+                        <img [src]="getFlag()" alt="" srcset="">
+                        <span class="text-xs !h-3"> {{ selectedLang | translate }} </span>
+                    </div>
+                </div>
+            </li>
+
+            <mat-menu #beforeMenu="matMenu" xPosition="before">
+                <button mat-menu-item class="op-lang" (click)="selectLang({code: 'es', name:'labels.spanish'})" *ngIf="existSpa">
+                    <img src="assets/images/spain.jpeg" alt="" srcset="">
+                    <span> {{ 'labels.spanish' | translate }} </span>
+                </button>
+                <button mat-menu-item class="op-lang" (click)="selectLang({code:'en', name:'labels.english'})" *ngIf="existEng">
+                    <img src="assets/images/eeuu.png" alt="" srcset="">
+                    <span> {{ 'labels.english' | translate}} </span>
+                </button>
+                <button mat-menu-item class="op-lang" *ngFor="let item of langs" (click)="selectLang(item)">
+                    <img src="assets/images/word.svg" alt="" srcset="">
+                    <span> {{ item.name }} </span>
+                </button>
+            </mat-menu>
+
+            <li *ngFor="let social of filteredSocialLinks" class="cursor-pointer" (click)="openExternalUrl(social.url)">
+                <img [src]="social.icon" [alt]="social.url" width="20" class="mr-4 hover:underline md:mr-6">
+            </li>
+        </ul>
+    </div>
+</footer>

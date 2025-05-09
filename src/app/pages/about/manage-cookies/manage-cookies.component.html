@@ -1,0 +1,30 @@
+<div class="container min-screen m-auto">
+    <h2 class="text-center semibold text-lg my-4">{{ 'components.cookies.title' | translate }}</h2>
+
+    <section class="info-content">
+
+        <div class="max-w-[900px] m-auto">
+            <h3 class="text-left text-medium text-lg my-4">{{ 'components.cookies.cookies_required' | translate }}</h3>
+            <p class="text-left my-5">{{ 'components.cookies.info_cookie_required' | translate }}</p>
+        </div>
+
+        <div class="content-info">
+            <div class="item-content header-content">
+                <span class="item-name"> {{ 'labels.name' | translate }} </span>
+                <span class="description-item"> {{ 'labels.description' | translate }} </span>
+                <span> {{ 'components.cookies.yes_no' | translate }} </span>
+            </div>
+            <div class="item-content" *ngFor="let cookie of cookies">
+                <span class="item-name"> {{ cookie.name }} </span>
+                <span class="description-item"> {{ cookie.description | translate }} </span>
+                <span>
+                    <mat-checkbox disabled [checked]="true"></mat-checkbox>
+                </span>
+            </div>
+
+            <button class="max-w-[190px] w-full justify-self-center my-4 bg-tl-primary-medium px-4 py-3 rounded-3xl flex justify-center"  (click)="save()">
+                <span class="h-5 text-tl-light text-sm">{{ 'labels.save' | translate }} {{ 'pages.options_account.config' | translate }}</span>
+            </button>
+        </div>
+    </section>
+</div>

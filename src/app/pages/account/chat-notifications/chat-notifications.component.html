@@ -1,0 +1,563 @@
+<loader-overlay *ngIf="isShowLoader"></loader-overlay>
+
+<div class="container min-screen m-auto p-2 pb-10">
+    <h1 class="lg:text-3.5xl text-2xl mt-3 mb-6 flex flex-wrap flex-col">
+        {{ 'pages.notifications.title' | translate }}
+        <!-- <button (click)="back()" class="h-[38px] flex items-center justify-start">
+            <mat-icon class="w-5 h-5 text-xl">arrow_back</mat-icon>
+            <span class="text-base-2 h-3">{{ 'labels.back_to' | translate }}</span>
+        </button> -->
+    </h1>
+
+    <div class="grid grid-cols-3 gap-5">
+        <div class="lg:col-span-1 md:col-span-1 sm:col-span-3 col-span-3">
+            <div class="buttons flex flex-row items-center justify-start space-x-3 my-5">
+                <button class="btn-base bg-tl-primary px-4 flex justify-center" [ngClass]="{'btn-gray': !isShowChat}" (click)="isShowChat = true">
+                    <span class="h-5 text-tl-blue  text-sm" [ngClass]="{'text-tl-dark-medium': !isShowChat}">{{ 'pages.notifications.messages' | translate }}</span>
+                </button>
+
+                <button class="btn-base bg-tl-primary px-5 flex justify-center" [ngClass]="{'btn-gray': isShowChat}"  (click)="isShowChat = false">
+                    <span class="h-5 text-tl-blue text-sm" [ngClass]="{'!text-tl-dark-medium opacity-80': isShowChat}">{{ 'pages.notifications.notifications' | translate }}</span>
+                </button>
+            </div>
+
+            <div *ngIf="isShowChat" [ngTemplateOutlet]="ChatList"></div>
+        </div>
+
+        <div class="col-span-3" *ngIf="!isLoadChat && !listChat.length && isShowChat">
+            <no-results message="pages.notifications.empty_chat" [status]="false"></no-results>
+        </div>
+
+        <div class="col-span-3" *ngIf="isLoadChat && isShowChat">
+            <div class="lg:w-7/12 md:w-9/12 w-10/12 m-auto">
+                <div [ngTemplateOutlet]="LoadItem" ></div>
+            </div>
+        </div>
+
+        <div class="lg:col-span-2 md:col-span-2 sm:col-span-3 col-span-3" *ngIf="!isLoadChat && isShowChat && chatSelected">
+            <chat-view [chatInfo]="chatSelected" [onNewMessage]="eventChat.asObservable()" (onDelete)="onDeleteChat($event)" ></chat-view>
+        </div>
+
+        <div class="lg:col-span-2 md:col-span-2 sm:col-span-3 col-span-3" *ngIf="!isLoadChat && isShowChat && !chatSelected && listChat.length">
+            <empty-view  message="pages.notifications.select_conversation" ></empty-view>
+        </div>
+    </div>
+
+    <div *ngIf="!isShowChat" [ngTemplateOutlet]="TemplateNotifications"></div>
+</div>
+
+<ng-template #ChatList>
+    <div class="notifications-container" *ngIf="listChat.length">
+        <div *ngFor="let item of listChat" class="item-notification cursor-pointer relative" [ngClass]="{'bg-tl-light': chatSelected?.id == item.id}" (click)="selectChat(item)">
+            <div class="flex items-start bg-tl-light">
+                <div class="avatar my-1 mx-2">
+                    <img [lazyLoad]="item.userReceive.photo" [defaultImage]="publicService.defaultAvatar" [alt]="'perfil de '+ item.userReceive.name">
+                </div>
+
+                <div>
+                    <p class="text-base-2 text-tl-dark-gray">{{ item.userReceive.name }}</p>
+                    <h2 class="text-base text-tl-dark capitalize" *ngIf="item.product">{{ item.product.name }}</h2>
+                    <p class="text-xs text-tl-dark-gray">{{ getLastMessage(item.messages).message | decrypted | textOverflow: 30 }}</p>
+                </div>
+            </div>
+            <span class="text-xs">{{ getLastMessage(item.messages).createdAt.toDate() | date: 'M/d/yy, h:mm a' }}</span>
+            <div class="absolute w-2 h-2 rounded-full bg-tl-primary-medium" *ngIf="item.new_message && item.newMsgFrom !== userCurrent?.id"></div>
+        </div>
+    </div>
+</ng-template>
+
+<ng-template #TemplateNotifications >
+    <div class="notifications-container" *ngIf="isLoadNotifications">
+        <div [ngTemplateOutlet]="LoadItem"></div>
+    </div>
+    <div class="notifications-container" *ngIf="!isOpenNotification && !isLoadNotifications">
+
+        <empty-view *ngIf="!notifications.length" [message]="'pages.notifications.empty_notifications'"></empty-view>
+
+        <div *ngFor="let item of notifications" class="item-notification">
+            <div class="flex items-start space-x-2 m-2 lg:w-10/12 md:w-9/12 cursor-pointer" (click)="openNotification( item )">
+                <img class="img-notification"  [defaultImage]="publicService.defaultImg"  [lazyLoad]="getImageNotification( item )" alt="">
+                <div>
+                    <h2 class="text-base text-tl-dark">{{ item.title }}</h2>
+                    <p class="text-base-2 text-tl-dark-gray">{{ item.message }}</p>
+                </div>
+            </div>
+            <div>
+                <span class="text-xs text-end min-w-[70px] m-2 p-2">{{ item.created_at | timeAgo }}</span>
+                <button
+                    class="flex items-center m-2 rounded-full hover:bg-tl-gray"
+                    *ngIf="!item.user_read_at"
+                    (click)="setReadNotification( item )"
+                    #tooltip="matTooltip"
+                    matTooltip="{{ 'pages.notifications.set_read_notification' | translate }}"
+                    matTooltipPosition="below"
+                    matTooltipHideDelay="300"
+                >
+                    <svg width="18px" height="18px" stroke-width="2" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" color="#000000"><path d="M5 13l4 4L19 7" stroke="#000000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+                </button>
+            </div>
+        </div>
+        <mat-paginator
+            #matPagNotifications
+            *ngIf="notifications.length"
+            [length]="paginatorNotification.total"
+            [pageSize]="10"
+            aria-label="Seleccionar página de mis notificaciones"
+            (page)="eventPaginatorNotifications($event)"
+            [hidePageSize]="true"
+            [disabled]="isLoadNotifications"
+            color="primary"
+            [pageIndex]="paginatorNotification.currentPage - 1"
+        ></mat-paginator>
+    </div>
+    <div [ngTemplateOutlet]="RentalView" *ngIf="isOpenNotification && !isSuccess && !isOpenConfirmDelivery && !isOpenConfirmReceive"></div>
+    <div [ngTemplateOutlet]="RentalViewSuccess" *ngIf="isSuccess"></div>
+    <div [ngTemplateOutlet]="ConfirmDeliveryProduct" *ngIf="isOpenConfirmDelivery"></div>
+    <div [ngTemplateOutlet]="ConfirmReceiveProduct" *ngIf="isOpenConfirmReceive"></div>
+</ng-template>
+
+<ng-template #RentalView>
+    <div class="notifications-container">
+        <div class="item-notification cursor-pointer">
+
+            <div class="flex items-start space-x-2" (click)="closeNotification()">
+                <img  class="img-notification" [defaultImage]="publicService.defaultImg"  [lazyLoad]="getImageNotification( notificationSelected )" alt="">
+                <div>
+                    <h2 class="text-base text-tl-dark">{{ notificationSelected.title }}</h2>
+                    <p class="text-base-2 text-tl-dark-gray flex">{{ notificationSelected.message }}</p>
+                    <div class="text-base-2 text-tl-dark-gray flex items-center"> <mat-icon class="icon-16">calendar_today</mat-icon>{{ notificationSelected.operation.init_date | date:'d MMM y'  }} - {{ notificationSelected.operation.end_date | date:'d MMM y' }} </div>
+                </div>
+            </div>
+
+            <div class="action-notification flex justify-between items-center flex-wrap" *ngIf="!isCanceledOperation()">
+                <button class="flex items-center space-x-2 m-2" (click)="modalCancelRental()">
+                    <img src="assets/icons/tl-cancel.svg" alt="icon cancel tenlow" srcset="">
+                    <span class="text-tl-crayola text-base-2">{{ 'pages.notifications.cancel_request' | translate }}</span>
+                </button>
+
+                <button class="flex items-center space-x-2 m-2" (click)="initConversation()" *ngIf="notificationSelected.operation.user.id !== userCurrent!.id">
+                    <img src="assets/icons/tl-chat.svg" alt="icon chat tenlow" srcset="">
+                    <span class="text-tl-crayola text-base-2">{{ 'pages.notifications.chat_with_user' | translate:{ name: notificationSelected.operation.user.name } }}</span>
+                </button>
+            </div>
+
+        </div>
+
+        <div class="content-preferences" *ngIf="isCanceledOperation()">
+
+            <div class="flex md:justify-between lg:justify-between justify-center items-center flex-wrap">
+                <div class="m-4 flex items-center h-4">
+                    <span class="h-4 ml-2 text-xl">{{ 'pages.notifications.cancel_rental_msg' | translate:{ product: notificationSelected.operation.product.title } }}</span>
+                </div>
+            </div>
+
+        </div>
+
+        <div class="alert-confirm" *ngIf="!isCanceledOperation()">
+
+            <div *ngIf="!isExistResponseAddress()">
+
+                <h1 class="text-2xl">{{ 'pages.notifications.user_request_rental_product' | translate:{ user:  getCompleteName(notificationSelected.operation.user)  } }}</h1>
+                <h1 class="text-2xl">{{ notificationSelected.operation.product.title | titlecase }}</h1>
+
+                <div class="flex items-center justify-center space-x-3 my-4">
+                    <img src="assets/icons/tl-calendar.svg" alt="icon calendar tenlow" srcset="">
+                    <span class="h-5">{{ notificationSelected.operation.init_date  | date:'d MMM y'}} - {{ notificationSelected.operation.end_date | date:'d MMM y'}}</span>
+                </div>
+
+                <div class="flex flex-wrap justify-center items-center mt-10 mb-8" *ngIf="!isAcceptRental && notificationSelected.operation.status !== 'confirmed' && notificationSelected.operation.user.id !== userCurrent?.id">
+                    <button class="px-4 bg-tl-gray rounded-3xl flex justify-center items-center m-2 h-10" (click)="openRejectRental(notificationSelected.operation.id)">
+                        <span class="text-tl-dark-medium  text-sm">{{ 'labels.rejected' | translate }}</span>
+                    </button>
+
+                    <button class="bg-tl-primary px-5 h-10 rounded-3xl flex justify-center items-center m-2" (click)="proccessAceptRental()">
+                        <span class="text-tl-blue text-sm">{{ 'labels.accept' | translate }}</span>
+                    </button>
+                </div>
+
+                <div class="content-preferences" *ngIf="isAcceptRental && notificationSelected.operation.shipping_method == 'in_person' ">
+
+                    <div class="flex md:justify-between lg:justify-between justify-center items-center flex-wrap">
+                        <div class="m-4 flex items-center h-4"><mat-icon>access_time</mat-icon><span class="h-4 ml-2">{{ 'pages.notifications.select_hour_to_delivery' | translate }}</span></div>
+                        <div class="flex flex-col items-center justify-center m-4">
+                            <div class="flex items-center justify-center text-center m-4 mb-0">
+                                <div class="select-hour text-center m-1" [ngClass]="{'border border-tl-error': isSendMeet && !hourMeet}">
+                                    <input class="input-time" type="time"  matInput name="week" min="09:00" max="20:00" [(ngModel)]="hourMeet" />
+                                </div>
+                                <div class="select-hour text-center m-1" [ngClass]="{'border border-tl-error': isSendMeet && !hourMeet2 }">
+                                    <input class="input-time" type="time"  matInput name="week" min="09:00" max="20:00" [(ngModel)]="hourMeet2" />
+                                </div>
+                                <div class="select-hour text-center m-1" [ngClass]="{'border border-tl-error': isSendMeet && !hourMeet3 }">
+                                    <input class="input-time" type="time"  matInput name="week" min="09:00" max="20:00" [(ngModel)]="hourMeet3" />
+                                </div>
+                            </div>
+                            <span class="text-sm text-tl-error" *ngIf="!isAddedHours()" >{{ 'messages.all_field_required' | translate }}</span>
+                        </div>
+                    </div>
+
+                    <div class="flex md:justify-between lg:justify-between justify-center items-center flex-wrap">
+                        <div class="m-4 flex items-center h-4"><mat-icon> location_on</mat-icon> <span class="h-4 ml-2">{{ 'pages.notifications.select_place_delivery' | translate }}</span></div>
+                        <div class="m-4 flex flex-col">
+                            <mat-form-field class="address-meet" [appearance]="'outline'" color="accent" subscriptSizing="dynamic">
+                                <mat-label>{{ 'pages.notifications.my_meet_point' | translate }}</mat-label>
+                                <span matPrefix>
+                                    <svg width="12" height="18" viewBox="0 0 12 18" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                        <path d="M5.99984 0.666748C2.77484 0.666748 0.166504 3.27508 0.166504 6.50008C0.166504 10.8751 5.99984 17.3334 5.99984 17.3334C5.99984 17.3334 11.8332 10.8751 11.8332 6.50008C11.8332 3.27508 9.22484 0.666748 5.99984 0.666748ZM5.99984 8.58341C4.84984 8.58341 3.9165 7.65008 3.9165 6.50008C3.9165 5.35008 4.84984 4.41675 5.99984 4.41675C7.14984 4.41675 8.08317 5.35008 8.08317 6.50008C8.08317 7.65008 7.14984 8.58341 5.99984 8.58341Z" fill="#9EAAAD"/>
+                                    </svg>
+                                </span>
+                                <input
+                                    id="meetAddress"
+                                    matInput
+                                    ngx-google-places-autocomplete
+                                    autocomplete="off"
+                                    [(ngModel)]="directionMeet"
+                                    type="text"
+                                    [options]="optionsAutocomplete"
+                                    [class]="cssInputDate"
+                                    placeholder=""
+                                    (onAddressChange)="onSelectAddress($event)"
+                                />
+                            </mat-form-field>
+                            <span class="text-sm text-tl-error" *ngIf="isSendMeet && directionMeet == ''" >{{ 'pages.notifications.select_place_delivery' | translate }}</span>
+                        </div>
+                    </div>
+
+                </div>
+
+                <div class="content-preferences" *ngIf="notificationSelected.operation.status == 'created' && notificationSelected.operation.user.id == userCurrent?.id ">
+                    <div class="flex md:justify-between lg:justify-between justify-center items-center flex-wrap">
+                        <div class="m-4 flex items-center h-4">
+                            <span class="h-4 ml-2 text-xl">{{ 'pages.notifications.wait_response_rental' | translate }}</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="flex flex-col items-center" *ngIf="notificationSelected.operation.user.id !== userCurrent?.id  && notificationSelected.operation.shipping_method == 'in_person' && notificationSelected.operation.status == 'confirmed' ">
+
+                    <p innerHTML="{{ 'pages.notifications.wait_client_confirm_assist' | translate:{ user: notificationSelected.operation.user.name } }} "> </p>
+
+                    <div class="content-preferences flex flex-col items-center">
+                        <div class="m-2 flex items-center h-4"><mat-icon>location_on</mat-icon><span class="h-4 ml-2">{{ notificationSelected.operation.shipping_address }} </span></div>
+                        <div class="flex flex-col justify-center items-start">
+                            <div class="m-2 flex items-center h-4"><mat-icon>calendar_today</mat-icon><span class="h-4 ml-2">{{ notificationSelected.operation.init_date | date:'d MMM y' }} </span></div>
+                            <div class="m-2 flex items-center h-4" *ngIf="hourMeet"><mat-icon> access_time</mat-icon> <span class="h-4 ml-2">{{ hourMeet ?? notificationSelected.operation.shipping_hour | hour }}</span></div>
+                        </div>
+                    </div>
+
+                    <div class="buttons flex flex-row items-center justify-start flex-wrap mt-5">
+                        <button class="btn-base bg-tl-primary !px-6 lg:w-auto md:w-auto w-full flex justify-center my-1 mx-3" (click)="closeNotification()">
+                            <span class="h-5 text-tl-blue text-sm semibold" >{{ 'pages.notifications.back_notifications' | translate }}</span>
+                        </button>
+                    </div>
+
+                </div>
+
+                <div class="content-preferences" *ngIf="notificationSelected.operation.user.id == userCurrent?.id  && notificationSelected.operation.status == 'confirmed' && notificationSelected.operation.shipping_method == 'in_person'">
+
+                    <div class="flex md:justify-between lg:justify-between justify-center items-center flex-wrap">
+                        <div class="m-4 flex items-center h-4"><mat-icon>access_time</mat-icon><span class="h-4 ml-2">{{ 'pages.notifications.select_hour_desire' | translate }}</span></div>
+                        <div class="m-4 flex items-center justify-center">
+                            <div class="op-select-hour text-center m-1" [ngClass]="{'selected-hour': notificationSelected.operation.shipping_hour == item }"  (click)="selectHour(item)" *ngFor="let item of notificationSelected.operation.suggestion_hours">
+                                <span class="h-4 text-tl-blue text-medium">{{ item | hour }}</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="flex md:justify-between lg:justify-between justify-center items-center flex-wrap">
+                        <div class="m-4 flex items-center h-4"><mat-icon> location_on</mat-icon> <span class="h-4 ml-2">{{ 'pages.notifications.meet_point' | translate }}</span></div>
+                        <div class="m-4">
+                            <span class="h-4" >{{ notificationSelected.operation.shipping_address }}</span>
+                        </div>
+                    </div>
+
+                    <div class="flex flex-wrap justify-center items-center mt-10 mb-8" *ngIf="!isExistResponseAddress()">
+                        <button class="px-4 bg-tl-gray rounded-3xl flex justify-center items-center m-2 h-10" (click)="setAcceptedAddressMeeting( false )">
+                            <span class="text-tl-dark-medium  text-sm">{{ 'pages.notifications.no_cant_go' | translate }}</span>
+                        </button>
+
+                        <button class="bg-tl-primary px-5 h-10 rounded-3xl flex justify-center items-center m-2"  (click)="setAcceptedAddressMeeting( true )">
+                            <span class="text-tl-blue text-sm">{{ 'pages.notifications.ok_can_go' | translate }}</span>
+                        </button>
+                    </div>
+
+                    <button *ngIf="!isExistResponseAddress()" (click)="sendPreferDeliveredProduct()" class="border border-tl-primary-medium px-5 h-10 rounded-3xl flex justify-center items-center w-7/12 m-auto max-w-[234px] my-2" >
+                        <span class="icon-btn mr-2">
+                            <svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <mask id="mask0_7928_5450" style="mask-type:alpha" maskUnits="userSpaceOnUse" x="0" y="0" width="18" height="18">
+                                <rect width="18" height="18" fill="#D9D9D9"/>
+                                </mask>
+                                <g mask="url(#mask0_7928_5450)">
+                                <path d="M4.5 15C3.875 15 3.34375 14.7812 2.90625 14.3438C2.46875 13.9062 2.25 13.375 2.25 12.75H0.75V4.5C0.75 4.0875 0.897 3.7345 1.191 3.441C1.4845 3.147 1.8375 3 2.25 3H12.75V6H15L17.25 9V12.75H15.75C15.75 13.375 15.5312 13.9062 15.0938 14.3438C14.6562 14.7812 14.125 15 13.5 15C12.875 15 12.3438 14.7812 11.9062 14.3438C11.4688 13.9062 11.25 13.375 11.25 12.75H6.75C6.75 13.375 6.53125 13.9062 6.09375 14.3438C5.65625 14.7812 5.125 15 4.5 15ZM4.5 13.5C4.7125 13.5 4.89075 13.428 5.03475 13.284C5.17825 13.1405 5.25 12.9625 5.25 12.75C5.25 12.5375 5.17825 12.3595 5.03475 12.216C4.89075 12.072 4.7125 12 4.5 12C4.2875 12 4.10925 12.072 3.96525 12.216C3.82175 12.3595 3.75 12.5375 3.75 12.75C3.75 12.9625 3.82175 13.1405 3.96525 13.284C4.10925 13.428 4.2875 13.5 4.5 13.5ZM2.25 11.25H2.85C3.0625 11.025 3.30625 10.8437 3.58125 10.7062C3.85625 10.5687 4.1625 10.5 4.5 10.5C4.8375 10.5 5.14375 10.5687 5.41875 10.7062C5.69375 10.8437 5.9375 11.025 6.15 11.25H11.25V4.5H2.25V11.25ZM13.5 13.5C13.7125 13.5 13.8905 13.428 14.034 13.284C14.178 13.1405 14.25 12.9625 14.25 12.75C14.25 12.5375 14.178 12.3595 14.034 12.216C13.8905 12.072 13.7125 12 13.5 12C13.2875 12 13.1095 12.072 12.966 12.216C12.822 12.3595 12.75 12.5375 12.75 12.75C12.75 12.9625 12.822 13.1405 12.966 13.284C13.1095 13.428 13.2875 13.5 13.5 13.5ZM12.75 9.75H15.9375L14.25 7.5H12.75V9.75Z" fill="#31B7BC"/>
+                                </g>
+                            </svg>
+                        </span>
+                        <span class="text-tl-primary-medium text-sm h-4">{{ 'pages.notifications.prefer_send_me' | translate }}</span>
+                    </button>
+
+                </div>
+
+                <div class="content-preferences max-w-[500px] mb-10" *ngIf="notificationSelected.operation.status == 'confirmed' && notificationSelected.operation.user.id == userCurrent?.id && notificationSelected.operation.shipping_method !== 'in_person'">
+                    <div class="flex md:justify-between lg:justify-between justify-center items-center flex-wrap">
+                        <div class="m-4 flex items-center h-4">
+                            <span class="h-4 ml-2 text-xl">{{ 'pages.notifications.owner_confirm_rental_product' | translate:{ owner: notificationSelected.operation.product.user.name } }}</span>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="flex flex-col items-center" *ngIf="isExistResponseAddress() && notificationSelected.operation.accepted_shipping_address">
+
+                <div class="my-4">
+                    <svg width="40" height="40" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M17.2 29.2L31.3 15.1L28.5 12.3L17.2 23.6L11.5 17.9L8.7 20.7L17.2 29.2ZM20 40C17.2333 40 14.6333 39.4747 12.2 38.424C9.76667 37.3747 7.65 35.95 5.85 34.15C4.05 32.35 2.62533 30.2333 1.576 27.8C0.525334 25.3667 0 22.7667 0 20C0 17.2333 0.525334 14.6333 1.576 12.2C2.62533 9.76667 4.05 7.65 5.85 5.85C7.65 4.05 9.76667 2.62467 12.2 1.574C14.6333 0.524667 17.2333 0 20 0C22.7667 0 25.3667 0.524667 27.8 1.574C30.2333 2.62467 32.35 4.05 34.15 5.85C35.95 7.65 37.3747 9.76667 38.424 12.2C39.4747 14.6333 40 17.2333 40 20C40 22.7667 39.4747 25.3667 38.424 27.8C37.3747 30.2333 35.95 32.35 34.15 34.15C32.35 35.95 30.2333 37.3747 27.8 38.424C25.3667 39.4747 22.7667 40 20 40ZM20 36C24.4667 36 28.25 34.45 31.35 31.35C34.45 28.25 36 24.4667 36 20C36 15.5333 34.45 11.75 31.35 8.65C28.25 5.55 24.4667 4 20 4C15.5333 4 11.75 5.55 8.65 8.65C5.55 11.75 4 15.5333 4 20C4 24.4667 5.55 28.25 8.65 31.35C11.75 34.45 15.5333 36 20 36Z" fill="#313B3F"/>
+                    </svg>
+                </div>
+
+                <h2 class="text-2xl">{{ 'pages.notifications.everything_ok' | translate }}</h2>
+                <p  class="text-2xl" *ngIf="notificationSelected.operation.user.id !== userCurrent?.id "  innerHTML="{{ 'pages.notifications.client_confirm_assist' | translate:{ user: notificationSelected.operation.user.name } }} "> </p>
+                <p  class="text-2xl" *ngIf="notificationSelected.operation.user.id == userCurrent?.id " >{{ 'pages.notifications.you_confirm_assist' | translate }}</p>
+                <p class="text-2xl"> {{ 'pages.notifications.remember_go_meet' | translate }} </p>
+
+                <div class="m-2 flex items-center h-4"><mat-icon>location_on</mat-icon><span class="h-4 ml-2">{{ notificationSelected.operation.shipping_address }} </span></div>
+
+                <div class="content-preferences">
+                    <div class="flex flex-col justify-center items-start">
+                        <div class="m-2 flex items-center h-4"><mat-icon>calendar_today</mat-icon><span class="h-4 ml-2">{{ notificationSelected.operation.init_date | date:'d MMM y' }} </span></div>
+                        <div class="m-2 flex items-center h-4" *ngIf="hourMeet"><mat-icon> access_time</mat-icon> <span class="h-4 ml-2">{{ hourMeet ?? notificationSelected.operation.shipping_hour | hour }}</span></div>
+                    </div>
+                </div>
+
+                <div class="buttons flex flex-row items-center justify-start flex-wrap mt-5">
+                    <button class="btn-base bg-tl-primary !px-6 lg:w-auto md:w-auto w-full flex justify-center my-1 mx-3" (click)="closeNotification()">
+                        <span class="h-5 text-tl-blue text-sm semibold" >{{ 'pages.notifications.back_notifications' | translate }}</span>
+                    </button>
+                </div>
+            </div>
+
+            <div class="flex flex-col items-center pb-12" *ngIf="isExistResponseAddress() && notificationSelected.operation.accepted_shipping_address == false">
+
+                <h2 class="max-w-[400px] text-2xl mt-20 mb-24" *ngIf="notificationSelected.operation.user.id == userCurrent?.id " innerHTML="{{ 'pages.notifications.msg_no_accept_address_response' | translate:{ user: notificationSelected.operation.product.user.name } }}" ></h2>
+                <h2 class="max-w-[311px] text-2xl mt-20 mb-24" *ngIf="notificationSelected.operation.user.id !== userCurrent?.id " innerHTML="{{ 'pages.notifications.msg_no_accept_address' | translate:{ user: notificationSelected.operation.user.name } }}" ></h2>
+
+                <div class="buttons flex flex-row items-center justify-start flex-wrap mt-5" *ngIf="notificationSelected.operation.user.id !== userCurrent?.id ">
+                    <button class="btn-base bg-tl-primary !px-6 lg:w-auto md:w-auto w-full flex justify-center my-1 mx-3" (click)="initConversation()">
+                        <span class="h-5 text-tl-blue text-sm semibold" >{{ 'pages.notifications.write_to_user' | translate:{ user: notificationSelected.operation.user.name } }}</span>
+                    </button>
+                </div>
+            </div>
+
+            <div class="buttons flex flex-row items-center justify-start space-x-3 mt-5" *ngIf="isAcceptRental  && notificationSelected.operation.shipping_method == 'in_person' ">
+                <button class="btn-base bg-tl-primary px-4 flex justify-center" *ngIf="!isOpenSetPreferences" (click)="sendMeetingInformation();">
+                    <span class="h-5 text-tl-blue text-sm semibold" >{{ 'labels.send' | translate }}</span>
+                </button>
+            </div>
+
+        </div>
+    </div>
+</ng-template>
+
+
+<ng-template #ConfirmDeliveryProduct>
+
+    <div class="notifications-container">
+
+        <div class="item-notification cursor-pointer">
+            <div class="flex items-start space-x-2" (click)="closeNotification()">
+                <img  class="img-notification" [defaultImage]="publicService.defaultImg"  [lazyLoad]="getImageNotification( notificationSelected )" alt="">
+                <div>
+                    <h2 class="text-base text-tl-dark">{{ notificationSelected.title }}</h2>
+                    <p class="text-base-2 text-tl-dark-gray flex">{{ notificationSelected.message }}</p>
+                    <div class="text-base-2 text-tl-dark-gray flex items-center"> <mat-icon class="icon-16">calendar_today</mat-icon>{{ notificationSelected.operation.init_date | date:'d MMM y'  }} - {{ notificationSelected.operation.end_date | date:'d MMM y' }} </div>
+                </div>
+            </div>
+            <!-- <div class="action-notification flex justify-between items-center flex-wrap">
+                <button class="flex items-center space-x-2 m-2" (click)="modalCancelRental()">
+                    <img src="assets/icons/tl-cancel.svg" alt="icon cancel tenlow" srcset="">
+                    <span>{{ 'pages.notifications.cancel_request' | translate }}</span>
+                </button>
+
+                <button class="flex items-center space-x-2 m-2" (click)="initConversation()" *ngIf="notificationSelected.operation.user.id !== userCurrent!.id">
+                    <img src="assets/icons/tl-chat.svg" alt="icon chat tenlow" srcset="">
+                    <span>{{ 'pages.notifications.chat_with_user' | translate:{ name: notificationSelected.operation.user.name } }}</span>
+                </button>
+            </div> -->
+        </div>
+
+        <div class="alert-confirm min-h-[400px] h-[50vh]" *ngIf="!isConfirmDelivery">
+            <h1 class="text-2xl">{{
+                'pages.notifications.delivery_product_to_user' | translate: {
+                    user:  getCompleteName(notificationSelected.operation.user),
+                    product: notificationSelected.operation.product.title
+            } }}</h1>
+
+            <div class="flex flex-wrap justify-center items-center mt-10 mb-8">
+                <button class="px-4 bg-tl-gray opacity-80 rounded-3xl flex justify-center items-center m-2 h-10" (click)="closeNotification()">
+                    <span class="text-tl-dark-medium text-medium  text-sm">{{ 'pages.notifications.no_even_no' | translate }}</span>
+                </button>
+
+                <button class="bg-tl-primary px-5 h-10 rounded-3xl flex justify-center items-center m-2"  (click)="modalConfirmDeliveryProduct()">
+                    <span class="text-tl-blue text-medium text-sm">{{ 'pages.notifications.yes_verify_delivery' | translate }}</span>
+                </button>
+            </div>
+        </div>
+
+        <div class="alert-confirm min-h-[400px] h-[50vh]" *ngIf="isConfirmDelivery">
+            <div class="my-4">
+                <svg width="40" height="40" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M17.2 29.2L31.3 15.1L28.5 12.3L17.2 23.6L11.5 17.9L8.7 20.7L17.2 29.2ZM20 40C17.2333 40 14.6333 39.4747 12.2 38.424C9.76667 37.3747 7.65 35.95 5.85 34.15C4.05 32.35 2.62533 30.2333 1.576 27.8C0.525334 25.3667 0 22.7667 0 20C0 17.2333 0.525334 14.6333 1.576 12.2C2.62533 9.76667 4.05 7.65 5.85 5.85C7.65 4.05 9.76667 2.62467 12.2 1.574C14.6333 0.524667 17.2333 0 20 0C22.7667 0 25.3667 0.524667 27.8 1.574C30.2333 2.62467 32.35 4.05 34.15 5.85C35.95 7.65 37.3747 9.76667 38.424 12.2C39.4747 14.6333 40 17.2333 40 20C40 22.7667 39.4747 25.3667 38.424 27.8C37.3747 30.2333 35.95 32.35 34.15 34.15C32.35 35.95 30.2333 37.3747 27.8 38.424C25.3667 39.4747 22.7667 40 20 40ZM20 36C24.4667 36 28.25 34.45 31.35 31.35C34.45 28.25 36 24.4667 36 20C36 15.5333 34.45 11.75 31.35 8.65C28.25 5.55 24.4667 4 20 4C15.5333 4 11.75 5.55 8.65 8.65C5.55 11.75 4 15.5333 4 20C4 24.4667 5.55 28.25 8.65 31.35C11.75 34.45 15.5333 36 20 36Z" fill="#313B3F"/>
+                </svg>
+            </div>
+
+            <h2 class="text-2xl text-tl-crayola">{{ 'pages.notifications.everything_ok' | translate }}</h2>
+            <p class="text-base my-6 text-tl-crayola">{{ 'pages.notifications.delivery_your_product' | translate  }}</p>
+
+            <button class="btn-base bg-tl-primary !px-6 lg:w-auto md:w-auto w-full flex justify-center mt-14" (click)="closeNotification()">
+                <span class="h-5 text-tl-blue text-sm text-medium" >{{ 'pages.notifications.back_notifications' | translate }}</span>
+            </button>
+        </div>
+    </div>
+</ng-template>
+
+<ng-template #ConfirmReceiveProduct>
+
+    <div class="notifications-container">
+
+        <div class="item-notification cursor-pointer">
+            <div class="flex items-start space-x-2" (click)="closeNotification()">
+                <img  class="img-notification" [defaultImage]="publicService.defaultImg"  [lazyLoad]="getImageNotification( notificationSelected )" alt="">
+                <div>
+                    <h2 class="text-base text-tl-dark">{{ notificationSelected.title }}</h2>
+                    <p class="text-base-2 text-tl-dark-gray flex">{{ notificationSelected.message }}</p>
+                    <div class="text-base-2 text-tl-dark-gray flex items-center"> <mat-icon class="icon-16">calendar_today</mat-icon>{{ notificationSelected.operation.init_date | date:'d MMM y'  }} - {{ notificationSelected.operation.end_date | date:'d MMM y' }} </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="alert-confirm min-h-[400px] h-[50vh]" *ngIf="!isConfirmReceive">
+            <h1 class="text-2xl">{{ notificationSelected.message | capitalize }}</h1>
+
+            <div class="flex flex-wrap justify-center items-center mt-10 mb-8">
+                <button class="px-4 bg-tl-gray opacity-80 rounded-3xl flex justify-center items-center m-2 h-10" (click)="closeNotification()">
+                    <span class="text-tl-dark-medium text-medium  text-sm">{{ 'pages.notifications.no_even_no' | translate }}</span>
+                </button>
+
+                <button class="bg-tl-primary px-5 h-10 rounded-3xl flex justify-center items-center m-2"  (click)="modalConfirmReceiveProduct()">
+                    <span class="text-tl-blue text-medium text-sm">{{ 'pages.notifications.yes_verify_received' | translate }}</span>
+                </button>
+            </div>
+        </div>
+
+        <div class="alert-confirm min-h-[400px] h-[50vh]" *ngIf="isConfirmReceive">
+            <div class="my-4">
+                <svg width="40" height="40" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M17.2 29.2L31.3 15.1L28.5 12.3L17.2 23.6L11.5 17.9L8.7 20.7L17.2 29.2ZM20 40C17.2333 40 14.6333 39.4747 12.2 38.424C9.76667 37.3747 7.65 35.95 5.85 34.15C4.05 32.35 2.62533 30.2333 1.576 27.8C0.525334 25.3667 0 22.7667 0 20C0 17.2333 0.525334 14.6333 1.576 12.2C2.62533 9.76667 4.05 7.65 5.85 5.85C7.65 4.05 9.76667 2.62467 12.2 1.574C14.6333 0.524667 17.2333 0 20 0C22.7667 0 25.3667 0.524667 27.8 1.574C30.2333 2.62467 32.35 4.05 34.15 5.85C35.95 7.65 37.3747 9.76667 38.424 12.2C39.4747 14.6333 40 17.2333 40 20C40 22.7667 39.4747 25.3667 38.424 27.8C37.3747 30.2333 35.95 32.35 34.15 34.15C32.35 35.95 30.2333 37.3747 27.8 38.424C25.3667 39.4747 22.7667 40 20 40ZM20 36C24.4667 36 28.25 34.45 31.35 31.35C34.45 28.25 36 24.4667 36 20C36 15.5333 34.45 11.75 31.35 8.65C28.25 5.55 24.4667 4 20 4C15.5333 4 11.75 5.55 8.65 8.65C5.55 11.75 4 15.5333 4 20C4 24.4667 5.55 28.25 8.65 31.35C11.75 34.45 15.5333 36 20 36Z" fill="#313B3F"/>
+                </svg>
+            </div>
+
+            <h2 class="text-2xl text-tl-crayola">{{ 'pages.notifications.everything_ok' | translate }}</h2>
+            <p class="text-base my-6 text-tl-crayola">{{ 'pages.notifications.receive_product' | translate  }}</p>
+
+            <button class="btn-base bg-tl-primary !px-6 lg:w-auto md:w-auto w-full flex justify-center mt-14" (click)="closeNotification()">
+                <span class="h-5 text-tl-blue text-sm text-medium" >{{ 'pages.notifications.back_notifications' | translate }}</span>
+            </button>
+        </div>
+    </div>
+</ng-template>
+
+<ng-template #RentalViewSuccess>
+    <div class="notifications-container">
+        <div class="item-notification cursor-pointer">
+            <div class="flex items-start space-x-2" (click)="closeNotification()">
+                <img  class="img-notification" [defaultImage]="publicService.defaultImg"   [lazyLoad]="getImageNotification( notificationSelected )" alt="">
+                <div>
+                    <h2 class="text-base text-tl-dark">{{ notificationSelected.title }}</h2>
+                    <p class="text-base-2 text-tl-dark-gray">{{ notificationSelected.message }}</p>
+                    <div class="text-base-2 text-tl-dark-gray flex items-center"> <mat-icon class="icon-16">calendar_today</mat-icon> {{ notificationSelected.operation.init_date | date:'d MMM y' }} - {{ notificationSelected.operation.end_date | date:'d MMM y' }} </div>
+                </div>
+            </div>
+            <div class="flex justify-between items-center space-x-3">
+                <button class="flex items-center space-x-2" (click)="modalCancelRental()">
+                    <img src="assets/icons/tl-cancel.svg" alt="icon cancel tenlow" srcset="">
+                    <span class="text-tl-crayola text-base-2">{{ 'pages.notifications.cancel_request' | translate }}</span>
+                </button>
+
+                <button class="flex items-center space-x-2" (click)="initConversation()" *ngIf="notificationSelected.operation.user.id !== userCurrent!.id">
+                    <img src="assets/icons/tl-chat.svg" alt="icon chat tenlow" srcset="">
+                    <span class="text-tl-crayola text-base-2">{{ 'pages.notifications.chat_with_user' | translate:{ name: notificationSelected.operation.user.name } }}</span>
+                </button>
+            </div>
+        </div>
+
+        <div class="alert-confirm">
+            <button mat-icon-button [matMenuTriggerFor]="menu" class="btn-info-issue">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <mask id="mask0_7255_30283" style="mask-type:alpha" maskUnits="userSpaceOnUse" x="0" y="0" width="24" height="24">
+                    <rect width="24" height="24" fill="#D9D9D9"/>
+                    </mask>
+                    <g mask="url(#mask0_7255_30283)">
+                    <path d="M12 17C12.2833 17 12.5208 16.9042 12.7125 16.7125C12.9042 16.5208 13 16.2833 13 16C13 15.7167 12.9042 15.4792 12.7125 15.2875C12.5208 15.0958 12.2833 15 12 15C11.7167 15 11.4792 15.0958 11.2875 15.2875C11.0958 15.4792 11 15.7167 11 16C11 16.2833 11.0958 16.5208 11.2875 16.7125C11.4792 16.9042 11.7167 17 12 17ZM11 13H13V7H11V13ZM12 22C10.6167 22 9.31667 21.7375 8.1 21.2125C6.88333 20.6875 5.825 19.975 4.925 19.075C4.025 18.175 3.3125 17.1167 2.7875 15.9C2.2625 14.6833 2 13.3833 2 12C2 10.6167 2.2625 9.31667 2.7875 8.1C3.3125 6.88333 4.025 5.825 4.925 4.925C5.825 4.025 6.88333 3.3125 8.1 2.7875C9.31667 2.2625 10.6167 2 12 2C13.3833 2 14.6833 2.2625 15.9 2.7875C17.1167 3.3125 18.175 4.025 19.075 4.925C19.975 5.825 20.6875 6.88333 21.2125 8.1C21.7375 9.31667 22 10.6167 22 12C22 13.3833 21.7375 14.6833 21.2125 15.9C20.6875 17.1167 19.975 18.175 19.075 19.075C18.175 19.975 17.1167 20.6875 15.9 21.2125C14.6833 21.7375 13.3833 22 12 22ZM12 20C14.2333 20 16.125 19.225 17.675 17.675C19.225 16.125 20 14.2333 20 12C20 9.76667 19.225 7.875 17.675 6.325C16.125 4.775 14.2333 4 12 4C9.76667 4 7.875 4.775 6.325 6.325C4.775 7.875 4 9.76667 4 12C4 14.2333 4.775 16.125 6.325 17.675C7.875 19.225 9.76667 20 12 20Z" fill="#1C1B1F"/>
+                    </g>
+                </svg>
+            </button>
+
+            <mat-menu #menu="matMenu">
+                <button class="p-2">
+                    {{ 'pages.notifications.if_have_issue_chat' | translate }}
+                </button>
+            </mat-menu>
+
+
+            <div class="mt-4 mb-5">
+                <svg width="40" height="40" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M17.2 29.2L31.3 15.1L28.5 12.3L17.2 23.6L11.5 17.9L8.7 20.7L17.2 29.2ZM20 40C17.2333 40 14.6333 39.4747 12.2 38.424C9.76667 37.3747 7.65 35.95 5.85 34.15C4.05 32.35 2.62533 30.2333 1.576 27.8C0.525334 25.3667 0 22.7667 0 20C0 17.2333 0.525334 14.6333 1.576 12.2C2.62533 9.76667 4.05 7.65 5.85 5.85C7.65 4.05 9.76667 2.62467 12.2 1.574C14.6333 0.524667 17.2333 0 20 0C22.7667 0 25.3667 0.524667 27.8 1.574C30.2333 2.62467 32.35 4.05 34.15 5.85C35.95 7.65 37.3747 9.76667 38.424 12.2C39.4747 14.6333 40 17.2333 40 20C40 22.7667 39.4747 25.3667 38.424 27.8C37.3747 30.2333 35.95 32.35 34.15 34.15C32.35 35.95 30.2333 37.3747 27.8 38.424C25.3667 39.4747 22.7667 40 20 40ZM20 36C24.4667 36 28.25 34.45 31.35 31.35C34.45 28.25 36 24.4667 36 20C36 15.5333 34.45 11.75 31.35 8.65C28.25 5.55 24.4667 4 20 4C15.5333 4 11.75 5.55 8.65 8.65C5.55 11.75 4 15.5333 4 20C4 24.4667 5.55 28.25 8.65 31.35C11.75 34.45 15.5333 36 20 36Z" fill="#313B3F"/>
+                </svg>
+            </div>
+
+            <h2 class="text-2xl">{{ 'pages.notifications.everything_ok' | translate }}</h2>
+            <p class="text-2xl" *ngIf="notificationSelected.operation.user.id !== userCurrent!.id"> {{ 'pages.notifications.remember_send_product' | translate:{ direction: notificationSelected.operation.shipping_address } }} </p>
+            <p class="text-2xl" *ngIf="notificationSelected.operation.user.id == userCurrent!.id"> {{ 'pages.notifications.owner_confirm_rental_product' | translate:{ owner: notificationSelected.operation.user.name } }} </p>
+
+            <div class="m-2 flex items-center h-4"><mat-icon>location_on</mat-icon><span class="h-4 ml-2">{{ notificationSelected.operation.shipping_address }} </span></div>
+
+            <div class="content-preferences !pt-1">
+                <div class="flex flex-col justify-center items-start">
+                    <div class="m-2 flex items-center h-4"><mat-icon>calendar_today</mat-icon><span class="h-4 ml-2">{{ notificationSelected.operation.init_date | date:'d MMM y' }} </span></div>
+                    <div class="m-2 flex items-center h-4" *ngIf="hourMeet" ><mat-icon> access_time</mat-icon> <span class="h-4 ml-2">{{ hourMeet ?? notificationSelected.operation.shipping_hour | hour }}</span></div>
+                </div>
+            </div>
+
+            <div class="buttons flex flex-row items-center justify-start flex-wrap mt-5">
+                <!-- <button class="btn-base bg-tl-gray lg:w-auto md:w-auto w-full !px-6 flex justify-center my-1 mx-3">
+                    <span class="h-5  text-tl-dark-medium text-sm semibold" >{{ 'pages.notifications.change_schedule' | translate }}</span>
+                </button> -->
+                <button class="btn-base bg-tl-primary !px-6 lg:w-auto md:w-auto w-full flex justify-center my-1 mx-3" (click)="closeNotification()">
+                    <span class="h-5 text-tl-blue text-sm semibold" >{{ 'pages.notifications.back_notifications' | translate }}</span>
+                </button>
+            </div>
+
+            <div class="info-about-cancel">
+                <span class="icon-info">
+                    <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M9 15H11V9H9V15ZM10 7C10.2833 7 10.5208 6.90417 10.7125 6.7125C10.9042 6.52083 11 6.28333 11 6C11 5.71667 10.9042 5.47917 10.7125 5.2875C10.5208 5.09583 10.2833 5 10 5C9.71667 5 9.47917 5.09583 9.2875 5.2875C9.09583 5.47917 9 5.71667 9 6C9 6.28333 9.09583 6.52083 9.2875 6.7125C9.47917 6.90417 9.71667 7 10 7ZM10 20C8.61667 20 7.31667 19.7375 6.1 19.2125C4.88333 18.6875 3.825 17.975 2.925 17.075C2.025 16.175 1.3125 15.1167 0.7875 13.9C0.2625 12.6833 0 11.3833 0 10C0 8.61667 0.2625 7.31667 0.7875 6.1C1.3125 4.88333 2.025 3.825 2.925 2.925C3.825 2.025 4.88333 1.3125 6.1 0.7875C7.31667 0.2625 8.61667 0 10 0C11.3833 0 12.6833 0.2625 13.9 0.7875C15.1167 1.3125 16.175 2.025 17.075 2.925C17.975 3.825 18.6875 4.88333 19.2125 6.1C19.7375 7.31667 20 8.61667 20 10C20 11.3833 19.7375 12.6833 19.2125 13.9C18.6875 15.1167 17.975 16.175 17.075 17.075C16.175 17.975 15.1167 18.6875 13.9 19.2125C12.6833 19.7375 11.3833 20 10 20ZM10 18C12.2333 18 14.125 17.225 15.675 15.675C17.225 14.125 18 12.2333 18 10C18 7.76667 17.225 5.875 15.675 4.325C14.125 2.775 12.2333 2 10 2C7.76667 2 5.875 2.775 4.325 4.325C2.775 5.875 2 7.76667 2 10C2 12.2333 2.775 14.125 4.325 15.675C5.875 17.225 7.76667 18 10 18Z" fill="#1C1B1F"/>
+                    </svg>
+                </span>
+                <span class="info-txt">{{ 'pages.notifications.consult_info_policy_changes' | translate }}</span>
+            </div>
+        </div>
+    </div>
+</ng-template>
+
+<ng-template #LoadItem>
+    <div class="notifications-container">
+        <div role="status" *ngFor="let item of [1,2,3,4,5]" class="animate-pulse item-notification">
+            <div class="w-9/12 flex items-start space-x-2">
+                <div class="h-14 w-14 min-w-[56px] min-h-[56px]  bg-tl-gray rounded-full text-tl-dark-medium  mb-2"></div>
+                <div class="w-full">
+                    <div class="h-4 bg-tl-gray rounded-full text-tl-dark-medium mb-2"></div>
+                    <div class="h-10 bg-tl-gray mb-2 rounded-full text-tl-dark-medium"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</ng-template>

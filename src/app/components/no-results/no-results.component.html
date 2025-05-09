@@ -1,0 +1,35 @@
+<div class="flex flex-col items-center justify-center no-results">
+
+    <div *ngIf="!status" class="flex flex-col items-center justify-center no-results">
+        <img src="assets/images/no-results.svg" alt="" srcset="" class="img-empty">
+        <h2 class="semibold text-xl text-tl-dark-medium">{{ message | translate }}</h2>
+    </div>
+
+    <div *ngIf="status" class="flex flex-col items-center justify-center no-results">
+        <h1>!Vaya, lo han reservado volando!</h1>
+
+        <div class="relative flex justify-center items-center margin-top-4 w-full">
+            <div class="absolute rounded-lg p-4 z-0 custom-background margin-top--4">
+                <img src="assets/images/no-disponible.png" alt="" class="">
+            </div>
+
+            <div class="m-1 w-2/5 flex justify-end z-10">
+            </div>
+            <div class="m-1 w-3/5 class-text z-10 relative">
+                <label>
+                    Este producto ya no está<br>
+                    disponible, pero nuestro<br>
+                    catálogo tiene más opciones<br>
+                    esperándote
+                </label>
+                <br>
+                <div>
+                    <button class="rounded-full mt-10  bg-tl-blue h-10 px-6 mb-4" (click)="navigate('shopping/store')">
+                        <span class="text-sm text-tl-light">Ir al tablón de productos</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
